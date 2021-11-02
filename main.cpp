@@ -116,7 +116,9 @@ struct Kyiv_t{
     //! Увага, ми біти нумеруємо з нуля, вони - з 1, тому 40 = 41-1 і т.д.
 
     //! TODO: Які вони там значення при включенні мали? Як це керувалося?
-    uint64_t C_reg = 0, K_reg = 0, P_reg = 0, Loop_reg = 0, A_reg = 0;
+    uint64_t C_reg = 0, K_reg = 0, P_reg = 0, Loop_reg = 0, A_reg = 0, B_tumb = 0;
+    // B_tumb is not bool because according to p. 163 Glushkov-Iushchenko it has 3 modes.
+    // Maybe there is a better way to handle this?
     bool T_reg = false;
 
 
@@ -161,7 +163,7 @@ struct Kyiv_t{
         // Операції над адресами
         opcode_group_op_begin = 0'26,
         opcode_group_op_end = 0'27,
-        opcode_F = 0'34, //! TODO: описи в різних місцях розходяться і в Глушко-Ющенко (стор.14) самосуперечливі. Розібратися.
+        opcode_F = 0'34,
         opcode_stop = 0'33, // TODO: Він ніби в десятковому у таблиці -- перевірити
     };
 
@@ -266,14 +268,28 @@ struct Kyiv_t{
             }
                 break;
             case flow_control_operations_t::opcode_F:{
+                // Якщо я правильно розібралася з 2 попередними командами, то тут все зрозуміло і немає суперечностей
                 A_reg = addr3_shifted.source_2;
                 addr3_shifted.destination = word_to_number(A_reg);
                 ++C_reg;
             }
                 break;
-            case flow_control_operations_t::opcode_stop: //! TODO: Вона враховує стан кнопки на пульті?
-                T_reg = true;
-                ++C_reg; //TODO: Звідки продовжить? Чи треба збільшувати?
+            case flow_control_operations_t::opcode_stop:{ //! TODO: Вона враховує стан кнопки на пульті?
+            // From Glushkov-Iushchenko p. 55
+            // If B_tumb == 0 -> neutral mode -> full stop
+            // If B_tumb > 0 -> just skip one command without full stop
+            // From Glushkov-Iushchenko pp. 163-164
+            // If B_tumb == 1 -> stop by 3d address
+            // If B_tumb == 2 -> stop by command number
+            // I'm not sure what to do with 1st and 2nd B_tumb (maybe that should be handled in main???)
+                if (!B_tumb) {
+                    T_reg = true;
+                    ++C_reg;
+                }
+                else {
+                    C_reg += 2;
+                }
+            }
                 break;
 //==========================================================================================================
             case logic_operations_t::opcode_log_shift:{
