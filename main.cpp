@@ -53,9 +53,13 @@ constexpr word_t to_positive(word_t w){
     return w & (~mask_41_bit);
 }
 
+signed_word_t get_absolute(word_t w){
+    return static_cast<signed_word_t>(w & mask_40_bits);
+}
+
 word_t word_to_number(word_t w){
     signed_word_t sign1 = (w ? -1 : 1);
-    signed_word_t abs_val1 = static_cast<signed_word_t>(w & mask_40_bits);
+    signed_word_t abs_val1 = get_absolute(w);
     return sign1 * abs_val1;
 }
 
@@ -186,7 +190,7 @@ struct Kyiv_t{
                 opcode_arythm(addr3_shifted, opcode);
                 break;
                 //==========================================================================================================
-            case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
+            case flow_control_operations_t::opcode_jmp_less_or_equal: {
                 if( word_to_number(addr3_shifted.source_1) <= word_to_number(addr3_shifted.source_2)){
                     C_reg = addr3_shifted.destination;
                 } else {
@@ -194,10 +198,34 @@ struct Kyiv_t{
                 }
             }
                 break;
+            case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
+                if (get_absolute(addr3_shifted.source_1) <= get_absolute(addr3_shifted.source_2)) {
+                    C_reg = addr3_shifted.destination;
+                } else {
+                    ++C_reg;
+                }
+            }
+                break;
+            case flow_control_operations_t::opcode_jmp_equal: {
+                if( word_to_number(addr3_shifted.source_1) == word_to_number(addr3_shifted.source_2)){
+                    C_reg = addr3_shifted.destination;
+                } else {
+                    ++C_reg;
+                }
+            }
+                break;
+            case flow_control_operations_t::opcode_fork_negative: {
+                if( is_negative(kmem[addr3_shifted.source_1]) ){
+                    C_reg = addr3_shifted.destination;
+                }else{
+                    C_reg = addr3_shifted.source_2;
+                }
+            }
+                break;
             case flow_control_operations_t::opcode_call_negative:{
                 if( is_negative(kmem[addr3_shifted.source_1]) ){
                     P_reg = addr3_shifted.source_2; //! TODO: Згідно тексту стор 342 (пункт 18) Гнеденко-Королюк-Ющенко-1961
-                    //! Глушко-Ющенок, стор 13, УПП не до кінця однозначна -- a1 без штриха, це зрозуміло,
+                    //! Глушков-Ющенко, стор 13, УПП не до кінця однозначна -- a1 без штриха, це зрозуміло,
                     //! але з врахуванням A і біта модифікатора, чи без?
                     //! Виглядає, що в таблиці на стор 180 -- помилка ('A2 => P -- зайвий штрих точно помилка,
                     //! чи помилка, що, немає зсуву на А?).
@@ -211,6 +239,36 @@ struct Kyiv_t{
                 break;
             case flow_control_operations_t::opcode_ret:{
                 C_reg = P_reg;
+            }
+                break;
+            case flow_control_operations_t::opcode_group_op_begin:{
+                // У книжці Глушков-Ющенко на ст. 14, ймовірно, помилка, бо навіть словами пояснено,
+                // що береться значення а1 і а2, але разом із тим наголошено, що береться не 'а1 чи 'а2,
+                // а саме а1 і а2. В кінці цієї книжки та у Гнеденко-Королюк-Ющенко пише,
+                // ніби беруться значення, тому тут реалізовано саме так.
+                Loop_reg = word_to_number(addr3_shifted.source_1);
+                A_reg = word_to_number(addr3_shifted.source_2);
+                if (A_reg == Loop_reg) {
+                    C_reg = addr3_shifted.destination;
+                } else {
+                    ++C_reg;
+                }
+            }
+                break;
+            case flow_control_operations_t::opcode_group_op_end:{
+                // Такий самий прикол, як з НГО
+                A_reg += word_to_number(addr3_shifted.source_1);
+                if (A_reg == Loop_reg) {
+                    C_reg = addr3_shifted.destination;
+                } else {
+                    C_reg = addr3_shifted.source_2;
+                }
+            }
+                break;
+            case flow_control_operations_t::opcode_F:{
+                A_reg = addr3_shifted.source_2;
+                addr3_shifted.destination = word_to_number(A_reg);
+                ++C_reg;
             }
                 break;
             case flow_control_operations_t::opcode_stop: //! TODO: Вона враховує стан кнопки на пульті?
