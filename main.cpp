@@ -6,6 +6,8 @@
 #include <cmath>
 #include <cassert>
 #include "k_memory.h"
+#include <fstream>
+#include <string>
 
 typedef uint64_t addr_t;
 typedef uint64_t word_t;
@@ -327,6 +329,46 @@ struct Kyiv_t{
                 break;
 //==========================================================================================================
                 //! Тут буде IO
+            case IO_operations_t::opcode_read_perfo_data:{
+                std::ifstream myfile;
+                myfile.open("input.txt");
+                std::string myline;
+                int count = 1;
+                if ( myfile.is_open() ) {
+                    while ( myfile ) {
+                        std::getline (myfile, myline);
+                        if(count >= addr3_shifted.destination && count <= addr3_shifted.destination + addr3_shifted.source_2 - addr3_shifted.source_1){
+                            kmem[addr3_shifted.source_1 + count - 1] = stoi(myline);
+                            //std::cout << myline << '\n';
+                        }
+                        count ++;
+                    }
+                }
+                else {
+                    std::cout << "Couldn't open file\n";
+                }
+            }
+            case IO_operations_t::opcode_read_perfo_binary:{}
+            case IO_operations_t::opcode_read_magnetic_drum:{}
+            case IO_operations_t::opcode_write_perfo_binary:{
+                //!воно ще якось має передавати управління
+                //! команді з третьої адреси, але я хз як саме це має відбуватись
+                std::ofstream myfile;
+                myfile.open("output.txt");
+                if (myfile.is_open())
+                {
+                    for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
+                        myfile << kmem[addr3_shifted.source_1 + i];
+                        myfile << "\n";
+                    }
+                    myfile.close();
+                }else {
+                    std::cout << "Unable to open file";
+                }
+                return 0;
+            }
+            case IO_operations_t::opcode_write_magnetic_drum:{}
+            case IO_operations_t::opcode_init_magnetic_drum:{}
 //==========================================================================================================
             default:
                 T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду
