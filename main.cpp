@@ -21,11 +21,12 @@ struct addr3_t{
 
 constexpr addr3_t word_to_addr3(word_t w){
     constexpr word_t Addr_1_mask_shift = (40-6-11)+1;
-    constexpr word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
+    constexpr word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift+1);  // also was -1
     constexpr word_t Addr_2_mask_shift = (40-6-12-11)+1;
-    constexpr word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);
+    constexpr word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift+1);  // also was -1
     constexpr word_t Addr_3_mask_shift = 0; // Для одноманітності
     constexpr word_t Addr_3_mask = 0b11'111'111'111ULL;
+
     addr3_t res;
     res.source_1    = (w & Addr_1_mask) >> Addr_1_mask_shift;
     res.source_2    = (w & Addr_2_mask) >> Addr_2_mask_shift;
@@ -35,13 +36,14 @@ constexpr addr3_t word_to_addr3(word_t w){
 
 constexpr opcode_t word_to_opcode(word_t w) {
     constexpr word_t op_code_shift = (40-5)+1;
-    constexpr word_t op_code_mask = 0b11'111ULL << (op_code_shift-1);
+    constexpr word_t op_code_mask = 0b11'111ULL << (op_code_shift); // it was op_code_shift -1 but it does not work for norm
     opcode_t opcode = (w & op_code_mask) >> op_code_shift;
     return opcode;
 }
 
 static constexpr word_t mask_40_bits = (1ULL << 40) - 1; // 0b111...11 -- 40 1-bits, std::pow(2, 41) === 1 << 41
 static constexpr word_t mask_41_bit = (1ULL << 40);      // 0b1000...00 -- 40 zeros after the 1
+
 
 constexpr bool is_negative(word_t w){
     return w & mask_41_bit; // 0 - додатнє, не нуль -- від'ємне
@@ -124,10 +126,9 @@ struct aproxy {
 
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'10'0003'0005'0005ULL, 0'11'0005'0010'0010ULL,
-                       to_negative(3),to_negative(4), 5,
+    word_t k[04000] = {0, 0'35'0003'0005'0006ULL, 123, 0, 0
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
-                       1099511627701, 10000, 18}; // 0AAAA -- octal constant};
+                       }; // 0AAAA -- octal constant};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
@@ -171,7 +172,7 @@ struct Kyiv_t{
         opcode_mul = 0'10,       //! УВАГА -- це нетривіальна операція!
         opcode_mul_round = 0'11, //! УВАГА -- це нетривіальна операція!
         opcode_div = 0'12,       //! УВАГА -- це нетривіальна операція!
-        opcode_norm = 0'35       // Іноді відносять до логічних операцій
+        opcode_norm = 0'35,       // Іноді відносять до логічних операцій
     };
     // Логічні операції працюють над всіма 41 бітами
     enum logic_operations_t{
@@ -210,7 +211,9 @@ struct Kyiv_t{
         addr3_t addr3_shifted = shift_addr3_byA(addr3, A_reg, K_reg); // Решта використовують цю змінну
         //! Ймовірно, потім це діло треба буде відрефакторити -- відчуваю, но де буде проблема - поки не знаю :+)
         switch(opcode){
+
             //TODO: Тестував лише opcode_add !!! -- решта вважайте невірними, поки не буде тестів.
+            case arythm_operations_t::opcode_norm: [[fallthrough]];
             case arythm_operations_t::opcode_add: [[fallthrough]];
             case arythm_operations_t::opcode_sub: [[fallthrough]];
             case arythm_operations_t::opcode_addcmd: [[fallthrough]];
@@ -412,6 +415,10 @@ struct Kyiv_t{
         signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3.source_1] & mask_40_bits);
         signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3.source_2] & mask_40_bits);;
         signed_word_t res = sign1 * abs_val1;
+
+        signed_word_t res_for_norm;
+        uint16_t power = 40 - leftmost_one(abs_val1);
+
         std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
         switch(opcode){
             case arythm_operations_t::opcode_add:
@@ -432,6 +439,11 @@ struct Kyiv_t{
             case arythm_operations_t::opcode_mul: [[fallthrough]];
             case arythm_operations_t::opcode_mul_round:
                 res = res * sign2 * abs_val2;
+                break;
+            case arythm_operations_t::opcode_norm: {
+
+                res_for_norm = sign1 * (abs_val1 << power);
+            }
                 break;
             default:
                 assert(false && "Should never been here!");
@@ -512,6 +524,26 @@ struct Kyiv_t{
             kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
             if (is_negative)
                 kmem[addr3.destination] |= mask_41_bit;
+        } else if (opcode == arythm_operations_t::opcode_norm) {
+            bool is_negative = (res < 0);
+
+
+
+            if (is_negative)
+                res = -res;
+            assert(res >= 0);
+            std::cout << "norm_val: " << (res_for_norm) << std::endl;
+            std::cout << "norm_power: " << (power) << std::endl;
+            std::cout << "norm_val_64: " << std::bitset<64>(res_for_norm) << std::endl;
+            std::cout << "norm_val_41: " << std::bitset<41>(res_for_norm) << std::endl;
+
+            kmem[addr3.source_2] = power;
+            kmem[addr3.destination] = static_cast<uint64_t>(res_for_norm) & mask_40_bits;
+            if (is_negative)
+                kmem[addr3.destination] |= mask_41_bit;
+
+            std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
+            std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
         }
         ++C_reg;
     }
