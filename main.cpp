@@ -21,9 +21,9 @@ struct addr3_t{
 
 constexpr addr3_t word_to_addr3(word_t w){
     constexpr word_t Addr_1_mask_shift = (40-6-11)+1;
-    constexpr word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift+1);  // also was -1
+    constexpr word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);  // also was -1
     constexpr word_t Addr_2_mask_shift = (40-6-12-11)+1;
-    constexpr word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift+1);  // also was -1
+    constexpr word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);  // also was -1
     constexpr word_t Addr_3_mask_shift = 0; // Для одноманітності
     constexpr word_t Addr_3_mask = 0b11'111'111'111ULL;
 
@@ -36,7 +36,7 @@ constexpr addr3_t word_to_addr3(word_t w){
 
 constexpr opcode_t word_to_opcode(word_t w) {
     constexpr word_t op_code_shift = (40-5)+1;
-    constexpr word_t op_code_mask = 0b11'111ULL << (op_code_shift); // it was op_code_shift -1 but it does not work for norm
+    constexpr word_t op_code_mask = 0b11'111ULL << (op_code_shift);
     opcode_t opcode = (w & op_code_mask) >> op_code_shift;
     return opcode;
 }
@@ -126,9 +126,10 @@ struct aproxy {
 
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'35'0003'0005'0006ULL, 123, 0, 0
+    word_t k[04000] = {0, 0'35'0003'0004'0005ULL, 0'12'0006'0007'0010ULL,
+                       to_negative(3),to_negative(4), 5,
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
-                       }; // 0AAAA -- octal constant};
+                       4, 5, 8};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
@@ -207,12 +208,14 @@ struct Kyiv_t{
     bool execute_opcode(){
         K_reg = kmem[C_reg];
         opcode_t opcode = word_to_opcode(K_reg);
+        std::cout << "opcode: " << opcode << std::endl;
         addr3_t addr3 = word_to_addr3(K_reg); // Парі команд потрібна
         addr3_t addr3_shifted = shift_addr3_byA(addr3, A_reg, K_reg); // Решта використовують цю змінну
         //! Ймовірно, потім це діло треба буде відрефакторити -- відчуваю, но де буде проблема - поки не знаю :+)
         switch(opcode){
 
-            //TODO: Тестував лише opcode_add !!! -- решта вважайте невірними, поки не буде тестів.
+            //TODO: Тестував лише opcode_add !!! -- решта вважайте невірними, поки не буде тестів. opcode_div
+            case arythm_operations_t::opcode_div: [[fallthrough]];
             case arythm_operations_t::opcode_norm: [[fallthrough]];
             case arythm_operations_t::opcode_add: [[fallthrough]];
             case arythm_operations_t::opcode_sub: [[fallthrough]];
@@ -417,7 +420,7 @@ struct Kyiv_t{
         signed_word_t res = sign1 * abs_val1;
 
         signed_word_t res_for_norm;
-        uint16_t power = 40 - leftmost_one(abs_val1);
+        uint16_t power = 40 - leftmost_one(abs_val1) -1;
 
         std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
         switch(opcode){
@@ -441,8 +444,16 @@ struct Kyiv_t{
                 res = res * sign2 * abs_val2;
                 break;
             case arythm_operations_t::opcode_norm: {
-
                 res_for_norm = sign1 * (abs_val1 << power);
+            }
+                break;
+            case arythm_operations_t::opcode_div: {
+                if ((abs_val2 == 0) || (abs_val2 < abs_val1)) {
+                    T_reg = true;
+                    ++C_reg;
+                    return;
+                }
+                res /= (sign2 * abs_val2);
             }
                 break;
             default:
@@ -525,13 +536,12 @@ struct Kyiv_t{
             if (is_negative)
                 kmem[addr3.destination] |= mask_41_bit;
         } else if (opcode == arythm_operations_t::opcode_norm) {
-            bool is_negative = (res < 0);
-
-
+            bool is_negative = (res_for_norm < 0);
 
             if (is_negative)
-                res = -res;
-            assert(res >= 0);
+                res_for_norm = -res_for_norm;
+            assert(res_for_norm >= 0);
+
             std::cout << "norm_val: " << (res_for_norm) << std::endl;
             std::cout << "norm_power: " << (power) << std::endl;
             std::cout << "norm_val_64: " << std::bitset<64>(res_for_norm) << std::endl;
@@ -544,6 +554,29 @@ struct Kyiv_t{
 
             std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
             std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
+        } else if (opcode == arythm_operations_t::opcode_div) {
+            bool is_negative = (res < 0);
+            std::cout << "Div: " << (res) << std::endl;
+            if (is_negative)
+                res = -res;
+            assert(res >= 0);
+
+            std::cout << "Div: " << std::bitset<64>(res) << std::endl;
+            std::cout << "Div: " << std::bitset<41>(res) << std::endl;
+
+            uint16_t leftmost = leftmost_one(res);
+            if (leftmost > 40) {
+                res = res >> (leftmost - 40);
+            }
+
+            std::cout << "Div: " << leftmost << std::endl;
+            std::cout << "Div: " << std::bitset<64>(res) << std::endl;
+            std::cout << "Div: " << std::bitset<41>(res) << std::endl;
+            std::cout << "Div: " << res << std::endl;
+
+            kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+            if (is_negative)
+                kmem[addr3.destination] |= mask_41_bit;
         }
         ++C_reg;
     }
