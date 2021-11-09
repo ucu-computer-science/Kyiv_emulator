@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <cmath>
 #include <cassert>
-#include "k_memory.h"
+#include <bitset>
 #include <fstream>
-#include <string>
+//#include "k_memory.h"
 
 typedef uint64_t addr_t;
 typedef uint64_t word_t;
@@ -55,6 +55,15 @@ constexpr word_t to_positive(word_t w){
     return w & (~mask_41_bit);
 }
 
+constexpr uint16_t leftmost_one(word_t w) {
+    uint16_t ct = 0;
+    while (w > 1) {
+        ct++;
+        w = w >> 1;
+    }
+    return ct;
+}
+
 signed_word_t get_absolute(word_t w){
     return static_cast<signed_word_t>(w & mask_40_bits);
 }
@@ -90,26 +99,42 @@ constexpr addr3_t shift_addr3_byA(addr3_t addr3, uint64_t offset, word_t w){
     return  addr3;
 }
 
+
+
+struct aproxy {
+    aproxy(word_t& r, addr_t addres) : mPtr(&r), ref(addres) {}
+    void operator = (word_t n) const {
+        if (ref > 03000) {
+            throw "ROM!";
+        }
+        *mPtr = n;
+    }
+    operator word_t() {
+        return *mPtr;
+    }
+    void operator |=(word_t x) const {
+        *mPtr =  *mPtr | x;
+    }
+    void operator &=(word_t x) const {
+        *mPtr = *mPtr & x;
+    }
+    addr_t ref;
+    word_t *mPtr;
+};
+
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'02'0003'0004'0005ULL, 0'02'0006'0007'0010ULL,
-                       to_negative(3), to_negative(4), 5,
+    word_t k[04000] = {0, 0'10'0003'0005'0005ULL, 0'11'0005'0010'0010ULL,
+                       to_negative(3),to_negative(4), 5,
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
-                       7, 5, 8}; // 0AAAA -- octal constant};
-    const word_t krom[01000] = {0};
-
+                       1099511627701, 10000, 18}; // 0AAAA -- octal constant};
 public:
-    word_t & operator[](addr_t addres) {
-        if (addres > 04000)
-            throw ;
-        if (addres < 01777) {
-            return k[addres];
-        }
-        k[addres] = krom[04000 - addres];
-        return k[addres];
+    auto operator[](addr_t addres) {
+        return aproxy(k[addres], addres);
     }
 
 };
+
 
 
 // Контроль виходу за розмір додати потім. Це дуже груба реалізація.
@@ -190,7 +215,9 @@ struct Kyiv_t{
             case arythm_operations_t::opcode_sub: [[fallthrough]];
             case arythm_operations_t::opcode_addcmd: [[fallthrough]];
             case arythm_operations_t::opcode_subabs: [[fallthrough]];
-            case arythm_operations_t::opcode_addcyc: // [[fallthrough]];
+            case arythm_operations_t::opcode_mul: [[fallthrough]];
+            case arythm_operations_t::opcode_addcyc: [[fallthrough]];
+            case arythm_operations_t::opcode_mul_round:
                 opcode_arythm(addr3_shifted, opcode);
                 break;
                 //==========================================================================================================
@@ -277,13 +304,13 @@ struct Kyiv_t{
             }
                 break;
             case flow_control_operations_t::opcode_stop:{ //! TODO: Вона враховує стан кнопки на пульті?
-            // From Glushkov-Iushchenko p. 55
-            // If B_tumb == 0 -> neutral mode -> full stop
-            // If B_tumb > 0 -> just skip one command without full stop
-            // From Glushkov-Iushchenko pp. 163-164
-            // If B_tumb == 1 -> stop by 3d address
-            // If B_tumb == 2 -> stop by command number
-            // I'm not sure what to do with 1st and 2nd B_tumb (maybe that should be handled in main???)
+                // From Glushkov-Iushchenko p. 55
+                // If B_tumb == 0 -> neutral mode -> full stop
+                // If B_tumb > 0 -> just skip one command without full stop
+                // From Glushkov-Iushchenko pp. 163-164
+                // If B_tumb == 1 -> stop by 3d address
+                // If B_tumb == 2 -> stop by command number
+                // I'm not sure what to do with 1st and 2nd B_tumb (maybe that should be handled in main???)
                 if (!B_tumb) {
                     T_reg = true;
                     ++C_reg;
@@ -402,6 +429,10 @@ struct Kyiv_t{
             case arythm_operations_t::opcode_addcyc:
                 res += sign2 * abs_val2; // Те ж, що і для opcode_add, але подальша обробка інша
                 break;
+            case arythm_operations_t::opcode_mul: [[fallthrough]];
+            case arythm_operations_t::opcode_mul_round:
+                res = res * sign2 * abs_val2;
+                break;
             default:
                 assert(false && "Should never been here!");
         }
@@ -433,7 +464,7 @@ struct Kyiv_t{
             }
         } else if(opcode == arythm_operations_t::opcode_addcmd){
             kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-            kmem[addr3.destination] |= is_negative(kmem[addr3.source_2]); // Копіюємо біт знаку з source_2
+            kmem[addr3.destination] |= kmem[addr3.source_2] & mask_41_bit; // Копіюємо біт знаку з source_2 // edited тут наче так має бути
         } else if(opcode == arythm_operations_t::opcode_addcyc){
             //! TODO: Вияснити, а як ця команда функціонує.
             // "Отличается от обычного сложения лишь тем, что  в нем отсутствует блокировка при выходе
@@ -442,13 +473,46 @@ struct Kyiv_t{
             // Питання (нумеруючи біти з 1 до 41):
             // 1. Перенос із 40 в 41 біт тут можливий? З фрази виглядає, що так.
             // 2. Якщо додавання переносу до молодшого біту виникло переповнення, що далі?
-            //          Так виглядає, що воно не може виникнути, але чи я не помилився?
-            if(res | (mask_41_bit<<1)){
+            //    Так виглядає, що воно не може виникнути, але чи я не помилився? -- не може, десь через переніс буде 0
+            bool is_negative = (res < 0);
+            std::cout << (res) << std::endl;
+            if (is_negative)
+                res = -res;
+            assert(res >= 0);
+
+            std::cout << std::bitset<41> (res) << std::endl;
+            if(res & mask_41_bit){
                 res += 1; // Маємо перенос із знакового біту
             }
-            kmem[addr3.destination] = static_cast<uint64_t>(res) & ( mask_40_bits | mask_41_bit);
-        }
 
+            kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+            if (is_negative)
+                kmem[addr3.destination] |= mask_41_bit;
+        } else if(opcode == arythm_operations_t::opcode_mul ||
+                  opcode == arythm_operations_t::opcode_mul_round
+                ) {
+            bool is_negative = (res < 0);
+            std::cout << (res) << std::endl;
+            if (is_negative)
+                res = -res;
+            assert(res >= 0);
+
+            std::cout << std::bitset<64>(res) << std::endl;
+            std::cout << std::bitset<41>(res) << std::endl;
+            uint16_t leftmost = leftmost_one(res);
+            if (leftmost > 40) {
+                if (opcode == arythm_operations_t::opcode_mul_round)
+                    res += 1 << (leftmost - 40 - 1);
+                res = res >> (leftmost - 40);
+            }
+            std::cout << leftmost << std::endl;
+            std::cout << std::bitset<64>(res) << std::endl;
+            std::cout << std::bitset<41>(res) << std::endl;
+            std::cout << res << std::endl;
+            kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+            if (is_negative)
+                kmem[addr3.destination] |= mask_41_bit;
+        }
         ++C_reg;
     }
 
@@ -463,6 +527,6 @@ int main() {
 
         // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
     }
-
+    std::cout << machine1.kmem[03001];
     return 0;
 }
