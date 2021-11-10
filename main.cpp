@@ -7,12 +7,16 @@
 #include <cassert>
 #include <bitset>
 #include <fstream>
+//#include <boost/algorithm/string/replace.hpp>
+//#include <boost/algorithm/string.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 //#include "k_memory.h"
 
 typedef uint64_t addr_t;
 typedef uint64_t word_t;
 typedef int64_t  signed_word_t;
 typedef uint32_t opcode_t;
+typedef boost::multiprecision::int128_t mul_word_t;
 
 struct addr3_t{
     addr_t source_1 = 0, source_2 = 0, destination = 0;
@@ -58,6 +62,16 @@ constexpr word_t to_positive(word_t w){
 }
 
 constexpr uint16_t leftmost_one(word_t w) {
+    uint16_t ct = 0;
+    while (w > 1) {
+        ct++;
+        w = w >> 1;
+    }
+    return ct;
+}
+
+//hz looks like kostyl but whatever
+constexpr uint16_t leftmost_one(mul_word_t w) {
     uint16_t ct = 0;
     while (w > 1) {
         ct++;
@@ -126,8 +140,8 @@ struct aproxy {
 
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'35'0003'0004'0005ULL, 0'12'0006'0007'0010ULL,
-                       to_negative(3),to_negative(4), 5,
+    word_t k[04000] = {0, 0'10'0003'0004'0005ULL, 0'02'0006'0007'0010ULL,
+                       13367, 164511353, 5,
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
                        4, 5, 8};
 public:
@@ -420,6 +434,7 @@ struct Kyiv_t{
         signed_word_t res = sign1 * abs_val1;
 
         signed_word_t res_for_norm;
+        mul_word_t res_mul;
         uint16_t power = 40 - leftmost_one(abs_val1) -1;
 
         std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
@@ -441,7 +456,7 @@ struct Kyiv_t{
                 break;
             case arythm_operations_t::opcode_mul: [[fallthrough]];
             case arythm_operations_t::opcode_mul_round:
-                res = res * sign2 * abs_val2;
+                res_mul = res * sign2 * abs_val2;
                 break;
             case arythm_operations_t::opcode_norm: {
                 res_for_norm = sign1 * (abs_val1 << power);
@@ -453,6 +468,7 @@ struct Kyiv_t{
                     ++C_reg;
                     return;
                 }
+
                 res /= (sign2 * abs_val2);
             }
                 break;
@@ -514,27 +530,29 @@ struct Kyiv_t{
         } else if(opcode == arythm_operations_t::opcode_mul ||
                   opcode == arythm_operations_t::opcode_mul_round
                 ) {
-            bool is_negative = (res < 0);
-            std::cout << (res) << std::endl;
+            bool is_negative = (res_mul < 0);
+            std::cout << "mul_res: " << (res_mul) << std::endl;
             if (is_negative)
-                res = -res;
-            assert(res >= 0);
+                res_mul = -res_mul;
+            assert(res_mul >= 0);
 
-            std::cout << std::bitset<64>(res) << std::endl;
-            std::cout << std::bitset<41>(res) << std::endl;
-            uint16_t leftmost = leftmost_one(res);
+//            std::cout << std::bitset<64>(res_mul) << std::endl;
+//            std::cout << std::bitset<41>(res_mul) << std::endl;
+            uint16_t leftmost = leftmost_one(res_mul);
             if (leftmost > 40) {
                 if (opcode == arythm_operations_t::opcode_mul_round)
-                    res += 1 << (leftmost - 40 - 1);
-                res = res >> (leftmost - 40);
+                    res_mul += 1 << (leftmost - 40 - 1);
+                res_mul = res >> (leftmost - 40);
             }
-            std::cout << leftmost << std::endl;
-            std::cout << std::bitset<64>(res) << std::endl;
-            std::cout << std::bitset<41>(res) << std::endl;
-            std::cout << res << std::endl;
-            kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+            std::cout << "leftmost: " << leftmost << std::endl;
+//            std::cout << std::bitset<64>(res_mul) << std::endl;
+//            std::cout << std::bitset<41>(res_mul) << std::endl;
+            std::cout << "res_mul_2: " << res_mul << std::endl;
+            kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
             if (is_negative)
                 kmem[addr3.destination] |= mask_41_bit;
+            std::cout << "kmem_res: " << kmem[addr3.destination] << std::endl;
+
         } else if (opcode == arythm_operations_t::opcode_norm) {
             bool is_negative = (res_for_norm < 0);
 
