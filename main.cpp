@@ -7,6 +7,7 @@
 #include <cassert>
 #include <bitset>
 #include <fstream>
+#include <regex>
 //#include <boost/algorithm/string/replace.hpp>
 //#include <boost/algorithm/string.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -39,6 +40,7 @@ constexpr addr3_t word_to_addr3(word_t w){
 }
 
 constexpr opcode_t word_to_opcode(word_t w) {
+
     constexpr word_t op_code_shift = (40-5)+1;
     constexpr word_t op_code_mask = 0b11'111ULL << (op_code_shift);
     opcode_t opcode = (w & op_code_mask) >> op_code_shift;
@@ -140,17 +142,16 @@ struct aproxy {
 
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'10'0003'0004'0005ULL, 0'02'0006'0007'0010ULL,
-                       13367, 164511353, 5,
+    word_t k[04000] = {0, 0'35'0004'0005'0006ULL, 0'02'0004'0005'0007ULL,
+                       0'33'0000'0000'0000ULL, 0'02'0004'0005'0007ULL, 5,
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
-                       4, 5, 8};
+                       4, 5, 0'02'0004'0005'0007ULL};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
     }
 
 };
-
 
 
 // Контроль виходу за розмір додати потім. Це дуже груба реалізація.
@@ -222,6 +223,10 @@ struct Kyiv_t{
     bool execute_opcode(){
         K_reg = kmem[C_reg];
         opcode_t opcode = word_to_opcode(K_reg);
+        if (opcode == 0) {
+            ++C_reg;
+
+        }
         std::cout << "opcode: " << opcode << std::endl;
         addr3_t addr3 = word_to_addr3(K_reg); // Парі команд потрібна
         addr3_t addr3_shifted = shift_addr3_byA(addr3, A_reg, K_reg); // Решта використовують цю змінну
@@ -472,6 +477,7 @@ struct Kyiv_t{
                 res /= (sign2 * abs_val2);
             }
                 break;
+
             default:
                 assert(false && "Should never been here!");
         }
