@@ -360,36 +360,113 @@ struct Kyiv_t{
 //==========================================================================================================
                 //! Тут буде IO
             case IO_operations_t::opcode_read_perfo_data:{
-                std::ifstream myfile;
-                myfile.open("input.txt");
-                std::string myline;
-                int count = 1;
-                if ( myfile.is_open() ) {
-                    while ( myfile ) {
-                        std::getline (myfile, myline);
-                        if(count >= addr3_shifted.destination && count <= addr3_shifted.destination + addr3_shifted.source_2 - addr3_shifted.source_1){
-                            kmem[addr3_shifted.source_1 + count - 1] = stoi(myline);
-                            //std::cout << myline << '\n';
+                    std::ifstream punch_cards;
+                    std::ifstream heads;
+                    std::string head;
+                    std::string line;
+                    std::string perfo;
+                    std::string number;
+
+                    punch_cards.open("../punch_cards_in.txt");
+                    heads.open("../heads.txt");
+
+                    std::getline(heads, head
+                    );
+                    int num = std::stoi(head);
+                    int counter = 0;
+
+                    while(punch_cards){
+                        std::getline(punch_cards, line);
+                        if(counter == num){
+                            perfo = line.substr(addr3_shifted.destination, line.size());
+                            break;
                         }
-                        count ++;
+                        counter ++;
+                    }
+
+                    number = "";
+                    counter = 0;
+                    for(auto c : perfo) {
+                        if(c == ' '){
+                            if(counter <= addr3_shifted.source_2 - addr3_shifted.source_1){
+                                //запис числа в пам'ять
+                                //std::cout << number << std::endl;
+                                kmem[addr3_shifted.source_1 + counter] = stoi(number);
+
+                            }else{
+                                break;
+                            }
+                            number = "";
+                            counter ++;
+                        }else{
+                            number = number + c;
+                        }
+                    }
+                    punch_cards.close();
+                    heads.close();
+            }
+
+            case IO_operations_t::opcode_read_perfo_binary:{}
+
+            case IO_operations_t::opcode_read_magnetic_drum:{
+                std::ifstream magnetic_drum;
+                std::ifstream heads;
+                std::string head;
+                std::string line;
+                std::string data;
+                std::string number;
+
+                magnetic_drum.open("../magnetic_drum.txt");
+                heads.open("../heads.txt");
+
+                std::getline(heads, head);
+                std::getline(heads, head);
+
+                int pos = head.find(',');
+                int coord_1 = std::stoi(head.substr(0, pos));
+                int coord_2 = std::stoi(head.substr(pos+1, head.size()));
+
+                int counter = 0;
+                while(magnetic_drum){
+                    std::getline(magnetic_drum, line);
+                    if(counter == coord_1){
+                        data = line.substr(coord_2, line.size());
+                        break;
+                    }
+                    counter ++;
+                }
+
+                counter = 0;
+                for(auto c : data) {
+                    if(c == ' '){
+                        if(counter <= addr3_shifted.source_2 - addr3_shifted.source_1){
+                            //запис числа в пам'ять
+                            //std::cout << number << std::endl;
+                            kmem[addr3_shifted.source_1 + counter] = stoi(number);
+
+                        }else{
+                            break;
+                        }
+                        number = "";
+                        counter ++;
+                    }else{
+                        number = number + c;
                     }
                 }
-                else {
-                    std::cout << "Couldn't open file\n";
-                }
+                C_reg = kmem[addr3_shifted.destination];
+                K_reg = C_reg;
             }
-            case IO_operations_t::opcode_read_perfo_binary:{}
-            case IO_operations_t::opcode_read_magnetic_drum:{}
+
             case IO_operations_t::opcode_write_perfo_binary:{
                 //!воно ще якось має передавати управління
                 //! команді з третьої адреси, але я хз як саме це має відбуватись
                 std::ofstream myfile;
-                myfile.open("output.txt");
+                myfile.open("../punc_cards_out.txt");
                 if (myfile.is_open())
                 {
                     for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
                         myfile << kmem[addr3_shifted.source_1 + i];
-                        myfile << "\n";
+                        myfile << ' ';
                     }
                     myfile.close();
                 }else {
@@ -397,8 +474,36 @@ struct Kyiv_t{
                 }
                 return 0;
             }
+
             case IO_operations_t::opcode_write_magnetic_drum:{}
-            case IO_operations_t::opcode_init_magnetic_drum:{}
+
+            case IO_operations_t::opcode_init_magnetic_drum:{
+                std::ifstream headsin;
+                std::string result;
+                std::string line;
+
+                headsin.open("../heads.txt");
+
+                std::getline(headsin, result);
+                result += '\n';
+                std::getline(headsin, line);
+                if(addr3_shifted.source_1 == 0){
+                    result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
+                    std::getline(headsin, line);
+                    result += line;
+                }else{
+                    result += line;
+                    result += '\n';
+                    result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
+                }
+
+                headsin.close();
+
+                std::ofstream headsout;
+                headsout.open("../heads.txt");
+                headsout << result << std::endl;
+                headsout.close();
+            }
 //==========================================================================================================
             default:
                 T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду

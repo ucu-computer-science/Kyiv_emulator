@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/kyivemu.dir/main.cpp.o -o kyivemu 

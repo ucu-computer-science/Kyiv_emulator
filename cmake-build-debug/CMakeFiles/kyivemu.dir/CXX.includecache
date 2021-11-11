@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hannusia/UCU/poc/eom_kyiv/eom/main.cpp
+iostream
+-
+cstdint
+-
+cmath
+-
+cassert
+-
+bitset
+-
+fstream
+-
+

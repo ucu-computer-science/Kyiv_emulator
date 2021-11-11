@@ -1,0 +1,3 @@
+/home/hannusia/UCU/poc/eom_kyiv/eom/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/hannusia/UCU/poc/eom_kyiv/eom/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/hannusia/UCU/poc/eom_kyiv/eom/cmake-build-debug/CMakeFiles/kyivemu.dir
