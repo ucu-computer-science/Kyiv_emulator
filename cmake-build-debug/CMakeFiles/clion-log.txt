@@ -1,0 +1,5 @@
+/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /home/olya/study/programming/poc/kyiv/Kyiv_emu/Kyiv_emulator
+-- Found Python: /usr/bin/python3.9 (found version "3.9.7") found components: Interpreter 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/olya/study/programming/poc/kyiv/Kyiv_emu/Kyiv_emulator/cmake-build-debug

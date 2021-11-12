@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/KTests.dir/kyiv_test.cpp.o CMakeFiles/KTests.dir/__/src/main.cpp.o -o KTests  ../lib/libgtest_maind.a ../lib/libgtestd.a -lpthread 
