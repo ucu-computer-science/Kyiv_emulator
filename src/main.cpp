@@ -399,6 +399,7 @@ bool Kyiv_t::execute_opcode(){
 
             std::getline(heads, head);
             std::getline(heads, head);
+            std::getline(heads, head);
 
             int pos = head.find(',');
             int coord_1 = std::stoi(head.substr(0, pos));
