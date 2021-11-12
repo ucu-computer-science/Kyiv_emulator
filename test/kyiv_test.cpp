@@ -62,18 +62,28 @@ namespace {
         EXPECT_EQ(machine1.C_reg, 2);
     }
 
-    TEST_F(KyivTests, addcyc) {
-        word_t num1 = 13;
-        word_t num2 = 15;
-        machine1.C_reg = 1;
-        machine1.kmem[1] = 0'07'0003'0004'0005ULL;
+//    TEST_F(KyivTests, addcyc) {
+//        word_t num1 = 13;
+//        word_t num2 = 15;
+//        machine1.C_reg = 1;
+//        machine1.kmem[1] = 0'07'0003'0004'0005ULL;
 //        machine1.kmem[3] = to_negative(num1);
 //        machine1.kmem[4] = num2;
 //        machine1.execute_opcode();
 //        word_t got = word_to_number(machine1.kmem[5]);
 //        EXPECT_EQ(got, -2);
 //        EXPECT_EQ(machine1.C_reg, 2);
+//    }
+
+    TEST_F(KyivTests, read_perfo_data) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'20'0003'0004'0000ULL;
+        machine1.execute_opcode();
+        word_t got = word_to_number(machine1.kmem[3]);
+        EXPECT_EQ(got, 1);
+        EXPECT_EQ(machine1.C_reg, 2);
     }
+
 }
 
 int main(int argc, char **argv) {

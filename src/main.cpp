@@ -8,10 +8,10 @@
 #include <bitset>
 #include <fstream>
 #include <regex>
-//#include <boost/algorithm/string/replace.hpp>
-//#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
-//#include "k_memory.h"
+#include <boost/multiprecision/float128.hpp>
 #include "kyiv.h"
 
 typedef uint64_t addr_t;
@@ -20,10 +20,6 @@ typedef int64_t  signed_word_t;
 typedef uint32_t opcode_t;
 typedef boost::multiprecision::int128_t mul_word_t;
 
-//struct addr3_t{
-//    addr_t source_1 = 0, source_2 = 0, destination = 0;
-//    constexpr addr3_t() = default;
-//};
 
 constexpr addr3_t word_to_addr3(word_t w){
     constexpr word_t Addr_1_mask_shift = (40-6-11)+1;
@@ -280,47 +276,191 @@ bool Kyiv_t::execute_opcode(){
         }
             break;
 //==========================================================================================================
-            //! Тут буде IO
         case IO_operations_t::opcode_read_perfo_data:{
-            std::ifstream myfile;
-            myfile.open("input.txt");
-            std::string myline;
-            int count = 1;
-            if ( myfile.is_open() ) {
-                while ( myfile ) {
-                    std::getline (myfile, myline);
-                    if(count >= addr3_shifted.destination && count <= addr3_shifted.destination + addr3_shifted.source_2 - addr3_shifted.source_1){
-                        kmem[addr3_shifted.source_1 + count - 1] = stoi(myline);
-                        //std::cout << myline << '\n';
+            std::ifstream punch_cards;
+            std::ifstream heads;
+            std::string head;
+            std::string line;
+            std::string perfo;
+            std::vector<std::string> argv;
+            signed_word_t number;
+
+            punch_cards.open("../punch_cards_in.txt");
+            heads.open("../heads.txt");
+
+            std::getline(heads, head);
+            int num = std::stoi(head);
+            int counter = 0;
+            int num_counter = 0;
+            bool flag;
+
+            while(punch_cards){
+                std::getline(punch_cards, line);
+                if(counter == num){
+                    perfo = line.substr(addr3_shifted.destination, line.size());
+                    boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                    for(auto num : argv){
+                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                            flag = true;
+                            break;
+                        }
+                        number = std::stoi(num);
+                        if(number >= 0){
+                            kmem[addr3_shifted.source_1 + num_counter] = number;
+                        }else{
+                            kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                        }
+                        num_counter ++;
                     }
-                    count ++;
+                }else if(counter > num){
+                    perfo = line;
+                    boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                    for(auto num : argv){
+                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                            flag = true;
+                            break;
+                        }
+                        number = std::stoi(num);
+                        if(number >= 0){
+                            kmem[addr3_shifted.source_1 + num_counter] = number;
+                        }else{
+                            kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                        }
+                        num_counter ++;
+                    }
                 }
+                if(flag == true){
+                    break;
+                }
+                counter ++;
             }
-            else {
-                std::cout << "Couldn't open file\n";
-            }
+
+            punch_cards.close();
+            heads.close();
+
+            C_reg ++;
+            K_reg = kmem[C_reg];
         }
+
         case IO_operations_t::opcode_read_perfo_binary:{}
-        case IO_operations_t::opcode_read_magnetic_drum:{}
+
+        case IO_operations_t::opcode_read_magnetic_drum:{
+            std::ifstream magnetic_drum;
+            std::ifstream heads;
+            std::string head;
+            std::string line;
+            std::string data;
+            std::vector<std::string> argv;
+            signed_word_t number;
+
+            magnetic_drum.open("../magnetic_drum.txt");
+            heads.open("../heads.txt");
+
+            std::getline(heads, head);
+            std::getline(heads, head);
+
+            int pos = head.find(',');
+            int coord_1 = std::stoi(head.substr(0, pos));
+            int coord_2 = std::stoi(head.substr(pos+1, head.size()));
+
+            int counter = 0;
+            int num_counter = 0;
+            bool flag;
+            while(magnetic_drum){
+                std::getline(magnetic_drum, line);
+                if(counter == coord_1){
+                    data = line.substr(coord_2, line.size());
+                    boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                    for(auto num : argv){
+                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                            flag = true;
+                            break;
+                        }
+                        number = std::stoi(num);
+                        if(number >= 0){
+                            kmem[addr3_shifted.source_1 + num_counter] = number;
+                        }else{
+                            kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                        }
+                        num_counter ++;
+                    }
+                }else if(counter > coord_1){
+                    data = line;
+                    boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                    for(auto num : argv){
+                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                            flag = true;
+                            break;
+                        }
+                        number = std::stoi(num);
+                        if(number >= 0){
+                            kmem[addr3_shifted.source_1 + num_counter] = number;
+                        }else{
+                            kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                        }
+                        num_counter ++;
+                    }
+                }
+                if(flag == true){
+                    break;
+                }
+                counter ++;
+
+            }
+
+            magnetic_drum.close();
+            heads.close();
+
+            C_reg = addr3_shifted.destination;
+            K_reg = kmem[C_reg];
+        }
+
         case IO_operations_t::opcode_write_perfo_binary:{
-            //!воно ще якось має передавати управління
-            //! команді з третьої адреси, але я хз як саме це має відбуватись
             std::ofstream myfile;
-            myfile.open("output.txt");
+            myfile.open("../punc_cards_out.txt");
             if (myfile.is_open())
             {
                 for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
                     myfile << kmem[addr3_shifted.source_1 + i];
-                    myfile << "\n";
+                    myfile << ' ';
                 }
                 myfile.close();
             }else {
                 std::cout << "Unable to open file";
             }
-            return 0;
+            C_reg = addr3_shifted.destination;
+            K_reg = kmem[C_reg];
         }
+
         case IO_operations_t::opcode_write_magnetic_drum:{}
-        case IO_operations_t::opcode_init_magnetic_drum:{}
+
+        case IO_operations_t::opcode_init_magnetic_drum:{
+            std::ifstream headsin;
+            std::string result;
+            std::string line;
+
+            headsin.open("../heads.txt");
+
+            std::getline(headsin, result);
+            result += '\n';
+            std::getline(headsin, line);
+            if(addr3_shifted.source_1 == 0){
+                result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
+                std::getline(headsin, line);
+                result += line;
+            }else{
+                result += line;
+                result += '\n';
+                result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
+            }
+
+            headsin.close();
+
+            std::ofstream headsout;
+            headsout.open("../heads.txt");
+            headsout << result << std::endl;
+            headsout.close();
+        }
 //==========================================================================================================
         default:
             T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду
@@ -373,8 +513,7 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
                 ++C_reg;
                 return;
             }
-
-            res /= (sign2 * abs_val2);
+            res_mul = (abs_val1 << 40) / abs_val2;
         }
             break;
 
@@ -479,35 +618,38 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
         std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
     } else if (opcode == arythm_operations_t::opcode_div) {
-        bool is_negative = (res < 0);
-        std::cout << "Div: " << (res) << std::endl;
-        if (is_negative)
-            res = -res;
-        assert(res >= 0);
+//        bool is_negative = (res < 0);
+//        std::cout << "Div: " << (res) << std::endl;
+//        if (is_negative)
+//            res = -res;
+//        assert(res >= 0);
 
-        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
-        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
+//        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
+//        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
+//
+//        uint16_t leftmost = leftmost_one(res);
+//        if (leftmost > 40) {
+//            res = res >> (leftmost - 40);
+//        }
 
-        uint16_t leftmost = leftmost_one(res);
-        if (leftmost > 40) {
-            res = res >> (leftmost - 40);
-        }
+//        std::cout << "Div: " << leftmost << std::endl;
+//        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
+//        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
+//        std::cout << "Div: " << res << std::endl;
 
-        std::cout << "Div: " << leftmost << std::endl;
-        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
-        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
-        std::cout << "Div: " << res << std::endl;
 
-        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-        if (is_negative)
+
+        kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
+        if ((sign1 * sign2) == -1)
             kmem[addr3.destination] |= mask_41_bit;
     }
     ++C_reg;
 }
 
-//
-//
+
+
 //int main() {
+//    Kyiv_t machine1;
 //    machine1.C_reg = 1; //! TODO: Звідки вона в реальності починала?
 //    //! TODO: Додати тести всіх команд!
 //    //! TODO: Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульт
@@ -515,6 +657,5 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
 //
 //        // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
 //    }
-//    std::cout << machine1.kmem[03001];
 //    return 0;
 //}
