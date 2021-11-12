@@ -8,6 +8,9 @@
 #include <bitset>
 #include <fstream>
 //#include "k_memory.h"
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string.hpp>
+#include <vector>
 
 typedef uint64_t addr_t;
 typedef uint64_t word_t;
@@ -365,43 +368,59 @@ struct Kyiv_t{
                     std::string head;
                     std::string line;
                     std::string perfo;
-                    std::string number;
+                    std::vector<std::string> argv;
+                    signed_word_t number;
 
                     punch_cards.open("../punch_cards_in.txt");
                     heads.open("../heads.txt");
 
-                    std::getline(heads, head
-                    );
+                    std::getline(heads, head);
                     int num = std::stoi(head);
                     int counter = 0;
+                    int num_counter = 0;
+                    bool flag;
 
                     while(punch_cards){
                         std::getline(punch_cards, line);
                         if(counter == num){
                             perfo = line.substr(addr3_shifted.destination, line.size());
+                            boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                            for(auto num : argv){
+                                if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                    flag = true;
+                                    break;
+                                }
+                                number = std::stoi(num);
+                                if(number >= 0){
+                                    kmem[addr3_shifted.source_1 + num_counter] = number;
+                                }else{
+                                    kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                                }
+                                num_counter ++;
+                            }
+                        }else if(counter > num){
+                            perfo = line;
+                            boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                            for(auto num : argv){
+                                if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                    flag = true;
+                                    break;
+                                }
+                                number = std::stoi(num);
+                                if(number >= 0){
+                                    kmem[addr3_shifted.source_1 + num_counter] = number;
+                                }else{
+                                    kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                                }
+                                num_counter ++;
+                            }
+                        }
+                        if(flag == true){
                             break;
                         }
                         counter ++;
                     }
 
-                    number = "";
-                    counter = 0;
-                    for(auto c : perfo) {
-                        if(c == ' '){
-                            if(counter <= addr3_shifted.source_2 - addr3_shifted.source_1){
-                                //запис числа в пам'ять
-                                //std::cout << number << std::endl;
-                                kmem[addr3_shifted.source_1 + counter] = stoi(number);
-
-                            }else{
-                                break;
-                            }
-                            number = "";
-                            counter ++;
-                        }else{
-                            number = number + c;
-                        }
-                    }
                     punch_cards.close();
                     heads.close();
 
@@ -417,7 +436,8 @@ struct Kyiv_t{
                 std::string head;
                 std::string line;
                 std::string data;
-                std::string number;
+                std::vector<std::string> argv;
+                signed_word_t number;
 
                 magnetic_drum.open("../magnetic_drum.txt");
                 heads.open("../heads.txt");
@@ -430,32 +450,53 @@ struct Kyiv_t{
                 int coord_2 = std::stoi(head.substr(pos+1, head.size()));
 
                 int counter = 0;
+                int num_counter = 0;
+                bool flag;
                 while(magnetic_drum){
                     std::getline(magnetic_drum, line);
                     if(counter == coord_1){
                         data = line.substr(coord_2, line.size());
+                        boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto num : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stoi(num);
+                            if(number >= 0){
+                                kmem[addr3_shifted.source_1 + num_counter] = number;
+                            }else{
+                                kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                            }
+                            num_counter ++;
+                        }
+                    }else if(counter > coord_1){
+                        data = line;
+                        boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto num : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stoi(num);
+                            if(number >= 0){
+                                kmem[addr3_shifted.source_1 + num_counter] = number;
+                            }else{
+                                kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+                            }
+                            num_counter ++;
+                        }
+                    }
+                    if(flag == true){
                         break;
                     }
                     counter ++;
+
                 }
 
-                counter = 0;
-                for(auto c : data) {
-                    if(c == ' '){
-                        if(counter <= addr3_shifted.source_2 - addr3_shifted.source_1){
-                            //запис числа в пам'ять
-                            //std::cout << number << std::endl;
-                            kmem[addr3_shifted.source_1 + counter] = stoi(number);
+                magnetic_drum.close();
+                heads.close();
 
-                        }else{
-                            break;
-                        }
-                        number = "";
-                        counter ++;
-                    }else{
-                        number = number + c;
-                    }
-                }
                 C_reg = addr3_shifted.destination;
                 K_reg = kmem[C_reg];
             }
