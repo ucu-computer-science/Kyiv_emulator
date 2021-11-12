@@ -342,7 +342,48 @@ bool Kyiv_t::execute_opcode(){
             K_reg = kmem[C_reg];
         }
 
-        case IO_operations_t::opcode_read_perfo_binary:{}
+        case IO_operations_t::opcode_read_perfo_binary:{
+            std::ifstream punch_cards;
+            std::ifstream heads;
+            std::string head;
+            std::string line;
+
+            punch_cards.open("../commands.txt");
+            heads.open("../heads.txt");
+
+            std::getline(heads, head);
+            std::getline(heads, head);
+            int num = std::stoi(head);
+            int counter = 0;
+            int com_counter = 0;
+            bool flag;
+
+            while(punch_cards){
+                std::getline(punch_cards, line);
+                int pos = 0;
+                if(counter == num){
+                    if(com_counter < addr3_shifted.source_1 - addr3_shifted.source_2){
+                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
+                        com_counter ++;
+                    }else{
+                        flag = true;
+                        break;
+                    }
+                }else if(counter > num){
+                    if(com_counter < addr3_shifted.source_1 - addr3_shifted.source_2){
+                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
+                        com_counter ++;
+                    }else{
+                        flag = true;
+                        break;
+                    }
+
+                }
+                if(flag == true){
+                    break;
+                }
+            }
+        }
 
         case IO_operations_t::opcode_read_magnetic_drum:{
             std::ifstream magnetic_drum;
