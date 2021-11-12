@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include <iostream>
+#include <stdlib.h>
 #include <cstdint>
 #include <cmath>
 #include <cassert>
@@ -92,8 +93,8 @@ constexpr addr3_t shift_addr3_byA(addr3_t addr3, uint64_t offset, word_t w){
 
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'02'0003'0004'0005ULL, 0'02'0006'0007'0010ULL,
-                       to_negative(3), to_negative(4), 5,
+    word_t k[04000] = {0, 0,
+                       to_negative(3), to_negative(10), 5,
 //                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
                        7, 5, 8}; // 0AAAA -- octal constant};
     const word_t krom[01000] = {0};
@@ -183,6 +184,17 @@ struct Kyiv_t{
         opcode_t opcode = word_to_opcode(K_reg);
         addr3_t addr3 = word_to_addr3(K_reg); // Парі команд потрібна
         addr3_t addr3_shifted = shift_addr3_byA(addr3, A_reg, K_reg); // Решта використовують цю змінну
+
+//        signed_word_t sign1 = (is_negative(kmem[addr3_shifted.source_1]) ? -1 : 1);
+//        signed_word_t sign2 = (is_negative(kmem[addr3_shifted.source_2]) ? -1 : 1);
+//        signed_word_t sign3 = (is_negative(kmem[addr3_shifted.destination]) ? -1 : 1);
+//        signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3_shifted.source_1] & mask_40_bits);
+//        signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3_shifted.source_2] & mask_40_bits);
+//        signed_word_t abs_val3 = static_cast<signed_word_t>(kmem[addr3_shifted.destination] & mask_40_bits);;
+//        signed_word_t num1 = sign1 * abs_val1;
+//        signed_word_t num2 = sign2 * abs_val2;
+//        signed_word_t num3 = sign3 * abs_val3;
+
         //! Ймовірно, потім це діло треба буде відрефакторити -- відчуваю, но де буде проблема - поки не знаю :+)
         switch(opcode){
             //TODO: Тестував лише opcode_add !!! -- решта вважайте невірними, поки не буде тестів.
@@ -195,11 +207,15 @@ struct Kyiv_t{
                 break;
                 //==========================================================================================================
             case flow_control_operations_t::opcode_jmp_less_or_equal: {
-                if( word_to_number(addr3_shifted.source_1) <= word_to_number(addr3_shifted.source_2)){
+//                std::cout << addr3_shifted.source_1 << std::endl;
+//                std::cout << addr3_shifted.source_2 << std::endl;
+//                std::cout << C_reg << std::endl;
+                if( addr3_shifted.source_1 <= addr3_shifted.source_2){
                     C_reg = addr3_shifted.destination;
                 } else {
                     ++C_reg;
                 }
+//                std::cout << C_reg << std::endl;
             }
                 break;
             case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
@@ -345,7 +361,8 @@ struct Kyiv_t{
                     }
                 }
                 else {
-                    std::cout << "Couldn't open file\n";
+//                    std::cout << "Couldn't open file\n";
+                    T_reg = true;
                 }
             }
             case IO_operations_t::opcode_read_perfo_binary:{}
@@ -363,7 +380,8 @@ struct Kyiv_t{
                     }
                     myfile.close();
                 }else {
-                    std::cout << "Unable to open file";
+                    //std::cout << "Unable to open file";
+                    T_reg = true;
                 }
                 return 0;
             }
@@ -385,7 +403,7 @@ struct Kyiv_t{
         signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3.source_1] & mask_40_bits);
         signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3.source_2] & mask_40_bits);;
         signed_word_t res = sign1 * abs_val1;
-        std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
+//        std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
         switch(opcode){
             case arythm_operations_t::opcode_add:
                 res += sign2 * abs_val2;
@@ -405,7 +423,7 @@ struct Kyiv_t{
             default:
                 assert(false && "Should never been here!");
         }
-        std::cout << res << std::endl;
+//        std::cout << res << std::endl;
         if(opcode == arythm_operations_t::opcode_add ||
            opcode == arythm_operations_t::opcode_sub ||
            opcode == arythm_operations_t::opcode_subabs     //! TODO: Я не плутаю, результат може мати знак?
@@ -459,7 +477,19 @@ int main() {
     machine1.C_reg = 1; //! TODO: Звідки вона в реальності починала?
     //! TODO: Додати тести всіх команд!
     //! TODO: Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульт
+    machine1.kmem[1] = 0'01'0005'0006'0005ULL;
+    machine1.kmem[2] = 0'04'0004'0005'0006ULL;
+    machine1.kmem[3] = 0'04'0004'0005'0006ULL;
+    machine1.kmem[6] = 0'05'0004'0003'0010ULL;
+
     while(machine1.execute_opcode()){
+        std::cout << machine1.kmem[5] << std::endl;
+        // 1) 7 + 5 = 12
+        // 2) 5 <= 12 -> jumps to 6
+        // 3)
+
+        std::cout << machine1.C_reg << " <- C register" << std::endl;
+
 
         // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
     }
