@@ -8,8 +8,6 @@
 #include <bitset>
 #include <fstream>
 #include <regex>
-//#include <boost/algorithm/string/replace.hpp>
-//#include <boost/algorithm/string.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 //#include "k_memory.h"
 #include "kyiv.h"

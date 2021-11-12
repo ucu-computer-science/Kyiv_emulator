@@ -404,6 +404,9 @@ struct Kyiv_t{
                     }
                     punch_cards.close();
                     heads.close();
+
+                    C_reg ++;
+                    K_reg = kmem[C_reg];
             }
 
             case IO_operations_t::opcode_read_perfo_binary:{}
@@ -453,13 +456,11 @@ struct Kyiv_t{
                         number = number + c;
                     }
                 }
-                C_reg = kmem[addr3_shifted.destination];
-                K_reg = C_reg;
+                C_reg = addr3_shifted.destination;
+                K_reg = kmem[C_reg];
             }
 
             case IO_operations_t::opcode_write_perfo_binary:{
-                //!воно ще якось має передавати управління
-                //! команді з третьої адреси, але я хз як саме це має відбуватись
                 std::ofstream myfile;
                 myfile.open("../punc_cards_out.txt");
                 if (myfile.is_open())
@@ -472,7 +473,8 @@ struct Kyiv_t{
                 }else {
                     std::cout << "Unable to open file";
                 }
-                return 0;
+                C_reg = addr3_shifted.destination;
+                K_reg = kmem[C_reg];
             }
 
             case IO_operations_t::opcode_write_magnetic_drum:{}
