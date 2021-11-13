@@ -718,7 +718,7 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         if (leftmost > 40) {
             if (opcode == arythm_operations_t::opcode_mul_round)
                 res_mul += 1 << (leftmost - 40 - 1);
-            res_mul = res >> (leftmost - 40);
+            res_mul = res_mul >> (leftmost - 40);
         }
         std::cout << "leftmost: " << leftmost << std::endl;
 //            std::cout << std::bitset<64>(res_mul) << std::endl;

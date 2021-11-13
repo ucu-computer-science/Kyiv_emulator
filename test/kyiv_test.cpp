@@ -36,6 +36,81 @@ namespace {
         EXPECT_EQ(machine1.C_reg, 2);
     }
 
+    TEST_F(KyivTests, mul) {
+        word_t num1 = 10;
+        word_t num2 = 11;
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'10'0003'0004'0005ULL;
+        machine1.kmem[2] = 0'10'0006'0004'0007ULL;
+        machine1.kmem[3] = to_negative(num1);
+        machine1.kmem[4] = num2;
+        machine1.kmem[6] = num1;
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, -110);
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.execute_opcode();
+        word_t got2 = word_to_number(machine1.kmem[7]);
+        EXPECT_EQ(got2, 110);
+        EXPECT_EQ(machine1.C_reg, 3);
+        machine1.C_reg = 10;
+        machine1.kmem[10] = 0'10'0011'0012'0013ULL;
+        machine1.kmem[11] = (1ULL << 39); // 0b1000...00 -- 39 zeros after the 1
+        machine1.kmem[12] = (1ULL << 39); // the same
+        machine1.execute_opcode();
+        word_t got3 = word_to_number(machine1.kmem[13]);
+        EXPECT_EQ(got3, 0);
+        EXPECT_EQ(machine1.C_reg, 11);
+    }
+
+    TEST_F(KyivTests, mul_round) {
+        word_t num1 = 10;
+        word_t num2 = 11;
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'11'0003'0004'0005ULL;
+        machine1.kmem[2] = 0'11'0006'0004'0007ULL;
+        machine1.kmem[3] = to_negative(num1);
+        machine1.kmem[4] = num2;
+        machine1.kmem[6] = num1;
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, -110);
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.execute_opcode();
+        word_t got2 = word_to_number(machine1.kmem[7]);
+        EXPECT_EQ(got2, 110);
+        EXPECT_EQ(machine1.C_reg, 3);
+    }
+
+    TEST_F(KyivTests, div) {
+        word_t num1 = 3;
+        word_t num2 = 5;
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'12'0003'0004'0005ULL;
+        machine1.kmem[2] = 0'12'0004'0003'0007ULL;
+        machine1.kmem[3] = num1;
+        machine1.kmem[4] = num2;
+        machine1.kmem[6] = num1;
+        machine1.execute_opcode();
+        word_t got = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got, 659706976665); // 3 * (2**40) / 5
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.execute_opcode();
+        EXPECT_TRUE(machine1.T_reg);
+    }
+
+    TEST_F(KyivTests, norm) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'35'0003'0004'0005ULL;
+        machine1.kmem[3] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        word_t got2 = word_to_number(machine1.kmem[4]);
+        EXPECT_EQ(got1, (1ULL << 39));
+        EXPECT_EQ(got2, 0);
+        EXPECT_EQ(machine1.C_reg, 2);
+    }
+
     TEST_F(KyivTests, addcmd) {
         word_t num1 = 15;
         word_t num2 = 13;
@@ -46,6 +121,74 @@ namespace {
         machine1.execute_opcode();
         word_t got = word_to_number(machine1.kmem[5]);
         EXPECT_EQ(got, -28);
+        EXPECT_EQ(machine1.C_reg, 2);
+    }
+
+    TEST_F(KyivTests, log_shift) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'13'0003'0004'0005ULL;
+        machine1.kmem[3] = 1;
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, 0);
+        EXPECT_EQ(machine1.C_reg, 2);
+    }
+
+    TEST_F(KyivTests, log_or) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'14'0003'0004'0005ULL;
+        machine1.kmem[3] = (1ULL << 39);
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, (1ULL << 39));
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'14'0003'0004'0005ULL;
+        machine1.kmem[3] = 0;
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got2 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got2, (1ULL << 39));
+        EXPECT_EQ(machine1.C_reg, 2);
+    }
+
+    TEST_F(KyivTests, log_and) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'15'0003'0004'0005ULL;
+        machine1.kmem[3] = (1ULL << 39);
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, (1ULL << 39));
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'15'0003'0004'0005ULL;
+        machine1.kmem[3] = 0;
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got2 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got2, 0);
+        EXPECT_EQ(machine1.C_reg, 2);
+    }
+
+    TEST_F(KyivTests, log_xor) {
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'17'0003'0004'0005ULL;
+        machine1.kmem[3] = (1ULL << 39);
+        machine1.kmem[4] = (1ULL << 39);
+        machine1.execute_opcode();
+        word_t got1 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got1, 0);
+        EXPECT_EQ(machine1.C_reg, 2);
+        machine1.C_reg = 1;
+        machine1.kmem[1] = 0'17'0003'0004'0005ULL;
+        machine1.kmem[3] = (1ULL << 39);
+        machine1.kmem[4] = 0;
+        machine1.execute_opcode();
+        word_t got2 = word_to_number(machine1.kmem[5]);
+        EXPECT_EQ(got2, (1ULL << 39));
         EXPECT_EQ(machine1.C_reg, 2);
     }
 
