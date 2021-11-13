@@ -108,8 +108,8 @@ struct Kyiv_t{
         opcode_jmp_abs_less_or_equal = 0'05,
         opcode_jmp_equal = 0'16,
         opcode_fork_negative = 0'31, // <=-0, дві гілки
-        opcode_call_negative = 0'30, // <=-0 -- не забудьте, що +0 -- немає стрибка
-        opcode_ret = 0'32,
+        opcode_call_negative = 0'32, // <=-0 -- не забудьте, що +0 -- немає стрибка
+        opcode_ret = 0'30,
         // Операції над адресами
         opcode_group_op_begin = 0'26,
         opcode_group_op_end = 0'27,
@@ -127,6 +127,8 @@ struct Kyiv_t{
     };
 
     bool execute_opcode();
+
+    void opcode_flow_control(const addr3_t &addr3, opcode_t opcode);
 
     void opcode_arythm(const addr3_t &addr3, opcode_t opcode);
 };
