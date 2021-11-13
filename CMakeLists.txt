@@ -8,6 +8,6 @@ include_directories(${Boost_INCLUDE_DIR})
 
 include_directories(inc)
 
-add_executable(kyivemu src/main.cpp inc/kyiv.h)
+add_executable(kyivemu src/main.cpp src/asm_disasm.cpp inc/kyiv.h)
 
 target_link_libraries(kyivemu Boost::program_options)

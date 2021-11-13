@@ -289,7 +289,7 @@ bool Kyiv_t::execute_opcode(){
             heads.open("../heads.txt");
 
             std::getline(heads, head);
-            int num = std::stoi(head);
+            int num = std::stol(head);
             int counter = 0;
             int num_counter = 0;
             bool flag;
@@ -297,14 +297,14 @@ bool Kyiv_t::execute_opcode(){
             while(punch_cards){
                 std::getline(punch_cards, line);
                 if(counter == num){
-                    perfo = line.substr(kmem[addr3_shifted.destination], line.size());
+                    perfo = line.substr(addr3_shifted.destination, line.size());
                     boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
                     for(auto num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
                             flag = true;
                             break;
                         }
-                        number = std::stoi(num);
+                        number = std::stol(num);
                         if(number >= 0){
                             kmem[addr3_shifted.source_1 + num_counter] = number;
                         }else{
@@ -338,9 +338,10 @@ bool Kyiv_t::execute_opcode(){
             punch_cards.close();
             heads.close();
 
-            C_reg ++;
-            K_reg = kmem[C_reg];
+            ++C_reg;
+
         }
+            break;
 
         case IO_operations_t::opcode_read_perfo_binary:{
             std::ifstream punch_cards;
@@ -348,7 +349,7 @@ bool Kyiv_t::execute_opcode(){
             std::string head;
             std::string line;
 
-            punch_cards.open("../commands.txt");
+            punch_cards.open("../punched_tape.txt");
             heads.open("../heads.txt");
 
             std::getline(heads, head);
@@ -362,15 +363,16 @@ bool Kyiv_t::execute_opcode(){
                 std::getline(punch_cards, line);
                 int pos = 0;
                 if(counter == num){
-                    if(com_counter < addr3_shifted.source_1 - addr3_shifted.source_2){
+                    std::cout << addr3_shifted.source_1 - addr3_shifted.source_2 << std::endl;
+                    if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
                         kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
-                        com_counter ++;
+                        com_counter++;
                     }else{
                         flag = true;
                         break;
                     }
                 }else if(counter > num){
-                    if(com_counter < addr3_shifted.source_1 - addr3_shifted.source_2){
+                    if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
                         kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
                         com_counter ++;
                     }else{
@@ -383,8 +385,9 @@ bool Kyiv_t::execute_opcode(){
                     break;
                 }
             }
+            ++C_reg;
         }
-
+            break;
         case IO_operations_t::opcode_read_magnetic_drum:{
             std::ifstream magnetic_drum;
             std::ifstream heads;
@@ -397,7 +400,6 @@ bool Kyiv_t::execute_opcode(){
             magnetic_drum.open("../magnetic_drum.txt");
             heads.open("../heads.txt");
 
-            std::getline(heads, head);
             std::getline(heads, head);
             std::getline(heads, head);
 
@@ -463,7 +465,7 @@ bool Kyiv_t::execute_opcode(){
             if (myfile.is_open())
             {
                 for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
-                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
+                    myfile << kmem[addr3_shifted.source_1 + i];
                     myfile << ' ';
                 }
                 myfile.close();
@@ -474,23 +476,7 @@ bool Kyiv_t::execute_opcode(){
             K_reg = kmem[C_reg];
         }
 
-        case IO_operations_t::opcode_write_magnetic_drum:{
-            std::ofstream myfile;
-            myfile.open("../magnetic_drum.txt");
-            if (myfile.is_open())
-            {
-                for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
-                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
-                    myfile << ' ';
-                }
-                myfile.close();
-            }else {
-                std::cout << "Unable to open file";
-            }
-            C_reg = addr3_shifted.destination;
-            K_reg = kmem[C_reg];
-        }
-        }
+        case IO_operations_t::opcode_write_magnetic_drum:{}
 
         case IO_operations_t::opcode_init_magnetic_drum:{
             std::ifstream headsin;
@@ -639,17 +625,14 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
             res_mul = -res_mul;
         assert(res_mul >= 0);
 
-//            std::cout << std::bitset<64>(res_mul) << std::endl;
-//            std::cout << std::bitset<41>(res_mul) << std::endl;
         uint16_t leftmost = leftmost_one(res_mul);
         if (leftmost > 40) {
             if (opcode == arythm_operations_t::opcode_mul_round)
                 res_mul += 1 << (leftmost - 40 - 1);
-            res_mul = res_mul >> (leftmost - 40);
+            res_mul = res >> (leftmost - 40);
         }
         std::cout << "leftmost: " << leftmost << std::endl;
-//            std::cout << std::bitset<64>(res_mul) << std::endl;
-//            std::cout << std::bitset<41>(res_mul) << std::endl;
+
         std::cout << "res_mul_2: " << res_mul << std::endl;
         kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
         if (is_negative)
@@ -676,27 +659,6 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
         std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
     } else if (opcode == arythm_operations_t::opcode_div) {
-//        bool is_negative = (res < 0);
-//        std::cout << "Div: " << (res) << std::endl;
-//        if (is_negative)
-//            res = -res;
-//        assert(res >= 0);
-
-//        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
-//        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
-//
-//        uint16_t leftmost = leftmost_one(res);
-//        if (leftmost > 40) {
-//            res = res >> (leftmost - 40);
-//        }
-
-//        std::cout << "Div: " << leftmost << std::endl;
-//        std::cout << "Div: " << std::bitset<64>(res) << std::endl;
-//        std::cout << "Div: " << std::bitset<41>(res) << std::endl;
-//        std::cout << "Div: " << res << std::endl;
-
-
-
         kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
         if ((sign1 * sign2) == -1)
             kmem[addr3.destination] |= mask_41_bit;
@@ -706,14 +668,17 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
 
 
 
-int main() {
-    Kyiv_t machine1;
-    machine1.C_reg = 1; //! TODO: Звідки вона в реальності починала?
-    //! TODO: Додати тести всіх команд!
-    //! TODO: Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульт
-    while(machine1.execute_opcode()){
-
-        // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
-    }
-    return 0;
-}
+//int main() {
+//    Kyiv_t machine1;
+//    word_t n = std::stol("01000400050006", 0, 8);
+//    std::cout << std::bitset<41>(n) << std::endl;
+//    machine1.kmem[1] = n;
+//    machine1.C_reg = 1; //! TODO: Звідки вона в реальності починала?
+//    //! TODO: Додати тести всіх команд!
+//    //! TODO: Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульт
+//    while(machine1.execute_opcode()){
+//
+//        // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
+//    }
+//    return 0;
+//}
