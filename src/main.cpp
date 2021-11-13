@@ -297,7 +297,7 @@ bool Kyiv_t::execute_opcode(){
             while(punch_cards){
                 std::getline(punch_cards, line);
                 if(counter == num){
-                    perfo = line.substr(addr3_shifted.destination, line.size());
+                    perfo = line.substr(kmem[addr3_shifted.destination], line.size());
                     boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
                     for(auto num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
