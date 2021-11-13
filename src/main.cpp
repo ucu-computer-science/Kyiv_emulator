@@ -463,7 +463,7 @@ bool Kyiv_t::execute_opcode(){
             if (myfile.is_open())
             {
                 for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
-                    myfile << kmem[addr3_shifted.source_1 + i];
+                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
                     myfile << ' ';
                 }
                 myfile.close();
@@ -474,7 +474,23 @@ bool Kyiv_t::execute_opcode(){
             K_reg = kmem[C_reg];
         }
 
-        case IO_operations_t::opcode_write_magnetic_drum:{}
+        case IO_operations_t::opcode_write_magnetic_drum:{
+            std::ofstream myfile;
+            myfile.open("../magnetic_drum.txt");
+            if (myfile.is_open())
+            {
+                for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
+                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
+                    myfile << ' ';
+                }
+                myfile.close();
+            }else {
+                std::cout << "Unable to open file";
+            }
+            C_reg = addr3_shifted.destination;
+            K_reg = kmem[C_reg];
+        }
+        }
 
         case IO_operations_t::opcode_init_magnetic_drum:{
             std::ifstream headsin;
