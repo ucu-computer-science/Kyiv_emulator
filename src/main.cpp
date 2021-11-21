@@ -141,6 +141,7 @@ bool Kyiv_t::execute_opcode(){
         case arythm_operations_t::opcode_mul_round:
             opcode_arythm(addr3_shifted, opcode);
             break;
+            //==========================================================================================================
         case flow_control_operations_t::opcode_jmp_less_or_equal: [[fallthrough]];
         case flow_control_operations_t::opcode_jmp_abs_less_or_equal: [[fallthrough]];
         case flow_control_operations_t::opcode_jmp_equal: [[fallthrough]];
@@ -153,21 +154,21 @@ bool Kyiv_t::execute_opcode(){
         case flow_control_operations_t::opcode_stop:
             opcode_flow_control(addr3_shifted, opcode);
             break;
-            //==========================================================================================================
+//==========================================================================================================
         case logic_operations_t::opcode_log_shift:{
-        //! TODO: Мені не повністю зрозуміло з обох книг, величина зсуву береться із RAM за адресою,
-        //! чи закодована в команді? Швидше перше -- але перевірити!
-        word_t shift = kmem[addr3_shifted.source_1] ; // Глушко-Ющенко, стор 12, сверджує: "на число разрядов,
-        // равное абсолютной величине константы сдвига, размещаемой в шести младших разрядах ячейки а1"
-        // 2^6 -- 64, тому решта бітів справді просто дадуть нуль на виході, але все рівно маскую, щоб
-        // не було невизначеної поведінки С. Та й зразу знак викидаємо
-        shift &= 0b111'111;
+            //! TODO: Мені не повністю зрозуміло з обох книг, величина зсуву береться із RAM за адресою,
+            //! чи закодована в команді? Швидше перше -- але перевірити!
+            word_t shift = kmem[addr3_shifted.source_1] ; // Глушко-Ющенко, стор 12, сверджує: "на число разрядов,
+            // равное абсолютной величине константы сдвига, размещаемой в шести младших разрядах ячейки а1"
+            // 2^6 -- 64, тому решта бітів справді просто дадуть нуль на виході, але все рівно маскую, щоб
+            // не було невизначеної поведінки С. Та й зразу знак викидаємо
+            shift &= 0b111'111;
 
-        if(is_negative(kmem[addr3_shifted.source_1])) {
-            kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] >> shift;
-        } else {
-            kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] << shift;
-            kmem[addr3_shifted.destination] &= (mask_40_bits | mask_41_bit); // Зануляємо зайві біти
+            if(is_negative(kmem[addr3_shifted.source_1])) {
+                kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] >> shift;
+            } else {
+                kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] << shift;
+                kmem[addr3_shifted.destination] &= (mask_40_bits | mask_41_bit); // Зануляємо зайві біти
             }
             ++C_reg;
         }
@@ -201,7 +202,7 @@ bool Kyiv_t::execute_opcode(){
             heads.open("../heads.txt");
 
             std::getline(heads, head);
-            int num = std::stol(head);
+            int num = std::stoi(head);
             int counter = 0;
             int num_counter = 0;
             bool flag;
@@ -209,14 +210,14 @@ bool Kyiv_t::execute_opcode(){
             while(punch_cards){
                 std::getline(punch_cards, line);
                 if(counter == num){
-                    perfo = line.substr(addr3_shifted.destination, line.size());
+                    perfo = line.substr(kmem[addr3_shifted.destination], line.size());
                     boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto num : argv){
+                    for(auto & num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
                             flag = true;
                             break;
                         }
-                        number = std::stol(num);
+                        number = std::stoi(num);
                         if(number >= 0){
                             kmem[addr3_shifted.source_1 + num_counter] = number;
                         }else{
@@ -227,7 +228,7 @@ bool Kyiv_t::execute_opcode(){
                 }else if(counter > num){
                     perfo = line;
                     boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto num : argv){
+                    for(auto & num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
                             flag = true;
                             break;
@@ -241,7 +242,7 @@ bool Kyiv_t::execute_opcode(){
                         num_counter ++;
                     }
                 }
-                if(flag == true){
+                if(flag){
                     break;
                 }
                 counter ++;
@@ -250,8 +251,8 @@ bool Kyiv_t::execute_opcode(){
             punch_cards.close();
             heads.close();
 
-            ++C_reg;
-
+            C_reg ++;
+            K_reg = kmem[C_reg];
         }
             break;
 
@@ -275,9 +276,8 @@ bool Kyiv_t::execute_opcode(){
                 std::getline(punch_cards, line);
                 int pos = 0;
                 if(counter == num){
-                    std::cout << addr3_shifted.source_1 - addr3_shifted.source_2 << std::endl;
                     if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
-                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
+                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, nullptr, 8);
                         com_counter++;
                     }else{
                         flag = true;
@@ -285,7 +285,7 @@ bool Kyiv_t::execute_opcode(){
                     }
                 }else if(counter > num){
                     if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
-                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, 0, 8);
+                        kmem[addr3_shifted.source_1 + com_counter] = std::stol(line, nullptr, 8);
                         com_counter ++;
                     }else{
                         flag = true;
@@ -293,13 +293,14 @@ bool Kyiv_t::execute_opcode(){
                     }
 
                 }
-                if(flag == true){
+                if(flag){
                     break;
                 }
             }
             ++C_reg;
         }
             break;
+
         case IO_operations_t::opcode_read_magnetic_drum:{
             std::ifstream magnetic_drum;
             std::ifstream heads;
@@ -312,6 +313,7 @@ bool Kyiv_t::execute_opcode(){
             magnetic_drum.open("../magnetic_drum.txt");
             heads.open("../heads.txt");
 
+            std::getline(heads, head);
             std::getline(heads, head);
             std::getline(heads, head);
 
@@ -327,7 +329,7 @@ bool Kyiv_t::execute_opcode(){
                 if(counter == coord_1){
                     data = line.substr(coord_2, line.size());
                     boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto num : argv){
+                    for(const auto& num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
                             flag = true;
                             break;
@@ -343,7 +345,7 @@ bool Kyiv_t::execute_opcode(){
                 }else if(counter > coord_1){
                     data = line;
                     boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto num : argv){
+                    for(const auto& num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
                             flag = true;
                             break;
@@ -357,7 +359,7 @@ bool Kyiv_t::execute_opcode(){
                         num_counter ++;
                     }
                 }
-                if(flag == true){
+                if(flag){
                     break;
                 }
                 counter ++;
@@ -370,6 +372,7 @@ bool Kyiv_t::execute_opcode(){
             C_reg = addr3_shifted.destination;
             K_reg = kmem[C_reg];
         }
+        break;
 
         case IO_operations_t::opcode_write_perfo_binary:{
             std::ofstream myfile;
@@ -377,7 +380,7 @@ bool Kyiv_t::execute_opcode(){
             if (myfile.is_open())
             {
                 for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
-                    myfile << kmem[addr3_shifted.source_1 + i];
+                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
                     myfile << ' ';
                 }
                 myfile.close();
@@ -388,7 +391,23 @@ bool Kyiv_t::execute_opcode(){
             K_reg = kmem[C_reg];
         }
 
-        case IO_operations_t::opcode_write_magnetic_drum:{}
+        case IO_operations_t::opcode_write_magnetic_drum:{
+            std::ofstream myfile;
+            myfile.open("../magnetic_drum.txt");
+            if (myfile.is_open())
+            {
+                for(uint64_t i = 0; i <= addr3_shifted.source_2; i++){
+                    myfile << word_to_number(kmem[addr3_shifted.source_1 + i]);
+                    myfile << ' ';
+                }
+                myfile.close();
+            }else {
+                std::cout << "Unable to open file";
+            }
+            C_reg = addr3_shifted.destination;
+            K_reg = kmem[C_reg];
+        }
+        break;
 
         case IO_operations_t::opcode_init_magnetic_drum:{
             std::ifstream headsin;
@@ -417,11 +436,168 @@ bool Kyiv_t::execute_opcode(){
             headsout << result << std::endl;
             headsout.close();
         }
+        break;
 //==========================================================================================================
         default:
             T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду
     }
     return !T_reg;
+}
+
+void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
+    //! TODO: Додати перевірку на можливість запису. Що робила машина при спробі запису в ПЗП?
+    //! TODO: Додати перевірку на вихід за границю пам'яті -- воно ніби зациклювалося при тому
+    //! (зверталося до байта add mod 2^11, в сенсі), але точно не знаю.
+    signed_word_t sign1 = (is_negative(kmem[addr3.source_1]) ? -1 : 1);
+    signed_word_t sign2 = (is_negative(kmem[addr3.source_2]) ? -1 : 1);
+    signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3.source_1] & mask_40_bits);
+    signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3.source_2] & mask_40_bits);;
+    signed_word_t res = sign1 * abs_val1;
+
+    signed_word_t res_for_norm;
+    mul_word_t res_mul;
+    uint16_t power = 40 - leftmost_one(abs_val1) -1;
+
+    std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
+    switch(opcode){
+        case arythm_operations_t::opcode_add:
+            res += sign2 * abs_val2;
+            break;
+        case arythm_operations_t::opcode_sub:
+            res -= sign2 * abs_val2;
+            break;
+        case arythm_operations_t::opcode_addcmd:
+            res += abs_val2;
+            break;
+        case arythm_operations_t::opcode_subabs:
+            res = abs_val1 - abs_val2;
+            break;
+        case arythm_operations_t::opcode_addcyc:
+            res += sign2 * abs_val2; // Те ж, що і для opcode_add, але подальша обробка інша
+            break;
+        case arythm_operations_t::opcode_mul: [[fallthrough]];
+        case arythm_operations_t::opcode_mul_round:
+            res_mul = res * sign2 * abs_val2;
+            break;
+        case arythm_operations_t::opcode_norm: {
+            res_for_norm = sign1 * (abs_val1 << power);
+        }
+            break;
+        case arythm_operations_t::opcode_div: {
+            if ((abs_val2 == 0) || (abs_val2 < abs_val1)) {
+                T_reg = true;
+                ++C_reg;
+                return;
+            }
+            res_mul = (abs_val1 << 40) / abs_val2;
+        }
+            break;
+
+        default:
+            assert(false && "Should never been here!");
+    }
+
+    if(opcode == arythm_operations_t::opcode_add ||
+       opcode == arythm_operations_t::opcode_sub ||
+       opcode == arythm_operations_t::opcode_subabs     //! TODO: Я не плутаю, результат може мати знак?
+            ) {
+        //! TODO: До речі, а якщо переповнення, воно кінцевий регістр змінювало до останову, чи ні?
+        // Тут я зробив, ніби ні -- але ХЗ, могло. Щоб точно знати -- треба моделювати на рівні схем ;=) --
+        // як ви і поривалися. Але це не має бути важливим.
+        bool is_negative = (res < 0);
+        if (is_negative)
+            res = -res;
+        assert(res >= 0);
+        if (res & mask_41_bit) { // if sum & CPU1.mask_41_bit == 1 -- overflow to sign bit
+            T_reg = true;
+            ++C_reg;
+            return;
+        }
+        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+        std::cout << -1 * res << std::endl;
+        if (is_negative)
+            kmem[addr3.destination] |= mask_41_bit;
+        //! "Нуль, получаемый как разность двух равных чисел, имеет отрицательный знак" -- стор. 13 Глушко-Ющенко, опис УПЧ
+        if(opcode == arythm_operations_t::opcode_sub && res == 0
+           && abs_val1 != 0 //! TODO: Моє припущення -- перевірити!
+                ){
+            kmem[addr3.destination] |= mask_41_bit;
+        }
+    } else if(opcode == arythm_operations_t::opcode_addcmd){
+        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+        kmem[addr3.destination] |= kmem[addr3.source_2] & mask_41_bit; // Копіюємо біт знаку з source_2 // edited тут наче так має бути
+    } else if(opcode == arythm_operations_t::opcode_addcyc){
+        //! TODO: Вияснити, а як ця команда функціонує.
+        // "Отличается от обычного сложения лишь тем, что  в нем отсутствует блокировка при выходе
+        // из разполагаемого числа разрядов. Перенос из знакового разряда поступает в младший разряд
+        // сумматора".
+        // Питання (нумеруючи біти з 1 до 41):
+        // 1. Перенос із 40 в 41 біт тут можливий? З фрази виглядає, що так.
+        // 2. Якщо додавання переносу до молодшого біту виникло переповнення, що далі?
+        //    Так виглядає, що воно не може виникнути, але чи я не помилився? -- не може, десь через переніс буде 0
+        bool is_negative = (res < 0);
+        std::cout << (res) << std::endl;
+        if (is_negative)
+            res = -res;
+        assert(res >= 0);
+
+        std::cout << std::bitset<41> (res) << std::endl;
+        if(res & mask_41_bit){
+            res += 1; // Маємо перенос із знакового біту
+        }
+
+        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
+        if (is_negative)
+            kmem[addr3.destination] |= mask_41_bit;
+    } else if(opcode == arythm_operations_t::opcode_mul ||
+              opcode == arythm_operations_t::opcode_mul_round
+            ) {
+        bool is_negative = (res_mul < 0);
+//        std::cout << "mul_res: " << (res_mul) << std::endl;
+        if (is_negative)
+            res_mul = -res_mul;
+        assert(res_mul >= 0);
+
+        uint16_t leftmost = leftmost_one(res_mul);
+        if (leftmost > 40) {
+            if (opcode == arythm_operations_t::opcode_mul_round)
+                res_mul += 1 << (leftmost - 40 - 1);
+            res_mul = res_mul >> (leftmost - 40);
+        }
+//        std::cout << "leftmost: " << leftmost << std::endl;
+//
+//        std::cout << "res_mul_2: " << res_mul << std::endl;
+        kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
+        if (is_negative)
+            kmem[addr3.destination] |= mask_41_bit;
+        std::cout << "Mult res: " << kmem[addr3.destination] << std::endl;
+
+    } else if (opcode == arythm_operations_t::opcode_norm) {
+        bool is_negative = (res_for_norm < 0);
+
+        if (is_negative)
+            res_for_norm = -res_for_norm;
+        assert(res_for_norm >= 0);
+
+        std::cout << "norm_val: " << (res_for_norm) << std::endl;
+        std::cout << "norm_power: " << (power) << std::endl;
+        std::cout << "norm_val_64: " << std::bitset<64>(res_for_norm) << std::endl;
+        std::cout << "norm_val_41: " << std::bitset<41>(res_for_norm) << std::endl;
+
+        kmem[addr3.source_2] = power;
+        kmem[addr3.destination] = static_cast<uint64_t>(res_for_norm) & mask_40_bits;
+        if (is_negative)
+            kmem[addr3.destination] |= mask_41_bit;
+
+        std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
+        std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
+    } else if (opcode == arythm_operations_t::opcode_div) {
+        kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
+        if ((sign1 * sign2) == -1)
+            kmem[addr3.destination] |= mask_41_bit;
+        std::cout << "Div res: " << kmem[addr3.destination] << std::endl;
+    }
+    ++C_reg;
 }
 
 void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode){
@@ -534,160 +710,6 @@ void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode){
         }
             break;
     }
-}
-
-void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
-    //! TODO: Додати перевірку на можливість запису. Що робила машина при спробі запису в ПЗП?
-    //! TODO: Додати перевірку на вихід за границю пам'яті -- воно ніби зациклювалося при тому
-    //! (зверталося до байта add mod 2^11, в сенсі), але точно не знаю.
-    signed_word_t sign1 = (is_negative(kmem[addr3.source_1]) ? -1 : 1);
-    signed_word_t sign2 = (is_negative(kmem[addr3.source_2]) ? -1 : 1);
-    signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3.source_1] & mask_40_bits);
-    signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3.source_2] & mask_40_bits);;
-    signed_word_t res = sign1 * abs_val1;
-
-    signed_word_t res_for_norm;
-    mul_word_t res_mul;
-    uint16_t power = 40 - leftmost_one(abs_val1) -1;
-
-    std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
-    switch(opcode){
-        case arythm_operations_t::opcode_add:
-            res += sign2 * abs_val2;
-            break;
-        case arythm_operations_t::opcode_sub:
-            res -= sign2 * abs_val2;
-            break;
-        case arythm_operations_t::opcode_addcmd:
-            res += abs_val2;
-            break;
-        case arythm_operations_t::opcode_subabs:
-            res = abs_val1 - abs_val2;
-            break;
-        case arythm_operations_t::opcode_addcyc:
-            res += sign2 * abs_val2; // Те ж, що і для opcode_add, але подальша обробка інша
-            break;
-        case arythm_operations_t::opcode_mul: [[fallthrough]];
-        case arythm_operations_t::opcode_mul_round:
-            res_mul = res * sign2 * abs_val2;
-            break;
-        case arythm_operations_t::opcode_norm: {
-            res_for_norm = sign1 * (abs_val1 << power);
-        }
-            break;
-        case arythm_operations_t::opcode_div: {
-            if ((abs_val2 == 0) || (abs_val2 < abs_val1)) {
-                T_reg = true;
-                ++C_reg;
-                return;
-            }
-            res_mul = (abs_val1 << 40) / abs_val2;
-        }
-            break;
-
-        default:
-            assert(false && "Should never been here!");
-    }
-    std::cout << res << std::endl;
-    if(opcode == arythm_operations_t::opcode_add ||
-       opcode == arythm_operations_t::opcode_sub ||
-       opcode == arythm_operations_t::opcode_subabs     //! TODO: Я не плутаю, результат може мати знак?
-            ) {
-        //! TODO: До речі, а якщо переповнення, воно кінцевий регістр змінювало до останову, чи ні?
-        // Тут я зробив, ніби ні -- але ХЗ, могло. Щоб точно знати -- треба моделювати на рівні схем ;=) --
-        // як ви і поривалися. Але це не має бути важливим.
-        bool is_negative = (res < 0);
-        if (is_negative)
-            res = -res;
-        assert(res >= 0);
-        if (res & mask_41_bit) { // if sum & CPU1.mask_41_bit == 1 -- overflow to sign bit
-            T_reg = true;
-            ++C_reg;
-            return;
-        }
-        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-        if (is_negative)
-            kmem[addr3.destination] |= mask_41_bit;
-        //! "Нуль, получаемый как разность двух равных чисел, имеет отрицательный знак" -- стор. 13 Глушко-Ющенко, опис УПЧ
-        if(opcode == arythm_operations_t::opcode_sub && res == 0
-           && abs_val1 != 0 //! TODO: Моє припущення -- перевірити!
-                ){
-            kmem[addr3.destination] |= mask_41_bit;
-        }
-    } else if(opcode == arythm_operations_t::opcode_addcmd){
-        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-        kmem[addr3.destination] |= kmem[addr3.source_2] & mask_41_bit; // Копіюємо біт знаку з source_2 // edited тут наче так має бути
-    } else if(opcode == arythm_operations_t::opcode_addcyc){
-        //! TODO: Вияснити, а як ця команда функціонує.
-        // "Отличается от обычного сложения лишь тем, что  в нем отсутствует блокировка при выходе
-        // из разполагаемого числа разрядов. Перенос из знакового разряда поступает в младший разряд
-        // сумматора".
-        // Питання (нумеруючи біти з 1 до 41):
-        // 1. Перенос із 40 в 41 біт тут можливий? З фрази виглядає, що так.
-        // 2. Якщо додавання переносу до молодшого біту виникло переповнення, що далі?
-        //    Так виглядає, що воно не може виникнути, але чи я не помилився? -- не може, десь через переніс буде 0
-        bool is_negative = (res < 0);
-        std::cout << (res) << std::endl;
-        if (is_negative)
-            res = -res;
-        assert(res >= 0);
-
-        std::cout << std::bitset<41> (res) << std::endl;
-        if(res & mask_41_bit){
-            res += 1; // Маємо перенос із знакового біту
-        }
-
-        kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-        if (is_negative)
-            kmem[addr3.destination] |= mask_41_bit;
-    } else if(opcode == arythm_operations_t::opcode_mul ||
-              opcode == arythm_operations_t::opcode_mul_round
-            ) {
-        bool is_negative = (res_mul < 0);
-        std::cout << "mul_res: " << (res_mul) << std::endl;
-        if (is_negative)
-            res_mul = -res_mul;
-        assert(res_mul >= 0);
-
-        uint16_t leftmost = leftmost_one(res_mul);
-        if (leftmost > 40) {
-            if (opcode == arythm_operations_t::opcode_mul_round)
-                res_mul += 1 << (leftmost - 40 - 1);
-            res_mul = res >> (leftmost - 40);
-        }
-        std::cout << "leftmost: " << leftmost << std::endl;
-
-        std::cout << "res_mul_2: " << res_mul << std::endl;
-        kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
-        if (is_negative)
-            kmem[addr3.destination] |= mask_41_bit;
-        std::cout << "kmem_res: " << kmem[addr3.destination] << std::endl;
-
-    } else if (opcode == arythm_operations_t::opcode_norm) {
-        bool is_negative = (res_for_norm < 0);
-
-        if (is_negative)
-            res_for_norm = -res_for_norm;
-        assert(res_for_norm >= 0);
-
-        std::cout << "norm_val: " << (res_for_norm) << std::endl;
-        std::cout << "norm_power: " << (power) << std::endl;
-        std::cout << "norm_val_64: " << std::bitset<64>(res_for_norm) << std::endl;
-        std::cout << "norm_val_41: " << std::bitset<41>(res_for_norm) << std::endl;
-
-        kmem[addr3.source_2] = power;
-        kmem[addr3.destination] = static_cast<uint64_t>(res_for_norm) & mask_40_bits;
-        if (is_negative)
-            kmem[addr3.destination] |= mask_41_bit;
-
-        std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
-        std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
-    } else if (opcode == arythm_operations_t::opcode_div) {
-        kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
-        if ((sign1 * sign2) == -1)
-            kmem[addr3.destination] |= mask_41_bit;
-    }
-    ++C_reg;
 }
 
 
