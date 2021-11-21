@@ -17,7 +17,7 @@ struct addr3_t{
 constexpr addr3_t word_to_addr3(word_t w);
 constexpr opcode_t word_to_opcode(word_t w);
 constexpr bool is_negative(word_t w);
-word_t to_negative(word_t w);
+constexpr word_t to_negative(word_t w);
 constexpr word_t to_positive(word_t w);
 constexpr uint16_t leftmost_one(word_t w);
 uint16_t leftmost_one(mul_word_t w);
@@ -53,12 +53,88 @@ struct aproxy {
 class Kyiv_memory {
 private:
     word_t k[04000] = {0, 0'12'0004'0005'0007ULL, 0'02'0004'0005'0007ULL,
-                       2, 3, 5, 6, 7, 8, 9, 10, 11, 12};
+                       10, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 2, 16, 549755813888};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
     }
 
+};
+
+class Kyiv_magnetic_drum {
+private:
+    std::string file_name = "../magnetic_drum.txt";
+    std::pair<size_t, size_t> read_d, write_d = {0, 0};
+public:
+    word_t read_drum(addr3_t & addr3_shifted, Kyiv_memory & kmem) {
+        std::ifstream magnetic_drum;
+        magnetic_drum.open(file_name);
+
+        std::vector<std::string> data;
+        signed_word_t number;
+        std::string line;
+        int counter = 0;
+        int num_counter = 0;
+        bool flag;
+
+        while(magnetic_drum) {
+            std::getline(magnetic_drum, line);
+            if (counter == read_d.first) {
+                boost::split(data, line, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                for (size_t i = read_d.second; i < data.size(); i++) {
+                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+
+        }
+//
+//        while(magnetic_drum){
+//            std::getline(magnetic_drum, line);
+//            if(counter == read_d.first){
+//                data = line.substr(read_d.second, line.size());
+//                boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+//                for(const auto& num : argv){
+//                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+//                        flag = true;
+//                        break;
+//                    }
+//                    number = std::stoi(num);
+//                    if(number >= 0){
+//                        kmem[addr3_shifted.source_1 + num_counter] = number;
+//                    }else{
+//                        kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+//                    }
+//                    num_counter ++;
+//                }
+//            }else if(counter > read_d.first){
+//                data = line;
+//                boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+//                for(const auto& num : argv){
+//                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+//                        flag = true;
+//                        break;
+//                    }
+//                    number = std::stoi(num);
+//                    if(number >= 0){
+//                        kmem[addr3_shifted.source_1 + num_counter] = number;
+//                    }else{
+//                        kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
+//                    }
+//                    num_counter ++;
+//                }
+//            }
+//            if(flag){
+//                break;
+//            }
+//            counter ++;
+//
+//        }
+        magnetic_drum.close();
+        return 0;
+    }
 };
 
 
@@ -127,6 +203,7 @@ struct Kyiv_t{
     bool execute_opcode();
 
     void opcode_flow_control(const addr3_t &addr3, opcode_t opcode);
+
     void opcode_arythm(const addr3_t &addr3, opcode_t opcode);
 };
 

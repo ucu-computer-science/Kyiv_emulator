@@ -121,14 +121,16 @@ int main(int argc, char *argv[]) {
     if (read_file(argv[1], result) < 0)
         return -1;
     write_file(outputf, result);
+
     Kyiv_t machine;
-    machine.kmem[1] = 0'21'0002'0005'0000ULL;
+    // machine.kmem[0001] = 0'12'0016'0003'0016ULL;
+    machine.kmem[0001] = 0'21'0002'0010'0000ULL;
+    machine.kmem[0012] = 549755813888;
+    machine.kmem[0013] = 16;
+    // machine.kmem[0016] = 9;
     machine.C_reg = 1;
     while (machine.execute_opcode()) {
-
     }
-    std::cout << word_to_number(machine.kmem[0013]) << std::endl;
-    std::cout << word_to_number(machine.kmem[0014]) << std::endl;
-    std::cout << word_to_number(machine.kmem[0015]) << std::endl;
+    std::cout << "RES: " << machine.kmem[0014] << std::endl;
     return 0;
 }
