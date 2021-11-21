@@ -17,7 +17,7 @@ struct addr3_t{
 constexpr addr3_t word_to_addr3(word_t w);
 constexpr opcode_t word_to_opcode(word_t w);
 constexpr bool is_negative(word_t w);
-constexpr word_t to_negative(word_t w);
+word_t to_negative(word_t w);
 constexpr word_t to_positive(word_t w);
 constexpr uint16_t leftmost_one(word_t w);
 uint16_t leftmost_one(mul_word_t w);
