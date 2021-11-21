@@ -126,6 +126,7 @@ struct Kyiv_t{
 
     bool execute_opcode();
 
+    void opcode_flow_control(const addr3_t &addr3, opcode_t opcode);
     void opcode_arythm(const addr3_t &addr3, opcode_t opcode);
 };
 

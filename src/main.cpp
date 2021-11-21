@@ -141,121 +141,33 @@ bool Kyiv_t::execute_opcode(){
         case arythm_operations_t::opcode_mul_round:
             opcode_arythm(addr3_shifted, opcode);
             break;
+        case flow_control_operations_t::opcode_jmp_less_or_equal: [[fallthrough]];
+        case flow_control_operations_t::opcode_jmp_abs_less_or_equal: [[fallthrough]];
+        case flow_control_operations_t::opcode_jmp_equal: [[fallthrough]];
+        case flow_control_operations_t::opcode_fork_negative: [[fallthrough]];
+        case flow_control_operations_t::opcode_call_negative: [[fallthrough]];
+        case flow_control_operations_t::opcode_ret: [[fallthrough]];
+        case flow_control_operations_t::opcode_group_op_begin: [[fallthrough]];
+        case flow_control_operations_t::opcode_group_op_end: [[fallthrough]];
+        case flow_control_operations_t::opcode_F: [[fallthrough]];
+        case flow_control_operations_t::opcode_stop:
+            opcode_flow_control(addr3_shifted, opcode);
+            break;
             //==========================================================================================================
-        case flow_control_operations_t::opcode_jmp_less_or_equal: {
-            if( word_to_number(addr3_shifted.source_1) <= word_to_number(addr3_shifted.source_2)){
-                C_reg = addr3_shifted.destination;
-            } else {
-                ++C_reg;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
-            if (get_absolute(addr3_shifted.source_1) <= get_absolute(addr3_shifted.source_2)) {
-                C_reg = addr3_shifted.destination;
-            } else {
-                ++C_reg;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_jmp_equal: {
-            if( word_to_number(addr3_shifted.source_1) == word_to_number(addr3_shifted.source_2)){
-                C_reg = addr3_shifted.destination;
-            } else {
-                ++C_reg;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_fork_negative: {
-            if( is_negative(kmem[addr3_shifted.source_1]) ){
-                C_reg = addr3_shifted.destination;
-            }else{
-                C_reg = addr3_shifted.source_2;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_call_negative:{
-            if( is_negative(kmem[addr3_shifted.source_1]) ){
-                P_reg = addr3_shifted.source_2; //! TODO: Згідно тексту стор 342 (пункт 18) Гнеденко-Королюк-Ющенко-1961
-                //! Глушков-Ющенко, стор 13, УПП не до кінця однозначна -- a1 без штриха, це зрозуміло,
-                //! але з врахуванням A і біта модифікатора, чи без?
-                //! Виглядає, що в таблиці на стор 180 -- помилка ('A2 => P -- зайвий штрих точно помилка,
-                //! чи помилка, що, немає зсуву на А?).
-                //! Однак, в  Гнеденко-Королюк-Ющенко-1961 опкод (32) суперечить опкоду в Глушко-Ющенко.
-                //! Перевірити!
-                C_reg = addr3_shifted.destination;
-            }else{
-                ++C_reg; //! Тут P_reg не мала б змінювати
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_ret:{
-            C_reg = P_reg;
-        }
-            break;
-        case flow_control_operations_t::opcode_group_op_begin:{
-            // У книжці Глушков-Ющенко на ст. 14, ймовірно, помилка, бо навіть словами пояснено,
-            // що береться значення а1 і а2, але разом із тим наголошено, що береться не 'а1 чи 'а2,
-            // а саме а1 і а2. В кінці цієї книжки та у Гнеденко-Королюк-Ющенко пише,
-            // ніби беруться значення, тому тут реалізовано саме так.
-            Loop_reg = word_to_number(addr3_shifted.source_1);
-            A_reg = word_to_number(addr3_shifted.source_2);
-            if (A_reg == Loop_reg) {
-                C_reg = addr3_shifted.destination;
-            } else {
-                ++C_reg;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_group_op_end:{
-            // Такий самий прикол, як з НГО
-            A_reg += word_to_number(addr3_shifted.source_1);
-            if (A_reg == Loop_reg) {
-                C_reg = addr3_shifted.destination;
-            } else {
-                C_reg = addr3_shifted.source_2;
-            }
-        }
-            break;
-        case flow_control_operations_t::opcode_F:{
-            // Якщо я правильно розібралася з 2 попередними командами, то тут все зрозуміло і немає суперечностей
-            A_reg = addr3_shifted.source_2;
-            addr3_shifted.destination = word_to_number(A_reg);
-            ++C_reg;
-        }
-            break;
-        case flow_control_operations_t::opcode_stop:{ //! TODO: Вона враховує стан кнопки на пульті?
-            // From Glushkov-Iushchenko p. 55
-            // If B_tumb == 0 -> neutral mode -> full stop
-            // If B_tumb > 0 -> just skip one command without full stop
-            // From Glushkov-Iushchenko pp. 163-164
-            // If B_tumb == 1 -> stop by 3d address
-            // If B_tumb == 2 -> stop by command number
-            // I'm not sure what to do with 1st and 2nd B_tumb (maybe that should be handled in main???)
-            if (!B_tumb) {
-                T_reg = true;
-                ++C_reg;
-            }
-            else {
-                C_reg += 2;
-            }
-        }
-            break;
-//==========================================================================================================
         case logic_operations_t::opcode_log_shift:{
-            //! TODO: Мені не повністю зрозуміло з обох книг, величина зсуву береться із RAM за адресою,
-            //! чи закодована в команді? Швидше перше -- але перевірити!
-            word_t shift = kmem[addr3_shifted.source_1] ; // Глушко-Ющенко, стор 12, сверджує: "на число разрядов,
-            // равное абсолютной величине константы сдвига, размещаемой в шести младших разрядах ячейки а1"
-            // 2^6 -- 64, тому решта бітів справді просто дадуть нуль на виході, але все рівно маскую, щоб
-            // не було невизначеної поведінки С. Та й зразу знак викидаємо
-            shift &= 0b111'111;
+        //! TODO: Мені не повністю зрозуміло з обох книг, величина зсуву береться із RAM за адресою,
+        //! чи закодована в команді? Швидше перше -- але перевірити!
+        word_t shift = kmem[addr3_shifted.source_1] ; // Глушко-Ющенко, стор 12, сверджує: "на число разрядов,
+        // равное абсолютной величине константы сдвига, размещаемой в шести младших разрядах ячейки а1"
+        // 2^6 -- 64, тому решта бітів справді просто дадуть нуль на виході, але все рівно маскую, щоб
+        // не було невизначеної поведінки С. Та й зразу знак викидаємо
+        shift &= 0b111'111;
 
-            if(is_negative(kmem[addr3_shifted.source_1])) {
-                kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] >> shift;
-            } else {
-                kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] << shift;
-                kmem[addr3_shifted.destination] &= (mask_40_bits | mask_41_bit); // Зануляємо зайві біти
+        if(is_negative(kmem[addr3_shifted.source_1])) {
+            kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] >> shift;
+        } else {
+            kmem[addr3_shifted.destination] = kmem[addr3_shifted.source_2] << shift;
+            kmem[addr3_shifted.destination] &= (mask_40_bits | mask_41_bit); // Зануляємо зайві біти
             }
             ++C_reg;
         }
@@ -510,6 +422,118 @@ bool Kyiv_t::execute_opcode(){
             T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду
     }
     return !T_reg;
+}
+
+void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode){
+    signed_word_t sign1 = (is_negative(kmem[addr3_shifted.source_1]) ? -1 : 1);
+    signed_word_t sign2 = (is_negative(kmem[addr3_shifted.source_2]) ? -1 : 1);
+    signed_word_t abs_val1 = static_cast<signed_word_t>(kmem[addr3_shifted.source_1] & mask_40_bits);
+    signed_word_t abs_val2 = static_cast<signed_word_t>(kmem[addr3_shifted.source_2] & mask_40_bits);;
+
+    switch (opcode) {
+        case flow_control_operations_t::opcode_jmp_less_or_equal: {
+            if((sign1 * abs_val1) <= (sign2 * abs_val2)){
+                C_reg = addr3_shifted.destination;
+            } else {
+                ++C_reg;
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
+            std::cout << "Num1 " << get_absolute(kmem[addr3_shifted.source_1]) << std::endl;
+            std::cout << "Num2 " << get_absolute(kmem[addr3_shifted.source_2]) << std::endl;
+            if (abs_val1 <= abs_val2) {
+                C_reg = addr3_shifted.destination;
+            } else {
+                ++C_reg;
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_jmp_equal: {
+            if( (sign1 * abs_val1) == (sign2 * abs_val2)){
+                C_reg = addr3_shifted.destination;
+            } else {
+                ++C_reg;
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_fork_negative: {
+            if( is_negative(kmem[addr3_shifted.source_1]) ){
+                C_reg = addr3_shifted.destination;
+            }else{
+                C_reg = addr3_shifted.source_2;
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_call_negative:{
+            if( is_negative(kmem[addr3_shifted.source_1]) ){
+                P_reg = addr3_shifted.source_2; //! TODO: Згідно тексту стор 342 (пункт 18) Гнеденко-Королюк-Ющенко-1961
+                //! Глушков-Ющенко, стор 13, УПП не до кінця однозначна -- a1 без штриха, це зрозуміло,
+                //! але з врахуванням A і біта модифікатора, чи без?
+                //! Виглядає, що в таблиці на стор 180 -- помилка ('A2 => P -- зайвий штрих точно помилка,
+                //! чи помилка, що, немає зсуву на А?).
+                //! Однак, в  Гнеденко-Королюк-Ющенко-1961 опкод (32) суперечить опкоду в Глушко-Ющенко.
+                //! Перевірити!
+                C_reg = addr3_shifted.destination;
+            }else{
+                ++C_reg; //! Тут P_reg не мала б змінювати
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_ret:{
+            C_reg = P_reg;
+        }
+            break;
+        case flow_control_operations_t::opcode_group_op_begin:{
+            // У книжці Глушков-Ющенко на ст. 14, ймовірно, помилка, бо навіть словами пояснено,
+            // що береться значення а1 і а2, але разом із тим наголошено, що береться не 'а1 чи 'а2,
+            // а саме а1 і а2. В кінці цієї книжки та у Гнеденко-Королюк-Ющенко пише,
+            // ніби беруться значення, тому тут реалізовано саме так.
+            Loop_reg = word_to_number(kmem[addr3_shifted.source_1]);
+            A_reg = word_to_number(kmem[addr3_shifted.source_2]);
+            if (A_reg == Loop_reg) {
+                C_reg = addr3_shifted.destination;
+            } else {
+                ++C_reg;
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_group_op_end:{
+            // Такий самий прикол, як з НГО
+            A_reg += word_to_number(kmem[addr3_shifted.source_1]);
+            if (A_reg == Loop_reg) {
+                C_reg = word_to_number(addr3_shifted.destination);
+            } else {
+                C_reg = word_to_number(addr3_shifted.source_2);
+            }
+        }
+            break;
+        case flow_control_operations_t::opcode_F:{
+            // Якщо я правильно розібралася з 2 попередними командами, то тут все зрозуміло і немає суперечностей
+            A_reg = word_to_addr3(kmem[addr3_shifted.source_1]).source_2;
+            word_t res = kmem[A_reg];
+            kmem[addr3_shifted.destination] = res;
+            ++C_reg;
+        }
+            break;
+        case flow_control_operations_t::opcode_stop:{ //! TODO: Вона враховує стан кнопки на пульті?
+            // From Glushkov-Iushchenko p. 55
+            // If B_tumb == 0 -> neutral mode -> full stop
+            // If B_tumb > 0 -> just skip one command without full stop
+            // From Glushkov-Iushchenko pp. 163-164
+            // If B_tumb == 1 -> stop by 3d address
+            // If B_tumb == 2 -> stop by command number
+            // I'm not sure what to do with 1st and 2nd B_tumb (maybe that should be handled in main???)
+            if (!B_tumb) {
+                T_reg = true;
+                ++C_reg;
+            }
+            else {
+                C_reg += 2;
+            }
+        }
+            break;
+    }
 }
 
 void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
