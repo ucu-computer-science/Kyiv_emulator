@@ -51,7 +51,7 @@ constexpr bool is_negative(word_t w){
     return w & mask_41_bit; // 0 - додатнє, не нуль -- від'ємне
 }
 
-constexpr word_t to_negative(word_t w){
+word_t to_negative(word_t w){
     return w | mask_41_bit;
 }
 
@@ -123,7 +123,6 @@ bool Kyiv_t::execute_opcode(){
         ++C_reg;
 
     }
-    std::cout << "opcode: " << opcode << std::endl;
     addr3_t addr3 = word_to_addr3(K_reg); // Парі команд потрібна
     addr3_t addr3_shifted = shift_addr3_byA(addr3, A_reg, K_reg); // Решта використовують цю змінну
     //! Ймовірно, потім це діло треба буде відрефакторити -- відчуваю, но де буде проблема - поки не знаю :+)
@@ -372,7 +371,7 @@ bool Kyiv_t::execute_opcode(){
             C_reg = addr3_shifted.destination;
             K_reg = kmem[C_reg];
         }
-        break;
+            break;
 
         case IO_operations_t::opcode_write_perfo_binary:{
             std::ofstream myfile;
@@ -407,7 +406,7 @@ bool Kyiv_t::execute_opcode(){
             C_reg = addr3_shifted.destination;
             K_reg = kmem[C_reg];
         }
-        break;
+            break;
 
         case IO_operations_t::opcode_init_magnetic_drum:{
             std::ifstream headsin;
@@ -436,7 +435,7 @@ bool Kyiv_t::execute_opcode(){
             headsout << result << std::endl;
             headsout.close();
         }
-        break;
+            break;
 //==========================================================================================================
         default:
             T_reg = true; // ! TODO: Не пам'ятаю, яка там точно реакція на невідому команду
@@ -458,7 +457,6 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
     mul_word_t res_mul;
     uint16_t power = 40 - leftmost_one(abs_val1) -1;
 
-    std::cout << sign1 * abs_val1 << "\t" << sign2 * abs_val2 << std::endl;
     switch(opcode){
         case arythm_operations_t::opcode_add:
             res += sign2 * abs_val2;
@@ -514,7 +512,6 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
             return;
         }
         kmem[addr3.destination] = static_cast<uint64_t>(res) & mask_40_bits;
-        std::cout << -1 * res << std::endl;
         if (is_negative)
             kmem[addr3.destination] |= mask_41_bit;
         //! "Нуль, получаемый как разность двух равных чисел, имеет отрицательный знак" -- стор. 13 Глушко-Ющенко, опис УПЧ
@@ -536,12 +533,10 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         // 2. Якщо додавання переносу до молодшого біту виникло переповнення, що далі?
         //    Так виглядає, що воно не може виникнути, але чи я не помилився? -- не може, десь через переніс буде 0
         bool is_negative = (res < 0);
-        std::cout << (res) << std::endl;
         if (is_negative)
             res = -res;
         assert(res >= 0);
 
-        std::cout << std::bitset<41> (res) << std::endl;
         if(res & mask_41_bit){
             res += 1; // Маємо перенос із знакового біту
         }
@@ -553,7 +548,6 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
               opcode == arythm_operations_t::opcode_mul_round
             ) {
         bool is_negative = (res_mul < 0);
-//        std::cout << "mul_res: " << (res_mul) << std::endl;
         if (is_negative)
             res_mul = -res_mul;
         assert(res_mul >= 0);
@@ -564,13 +558,9 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
                 res_mul += 1 << (leftmost - 40 - 1);
             res_mul = res_mul >> (leftmost - 40);
         }
-//        std::cout << "leftmost: " << leftmost << std::endl;
-//
-//        std::cout << "res_mul_2: " << res_mul << std::endl;
         kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
         if (is_negative)
             kmem[addr3.destination] |= mask_41_bit;
-        std::cout << "Mult res: " << kmem[addr3.destination] << std::endl;
 
     } else if (opcode == arythm_operations_t::opcode_norm) {
         bool is_negative = (res_for_norm < 0);
@@ -579,23 +569,15 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
             res_for_norm = -res_for_norm;
         assert(res_for_norm >= 0);
 
-        std::cout << "norm_val: " << (res_for_norm) << std::endl;
-        std::cout << "norm_power: " << (power) << std::endl;
-        std::cout << "norm_val_64: " << std::bitset<64>(res_for_norm) << std::endl;
-        std::cout << "norm_val_41: " << std::bitset<41>(res_for_norm) << std::endl;
-
         kmem[addr3.source_2] = power;
         kmem[addr3.destination] = static_cast<uint64_t>(res_for_norm) & mask_40_bits;
         if (is_negative)
             kmem[addr3.destination] |= mask_41_bit;
 
-        std::cout << "norm_val_mem: " << kmem[addr3.destination] << std::endl;
-        std::cout << "norm_val_pow: " << kmem[addr3.source_2] << std::endl;
     } else if (opcode == arythm_operations_t::opcode_div) {
         kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
         if ((sign1 * sign2) == -1)
             kmem[addr3.destination] |= mask_41_bit;
-        std::cout << "Div res: " << kmem[addr3.destination] << std::endl;
     }
     ++C_reg;
 }
@@ -616,8 +598,6 @@ void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode){
         }
             break;
         case flow_control_operations_t::opcode_jmp_abs_less_or_equal: {
-            std::cout << "Num1 " << get_absolute(kmem[addr3_shifted.source_1]) << std::endl;
-            std::cout << "Num2 " << get_absolute(kmem[addr3_shifted.source_2]) << std::endl;
             if (abs_val1 <= abs_val2) {
                 C_reg = addr3_shifted.destination;
             } else {
@@ -711,20 +691,3 @@ void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode){
             break;
     }
 }
-
-
-
-//int main() {
-//    Kyiv_t machine1;
-//    word_t n = std::stol("01000400050006", 0, 8);
-//    std::cout << std::bitset<41>(n) << std::endl;
-//    machine1.kmem[1] = n;
-//    machine1.C_reg = 1; //! TODO: Звідки вона в реальності починала?
-//    //! TODO: Додати тести всіх команд!
-//    //! TODO: Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульт
-//    while(machine1.execute_opcode()){
-//
-//        // Ще тут буде потім перевірка, чи зупиняти машину при виникненні ситуації переповнення -- керується кнопкою на пульті
-//    }
-//    return 0;
-//}
