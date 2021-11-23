@@ -1,7 +1,14 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
+
 #include <fstream>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
 #include "kyiv.h"
+#include "asm_disasm.h"
+
+#define COMMAND_SIZE 4
 
 constexpr char outputf[] = "../punched_tape.txt";
 
@@ -69,13 +76,47 @@ std::map <std::string, std::string> ua_instructions = {
         {"останов",  "33"}
 };
 
-int disassembly(std::string& command, std::string &result) {
+int disassembly(const uint64_t & command_oct, Kyiv_memory & kmem) {
+    std::cout << command_oct << std::endl;
+    std::ostringstream str;
+    str << std::oct << command_oct;
+    std::string command = str.str();
+    if (command.size() != 14) {
+        command.insert(0, "0");
+    }
+    std::string result;
+    for (const auto & it : en_instructions) {
+        if ( it.second == command.substr(0, 2) )
+            result.append(it.first);
+    }
+    if (result.empty()) {
+        for (const auto & it : ua_instructions) {
+            if ( it.second == command.substr(0, 2) )
+                result.append(it.first);
+        }
+    }
+    if (result.empty()) {
+        assert("Shouldn't be here!");
+    }
+    result.append(" " + command.substr(2, 4) + " " + command.substr(6, 4) + " " + command.substr(10, 4));
+    word_t Addr_1_mask_shift = (40-6-11)+1;
+    word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
+    word_t Addr_2_mask_shift = (40-6-12-11)+1;
+    word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);
+    std::string val1 = std::to_string(word_to_number(kmem[(command_oct & Addr_1_mask) >> Addr_1_mask_shift]));
+    std::string val2 = std::to_string(word_to_number(kmem[(command_oct & Addr_2_mask) >> Addr_2_mask_shift]));
+    result.append("\t;; " + val1 + " " + val2);
+    std::cout << result << std::endl;
+    return 0;
+}
+
+int assembly(std::string& command, std::string &result) {
     std::vector<std::string> argv;
     boost::split(argv,command,boost::is_any_of(" "), boost::algorithm::token_compress_off);
-    if (argv.size() != 4)
+    if (argv.size() != COMMAND_SIZE)
         return -1;
-    for (uint8_t i = 1; i < 4; i++) {
-        if ((argv[i].size() != 4) || (argv[i].find_first_not_of("01234567") != std::string::npos))
+    for (uint8_t i = 1; i < COMMAND_SIZE; i++) {
+        if ((argv[i].size() != COMMAND_SIZE) || (argv[i].find_first_not_of("01234567") != std::string::npos))
             return -1;
     }
     if (en_instructions.find(argv[0]) != en_instructions.end())
@@ -93,7 +134,7 @@ int read_file(const std::string& filename, std::string &result) {
     std::string line;
     size_t count = 1;
     while (std::getline(infile, line)) { // Добавити для запису даних через тумблер
-        if (disassembly(line, result) < 0) {
+        if (assembly(line, result) < 0) {
             std::cerr << "Error in line " << count << ": " << line << std::endl;
             return -1;
         }

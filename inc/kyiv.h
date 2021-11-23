@@ -22,7 +22,7 @@ constexpr word_t to_positive(word_t w);
 constexpr uint16_t leftmost_one(word_t w);
 uint16_t leftmost_one(mul_word_t w);
 signed_word_t get_absolute(word_t w);
-word_t word_to_number(word_t w);
+signed_word_t word_to_number(word_t w);
 constexpr bool get_A1(word_t w);
 constexpr bool get_A2(word_t w);
 constexpr bool get_A3(word_t w);
@@ -53,7 +53,7 @@ struct aproxy {
 class Kyiv_memory {
 private:
     word_t k[04000] = {0, 0'12'0004'0005'0007ULL, 0'02'0004'0005'0007ULL,
-                       10, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 2, 16, 549755813888};
+                       100, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 2, 16, 43980465111};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
