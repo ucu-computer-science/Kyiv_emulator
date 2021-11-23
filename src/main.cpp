@@ -480,7 +480,7 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         case arythm_operations_t::opcode_mul: [[fallthrough]];
         case arythm_operations_t::opcode_mul_round:
             res_mul = sign1 * (mul_word_t) abs_val1 * sign2 * (mul_word_t) abs_val2;
-            // std::cout << "H : " << res_mul << std::endl;
+             std::cout << "H : " << res_mul << std::endl;
             break;
         case arythm_operations_t::opcode_norm: {
             res_for_norm = sign1 * (abs_val1 << power);
@@ -563,12 +563,16 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode){
         assert(res_mul >= 0);
 
         uint16_t leftmost = leftmost_one(res_mul);
-        if (leftmost > 40) {
-            if (opcode == arythm_operations_t::opcode_mul_round)
-                res_mul += 1 << (leftmost - 40);
-            res_mul = res_mul >> (leftmost - 39);
+
+        if (leftmost > 39) {
+            if (opcode == arythm_operations_t::opcode_mul_round) {
+                res_mul += 1ULL << 41;
+            }
+            res_mul = res_mul >> 40;
         }
         kmem[addr3.destination] = static_cast<uint64_t>(res_mul) & mask_40_bits;
+        std::cout << "DEBUUUUUUUUG2 " << static_cast<uint64_t>(res_mul) << std::endl;
+        std::cout << "DEBUUUUUUUUG " << word_to_number(kmem[addr3.destination]) << std::endl;
         // std::cout << is_negative << std::endl;
         if (is_negative)
             kmem[addr3.destination] |= mask_41_bit;

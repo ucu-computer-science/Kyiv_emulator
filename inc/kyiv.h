@@ -53,7 +53,7 @@ struct aproxy {
 class Kyiv_memory {
 private:
     word_t k[04000] = {0, 0'12'0004'0005'0007ULL, 0'02'0004'0005'0007ULL,
-                       100, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 2, 16, 43980465111};
+                       100, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 2, 16, 219902325555};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);

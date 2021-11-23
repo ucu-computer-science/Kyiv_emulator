@@ -3,6 +3,7 @@
 
 
 #include <fstream>
+#include <iomanip>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
 #include "kyiv.h"
@@ -77,10 +78,15 @@ std::map <std::string, std::string> ua_instructions = {
 };
 
 int disassembly(const uint64_t & command_oct, Kyiv_memory & kmem) {
-    std::cout << command_oct << std::endl;
+
+//    std::cout << command_oct << std::endl;
     std::ostringstream str;
     str << std::oct << command_oct;
     std::string command = str.str();
+
+    if (command.size() != 13 && command.size() != 14) {
+        return -1;
+    }
     if (command.size() != 14) {
         command.insert(0, "0");
     }
@@ -103,7 +109,7 @@ int disassembly(const uint64_t & command_oct, Kyiv_memory & kmem) {
     word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
     word_t Addr_2_mask_shift = (40-6-12-11)+1;
     word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);
-    std::string val1 = std::to_string(word_to_number(kmem[(command_oct & Addr_1_mask) >> Addr_1_mask_shift]));
+    std::string val1 = std::to_string((word_to_number(kmem[(command_oct & Addr_1_mask) >> Addr_1_mask_shift]) ));  //* std::pow(2, -40)
     std::string val2 = std::to_string(word_to_number(kmem[(command_oct & Addr_2_mask) >> Addr_2_mask_shift]));
     result.append("\t;; " + val1 + " " + val2);
     std::cout << result << std::endl;
@@ -170,8 +176,12 @@ int main(int argc, char *argv[]) {
     machine.kmem[0013] = 16;
     // machine.kmem[0016] = 9;
     machine.C_reg = 1;
+
+    std::cout << std::setprecision(15);
+
     while (machine.execute_opcode()) {
+        std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
     }
-    std::cout << "RES: " << machine.kmem[0014] << std::endl;
+    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
     return 0;
 }
