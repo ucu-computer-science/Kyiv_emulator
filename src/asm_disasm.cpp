@@ -139,6 +139,8 @@ int disassembly_text(const std::string& file_from, const std::string& file_to) {
         std::string address = command.substr(0, 4);
         command = command.substr(4);
 
+        std::cout << line << std::endl;
+
         if (command.size() != 13 && command.size() != 14) {
             return -1;
         }
@@ -242,7 +244,7 @@ std::string mod_comment(std::string addr_1, std::string addr_2, std::string addr
         std::ostringstream str;
         str << std::oct << check;
         std::string to_print_1 = str.str();
-        comment.append(" modification of address 1: " + to_print_1 + " + value of register A; ");
+        comment.append(" Addr 1: " + to_print_1 + " + A; ");
     }
 
     check = check_modification(addr_2);
@@ -251,7 +253,7 @@ std::string mod_comment(std::string addr_1, std::string addr_2, std::string addr
         std::ostringstream str;
         str << std::oct << check;
         std::string to_print_1 = str.str();
-        comment.append(" modification of address 2: " + to_print_1 + " + value of register A; ");
+        comment.append(" Addr 2: " + to_print_1 + " + A; ");
     }
 
     check = check_modification(addr_3);
@@ -260,7 +262,7 @@ std::string mod_comment(std::string addr_1, std::string addr_2, std::string addr
         std::ostringstream str;
         str << std::oct << check;
         std::string to_print_1 = str.str();
-        comment.append(" modification of address 3: " + to_print_1 + " + value of register A; ");
+        comment.append(" Addr 3: " + to_print_1 + " + A; ");
     }
     return comment;
 }

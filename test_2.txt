@@ -9,11 +9,11 @@ jump1:
 	div 0004 3047 0004 
 	sub 0002 0004 0002 
 	div 0002 3045 0002 
-	goe 4001 jump1 jump2 	; modification of address 1: 1 + value of register A; 
-	add 5712 7226 4561 	; modification of address 1: 1712 + value of register A;  modification of address 2: 3226 + value of register A;  modification of address 3: 561 + value of register A; 
-	sub 2346 6040 1441 	; modification of address 2: 2040 + value of register A; 
-	addcmd 6616 1114 4322 	; modification of address 1: 2616 + value of register A;  modification of address 3: 322 + value of register A; 
-	sh 4252 1661 7650 	; modification of address 1: 252 + value of register A;  modification of address 3: 3650 + value of register A; 
+	goe 4001 jump1 jump2 	; Addr 1: 1 + A; 
+	add 5712 7226 4561 	; Addr 1: 1712 + A;  Addr 2: 3226 + A;  Addr 3: 561 + A; 
+	sub 2346 6040 1441 	; Addr 2: 2040 + A; 
+	addcmd 6616 1114 4322 	; Addr 1: 2616 + A;  Addr 3: 322 + A; 
+	sh 4252 1661 7650 	; Addr 1: 252 + A;  Addr 3: 3650 + A; 
 	add 3020 0000 0005 
 jump4:
 	jlea 3070 0002 jump3 
@@ -34,8 +34,8 @@ jump3:
 	add 3112 0000 0003 
 jump6:
 	rmul 0003 0006 0003 
-	add 0003 7113 0003 	; modification of address 2: 3113 + value of register A; 
-	goe 4001 jump6 jump7 	; modification of address 1: 1 + value of register A; 
+	add 0003 7113 0003 	; Addr 2: 3113 + A; 
+	goe 4001 jump6 jump7 	; Addr 1: 1 + A; 
 jump7:
 	rmul 0003 0002 0003 
 	rmul 0003 0004 0003 
@@ -54,8 +54,8 @@ jump32:
 	add 3172 0000 0003 
 jump10:
 	rmul 0003 0004 0003 
-	add 0003 7173 0003 	; modification of address 2: 3173 + value of register A; 
-	goe 4001 jump10 jump11 	; modification of address 1: 1 + value of register A; 
+	add 0003 7173 0003 	; Addr 2: 3173 + A; 
+	goe 4001 jump10 jump11 	; Addr 1: 1 + A; 
 jump11:
 	rmul 0003 0002 0003 
 	ret 0000 0000 0000 
@@ -70,8 +70,8 @@ jump12:
 	00000475536722
 	rdt 0231 1146 1443 
 	00506321275453
-	imd 1256 7405 5264 	; modification of address 2: 3405 + value of register A;  modification of address 3: 1264 + value of register A; 
-	and 4417 6651 0101 	; modification of address 1: 417 + value of register A;  modification of address 2: 2651 + value of register A; 
+	imd 1256 7405 5264 	; Addr 2: 3405 + A;  Addr 3: 1264 + A; 
+	and 4417 6651 0101 	; Addr 1: 417 + A;  Addr 2: 2651 + A; 
 	rdt 0000 0000 0001 
 	suba 3025 3044 0004 
 	add 0000 0004 0005 
@@ -101,8 +101,8 @@ jump19:
 	add 3172 0000 0003 
 jump17:
 	rmul 0003 0004 0003 
-	add 0003 7173 0003 	; modification of address 2: 3173 + value of register A; 
-	goe 4001 jump17 jump18 	; modification of address 1: 1 + value of register A; 
+	add 0003 7173 0003 	; Addr 2: 3173 + A; 
+	goe 4001 jump17 jump18 	; Addr 1: 1 + A; 
 jump18:
 	rmul 0003 0002 0003 
 	and 0005 0003 0003 
