@@ -30,8 +30,8 @@ std::map <std::string, std::string> en_instructions = {
         {"jle",  "04"},
         {"jlea",  "05"},
         {"je", "16"},
-        {"nfork",  "30"},
-        {"ncall",  "31"},
+        {"ncall",  "30"},
+        {"nfork",  "31"},
         {"ret", "32"},
         {"gob",  "26"},
         {"goe",  "27"},
@@ -116,6 +116,155 @@ int disassembly(const uint64_t & command_oct, Kyiv_memory & kmem) {
     return 0;
 }
 
+int disassembly_text(const std::string& file_from, const std::string& file_to) {
+    word_t Addr_1_mask_shift = (40-6-11)+1;
+    word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
+    word_t Addr_2_mask_shift = (40-6-12-11)+1;
+    word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);
+    word_t oct_command;
+    std::map<std::string, std::string> program;
+    std::map<std::string, std::string> jumps;
+    size_t jump_counter = 0;
+
+    std::ifstream infile(file_from);
+
+    std::string line;
+
+
+    while (std::getline(infile, line)) {
+        line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+        std::ostringstream str;
+        str << std::oct << line;
+        std::string command = str.str();
+        std::string address = command.substr(0, 4);
+        command = command.substr(4);
+
+        if (command.size() != 13 && command.size() != 14) {
+            return -1;
+        }
+        if (command.size() != 14) {
+            command.insert(0, "0");
+        }
+        std::string result;
+
+        if (command.substr(0, 2) == "00") {
+            program[address] = command;
+            continue;
+        }
+
+            for (const auto &it: en_instructions) {
+                if (it.second == command.substr(0, 2)) {
+                    result.append(it.first + " ");
+                    std::string addr_1 = command.substr(2, 4) + " ";
+                    std::string addr_2 = command.substr(6, 4) + " ";
+                    std::string addr_3 = command.substr(10, 4) + " ";
+                    std::string mod = mod_comment(addr_1, addr_2, addr_3);
+
+                    if (it.first == "jle" || it.first == "jlea" || it.first == "je" || it.first == "ncall" ||
+                        it.first == "gob") {
+                        std::string label = "jump" + std::to_string(jump_counter++);
+                        jumps[addr_3.substr(0, 4)] = label + ":";
+
+                        result.append(addr_1);
+                        result.append(addr_2);
+                        result.append(label + " ");
+                    } else if (it.first == "nfork" || it.first == "goe") {
+                        std::string label_1 = "jump" + std::to_string(jump_counter++);
+                        std::string label_2 = "jump" + std::to_string(jump_counter++);
+                        jumps[addr_2.substr(0, 4)] = label_1 + ":";
+                        jumps[addr_3.substr(0, 4)] = label_2 + ":";
+
+                        result.append(addr_1);
+                        result.append(label_1 + " ");
+                        result.append(label_2 + " ");
+                    } else {
+                        result.append(addr_1);
+                        result.append(addr_2);
+                        result.append(addr_3);
+                    }
+
+                    if (mod != ";") {
+                        result.append("\t" + mod);
+                    }
+                }
+//                if (result.empty()) {
+//                    for (const auto &it: ua_instructions) {
+//                        if (it.second == command.substr(0, 2))
+//                            result.append(it.first);
+//                    }
+//                }
+                if (result.empty()) {
+                    assert("Shouldn't be here!");
+                }
+                program[address] = result;
+            }
+    }
+    disassembler_second_pass(program, jumps, file_to);
+    return 0;
+}
+
+int disassembler_second_pass(std::map<std::string, std::string> program, std::map<std::string, std::string> jumps, const std::string& file_to) {
+    std::string prog_to_file = "";
+    prog_to_file.append("org1 " + program.begin()->first + "\n");
+
+    for(const auto & it : program) {
+        if(jumps.find(it.first) != jumps.end()) {
+            prog_to_file.append(jumps.find(it.first)->second + "\n");
+        }
+        prog_to_file.append("\t" + it.second + "\n");
+    }
+
+    std::ofstream infile(file_to);
+    if (!infile.is_open())
+        return -1;
+    infile << prog_to_file;
+    infile.close();
+
+    return 0;
+}
+
+
+int check_modification(std::string addr) {
+    word_t mod_bit = 0b100'000'000'000ULL;
+    int num = std::stoi(addr, 0, 8);
+
+    if (num & mod_bit) {
+        return num^mod_bit;
+    }
+    return -1;
+}
+
+std::string mod_comment(std::string addr_1, std::string addr_2, std::string addr_3) {
+    std::string comment = ";";
+    int check = check_modification(addr_1);
+
+    if (check != -1) {
+        std::ostringstream str;
+        str << std::oct << check;
+        std::string to_print_1 = str.str();
+        comment.append(" modification of address 1: " + to_print_1 + " + value of register A; ");
+    }
+
+    check = check_modification(addr_2);
+
+    if (check != -1) {
+        std::ostringstream str;
+        str << std::oct << check;
+        std::string to_print_1 = str.str();
+        comment.append(" modification of address 2: " + to_print_1 + " + value of register A; ");
+    }
+
+    check = check_modification(addr_3);
+
+    if (check != -1) {
+        std::ostringstream str;
+        str << std::oct << check;
+        std::string to_print_1 = str.str();
+        comment.append(" modification of address 3: " + to_print_1 + " + value of register A; ");
+    }
+    return comment;
+}
+
 int assembly(std::string& command, std::string &result) {
     std::vector<std::string> argv;
     boost::split(argv,command,boost::is_any_of(" "), boost::algorithm::token_compress_off);
@@ -135,20 +284,6 @@ int assembly(std::string& command, std::string &result) {
     return 0;
 }
 
-int read_file(const std::string& filename, std::string &result) {
-    std::ifstream infile(filename);
-    std::string line;
-    size_t count = 1;
-    while (std::getline(infile, line)) { // Добавити для запису даних через тумблер
-        if (assembly(line, result) < 0) {
-            std::cerr << "Error in line " << count << ": " << line << std::endl;
-            return -1;
-        }
-        count++;
-    }
-    infile.close();
-    return 0;
-}
 
 int write_file(const char* filename, std::string &res) {
     std::ofstream infile(filename);
@@ -164,24 +299,27 @@ int main(int argc, char *argv[]) {
         std::cerr << "Wrong arg" << std::endl;
         return -1;
     }
-    std::string result;
-    if (read_file(argv[1], result) < 0)
-        return -1;
-    write_file(outputf, result);
-
-    Kyiv_t machine;
-    // machine.kmem[0001] = 0'12'0016'0003'0016ULL;
-    machine.kmem[0001] = 0'21'0002'0010'0000ULL;
-    machine.kmem[0012] = 549755813888;
-    machine.kmem[0013] = 16;
-    // machine.kmem[0016] = 9;
-    machine.C_reg = 1;
-
-    std::cout << std::setprecision(15);
-
-    while (machine.execute_opcode()) {
-        std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
-    }
-    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
+    std::string from = "../test_1.txt";
+    std::string to = "../test_2.txt";
+    disassembly_text(from, to);
+//    std::string result;
+//    if (read_file(argv[1], result) < 0)
+//        return -1;
+//    write_file(outputf, result);
+//
+//    Kyiv_t machine;
+//    // machine.kmem[0001] = 0'12'0016'0003'0016ULL;
+//    machine.kmem[0001] = 0'21'0002'0010'0000ULL;
+//    machine.kmem[0012] = 549755813888;
+//    machine.kmem[0013] = 16;
+//    // machine.kmem[0016] = 9;
+//    machine.C_reg = 1;
+//
+//    std::cout << std::setprecision(15);
+//
+//    while (machine.execute_opcode()) {
+//        std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
+//    }
+//    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
     return 0;
 }
