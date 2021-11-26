@@ -130,7 +130,6 @@ int disassembly_text(const std::string& file_from, const std::string& file_to) {
 
     std::string line;
 
-
     while (std::getline(infile, line)) {
         line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
         std::ostringstream str;
@@ -138,8 +137,6 @@ int disassembly_text(const std::string& file_from, const std::string& file_to) {
         std::string command = str.str();
         std::string address = command.substr(0, 4);
         command = command.substr(4);
-
-        std::cout << line << std::endl;
 
         if (command.size() != 13 && command.size() != 14) {
             return -1;
@@ -207,12 +204,19 @@ int disassembly_text(const std::string& file_from, const std::string& file_to) {
 
 int disassembler_second_pass(std::map<std::string, std::string> program, std::map<std::string, std::string> jumps, const std::string& file_to) {
     std::string prog_to_file = "";
-    prog_to_file.append("org1 " + program.begin()->first + "\n");
+    int last_address = std::stoi(program.begin()->first, 0, 8);
+    int origin_counter = 1;
+    prog_to_file.append("org0 " + program.begin()->first + "\n");
 
     for(const auto & it : program) {
         if(jumps.find(it.first) != jumps.end()) {
             prog_to_file.append(jumps.find(it.first)->second + "\n");
         }
+        if (std::stoi(it.first, 0, 8) - last_address > 1) {
+            prog_to_file.append("org" + std::to_string(origin_counter++) + " " + it.first + "\n");
+        }
+        last_address = std::stoi(it.first, 0, 8);   // not sure if I should initialize a new variable for this or leave it like that
+
         prog_to_file.append("\t" + it.second + "\n");
     }
 
