@@ -50,75 +50,10 @@ struct aproxy {
     word_t *mPtr;
 };
 
-class memory_error: public std::runtime_error{
-    addr_t err_addr;
-public:
-    memory_error(const std::string& err_descr_, addr_t addr_ ): std::runtime_error{err_descr_}, err_addr(addr_)
-    {}
-};
-
-class out_of_range_error: public memory_error {
-public:
-    out_of_range_error(const std::string& err_descr_, addr_t addr_ ): memory_error{err_descr_, addr_}
-    {}
-};
-
-class ROW_write_error: public memory_error {
-public:
-    ROW_write_error(const std::string& err_descr_, addr_t addr_ ): memory_error{err_descr_, addr_}
-    {}
-};
-
-
-class Kyiv_memory_t {
-private:
-    word_t mem_array_m[04000] = {0, 0'07'0003'0004'0005ULL, 0'07'0005'0000'0010ULL,
-                                 to_negative(3), to_negative(4), 5,
-//                            CPU1.to_negative(6), 7, 8}; // 0AAAA -- octal constant
-                                 1099511627700, 10000, 8}; // 0AAAA -- octal constant};
-
-
-    //! Оператор може змінювати деякі значення  ROM
-    void internal_set_ROM_values(addr_t addr, word_t val){
-        // Перевірки додати, чи що? З пульта не всі змінюються. Або хай тим реалізація пульта займається?
-        if (addr >= max_RAM_addr){
-            throw out_of_range_error("Writing to ROM", addr);
-        }
-        mem_array_m[addr] = val;
-    }
-
-public:
-    static constexpr addr_t min_addr =     0;
-    static constexpr addr_t min_RAM_addr = 0;
-    static constexpr addr_t min_ROM_addr = 03000;
-    static constexpr addr_t max_RAM_addr = min_ROM_addr; //! Напіввідкритий інтервал, як із вказівниками:
-    //! Коректні адреси: [min_RAM_addr, max_RAM_addr)
-    static constexpr addr_t max_ROM_addr = 04000;
-    static constexpr addr_t max_addr =     04000;
-
-    constexpr word_t read_memory(addr_t addr) const {
-        if(addr >= max_RAM_addr){
-            throw out_of_range_error("Wrong address while reading", addr);
-        }
-        return mem_array_m[addr];
-    }
-    void write_memory(addr_t addr, word_t val){
-        if(addr >= max_RAM_addr){
-            throw out_of_range_error("Wrong address while writing", addr);
-        } else if (addr >= max_RAM_addr){
-            throw out_of_range_error("Writing to ROM", addr);
-        }
-        mem_array_m[addr] = val;
-    }
-
-};
-
-
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'12'0004'0005'0007ULL, 0'02'0004'0005'0007ULL,
-                       100, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 219902328832, 16, 549755813888
-    };
+    word_t k[04000] = {0, 0'01'0000'0011'0014ULL, 0'12'0016'0014'0015ULL,
+                       0'02'0015'0014'0015ULL, 0'11'0015'0012'0015ULL, 0'01'0014'0015'0014ULL, 0'05'0013'0015'0002ULL, 0'32'0000'0000'0000ULL, 8, 1099511627775, 549755813888, 16, 219902328832, 16, 43980464128};
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
@@ -213,7 +148,6 @@ struct Kyiv_t{
     // B_tumb is not bool because according to p. 163 Glushkov-Iushchenko it has 3 modes.
     // Maybe there is a better way to handle this?
     bool T_reg = false;
-    size_t h = 0;
 
 
     //! ! TODO: Пам'ять певне потрібно виділити в нову сутність -- клас, який зразу відповідатиме і за
@@ -221,7 +155,7 @@ struct Kyiv_t{
     //! Нульова адреса має завжди містити 0.
     //! Найпростіше, певне, буде створити свій клас, який перевизначає оператор [], і все це реалізовує.
     //! Тоді решта коду не потребуватиме зміни.
-    Kyiv_memory_t kmem;
+    Kyiv_memory kmem;
 
     //! TODO: Придумати адекватні мнемоніки
     enum arythm_operations_t{
