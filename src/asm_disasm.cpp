@@ -116,7 +116,7 @@ std::map <std::string, std::string> ua_instructions = {
 //    return 0;
 //}
 
-int disassembly(const uint64_t & command_oct, Kyiv_memory_t & kmem) {
+int disassembly(const uint64_t & command_oct, Kyiv_memory & kmem) {
 
 //    std::cout << command_oct << std::endl;
     std::ostringstream str;
@@ -148,16 +148,14 @@ int disassembly(const uint64_t & command_oct, Kyiv_memory_t & kmem) {
     word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
     word_t Addr_2_mask_shift = (40-6-12-11)+1;
     word_t Addr_2_mask = 0b11'111'111'111ULL << (Addr_2_mask_shift-1);
-    std::string val1 = std::to_string((word_to_number(kmem.read_memory((command_oct & Addr_1_mask) >> Addr_1_mask_shift)) )) + "  " +
-            std::to_string((word_to_number(kmem.read_memory((command_oct & Addr_1_mask) >> Addr_1_mask_shift)) ) * std::pow(2, -40));  //* std::pow(2, -40)
-    std::string val2 = std::to_string(word_to_number(kmem.read_memory((command_oct & Addr_2_mask) >> Addr_2_mask_shift))) + "  " +
-            std::to_string(word_to_number(kmem.read_memory((command_oct & Addr_2_mask) >> Addr_2_mask_shift)) * std::pow(2, -40) );
-    result.append("\t;; " + val1 + "\t" + val2);
+    std::string val1 = std::to_string((word_to_number(kmem[(command_oct & Addr_1_mask) >> Addr_1_mask_shift]) ));  //* std::pow(2, -40)
+    std::string val2 = std::to_string(word_to_number(kmem[(command_oct & Addr_2_mask) >> Addr_2_mask_shift]));
+    result.append("\t;; " + val1 + " " + val2);
     std::cout << result << std::endl;
     return 0;
 }
 
-int disassembly_text(const std::string file_from, const std::string file_to) {
+int disassembly_text(const std::string& file_from, const std::string& file_to) {
     word_t Addr_1_mask_shift = (40-6-11)+1;
     word_t Addr_1_mask = 0b11'111'111'111ULL << (Addr_1_mask_shift-1);
     word_t Addr_2_mask_shift = (40-6-12-11)+1;
@@ -313,32 +311,19 @@ std::string mod_comment(std::string addr_1, std::string addr_2, std::string addr
 }
 
 class Assembly {
-    /*
-     * Class for reading and executing assembly code on Kyiv.
-     */
 private:
-    std::map<std::string, std::string> references;          // contains origins, labels
-    std::vector<std::string> readers;                       // helper for executing final code on Kyiv
-    std::vector<std::string> lines_cout;                    // Optional - saves command address
-    size_t command_count;                                   // helper to save current command address
-    size_t org_counter;                                     // helper to numerate origin
-    size_t end;                                             // helper to find address of last command
-    bool text;                                              // check if we input command or value
-    bool numer;                                             // Optional - if we want to address commands
-
+    std::map<std::string, std::string> references;
+    std::vector<std::string> readers;
+    size_t command_count;
+    size_t org_counter;
+    size_t end;
+    bool text = true;
 public:
-    /*
-     * Read file in assembly code, convert it into Kyiv code and write into output file.
-     * If numerate set in true -- output file will contain commands numeration.
-     * @param input filename as string, flag to indicate if we address commands as bool
-     * @return 0 if success
-     */
-    int read_file(const std::string& filename, bool numerate=false) {
+    int read_file(const std::string& filename) {
         references = {};
         readers = {};
         command_count = 0;
         org_counter = 0;
-        numer = numerate;
 
         std::ifstream infile(filename);
         std::string line;
@@ -346,15 +331,10 @@ public:
 
         while (std::getline(infile, line)) {
             if (line.find(';') != std::string::npos)
-                line.erase(line.find_first_of(';')); // remove comment
+                line.erase(line.find_first_of(';')); // remove commen
             if (!line.empty() && find_special_bts(line) == 0) {
                 commands.push_back(line);
-                if (numer) {
-                    std::ostringstream oct;
-                    oct << std::setw(4) << std::setfill('0') << std::oct << command_count;
-                    lines_cout.insert(lines_cout.begin(), oct.str());
-                    command_count++;
-                }
+                command_count++;
                 end++;
             }
         }
@@ -368,24 +348,16 @@ public:
             boost::split(argv,command,boost::is_any_of(" "), boost::algorithm::token_compress_off);
             if (references.find(argv[0]) != references.end()) {
                 readers.push_back(references[argv[0]]);
+//                res += references[argv[0]] + "\n";
             } else {
-                if (assembly_command(command, res) == -2) {
-                    res += (numer) ? lines_cout.back()+ "\t" : "";
+                if (assembly_command(command, res) == -2)
                     res += command + "\n";
-                }
-                if (numer)
-                    lines_cout.pop_back();
             }
         }
         write_file(outputf, res);
         return 0;
     }
 
-    /*
-     * Check if we have any helper in line, such as origin, label, text or data section
-     * @param input line as string
-     * @return 0 if success
-     */
     int find_special_bts(std::string &line) {
         std::vector<std::string> argv;
         boost::algorithm::trim(line);
@@ -406,8 +378,6 @@ public:
             end = std::stoi(argv[1], 0, 8) - 1;
             std::string com = text ? "21" : "20";
             com += argv[1];
-            if (numer)
-                command_count =  std::stoi(argv[1]);
             references["org" + std::to_string(org_counter)] = com;
             line = "org" + std::to_string(org_counter++);
         } else if (!text && argv.size() == 2) {
@@ -431,11 +401,6 @@ public:
         return 0;
     }
 
-    /*
-     * Check if given line contains command, if yes - convert it into Kyiv code and write into result line
-     * @param input line as string, result with Kyiv codes as string
-     * @return 0 if success, -2 if contains data
-     */
     int assembly_command(std::string& command, std::string &result) {
         std::vector<std::string> argv;
         boost::split(argv,command,boost::is_any_of(" "), boost::algorithm::token_compress_off);
@@ -459,16 +424,10 @@ public:
             argv[0] = ua_instructions[argv[0]];
         else
             return -1;
-        result += (numer && !lines_cout.empty()) ? lines_cout.back() + "\t": "";
         result += boost::algorithm::join(argv, "") + "\n";
         return 0;
     }
 
-    /*
-     * Write result to given file (punched tape, or perfocard)
-     * @param file name as pointer to char array, result as string
-     * @return 0 if success
-     */
     int write_file(const char* filename, std::string &res) {
         std::ofstream infile(filename);
         if (!infile.is_open())
@@ -478,22 +437,17 @@ public:
         return 0;
     }
 
-    /*
-     * Execute all commands that we convert from assembly into Kyiv codes
-     * @param struct Kyiv_t, address from which we start execution
-     * @return 0 if success
-     */
     int execute(Kyiv_t & machine, const size_t start) {
         for (auto & i : readers) {
-            machine.kmem.write_memory(0001, stol(i, 0, 8));
+            machine.kmem[0001] = stol(i, 0, 8);
             machine.C_reg = 1;
             machine.execute_opcode();
         }
         machine.C_reg = start;
         while (machine.execute_opcode()) {
-            std::cout << "\tRES: " << machine.kmem.read_memory(0015) << " - " << word_to_number(machine.kmem.read_memory(0015)) * std::pow(2, -40) <<  std::endl;
+            std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
         }
-        std::cout << "RES: " << machine.kmem.read_memory(0015) << " - " << machine.kmem.read_memory(0015) * std::pow(2, -40) <<  std::endl;
+        std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
         return 0;
     }
 };
@@ -503,29 +457,30 @@ int main(int argc, char *argv[]) {
         std::cerr << "Wrong arg" << std::endl;
         return -1;
     }
-    disassembly_text("../ROM.txt", "../rom_k.txt");
-//    std::cout << std::setprecision(10);
 //    disassembly_text(outputf, "../h.txt");
 //    Assembly as;
-//    as.read_file("../commans.txt", false);
-//    Kyiv_t machine;
+//    as.read_file("../commans.txt");
+    Kyiv_t machine;
 //    as.execute(machine, 2);
 //    std::string result;
 //
 //    write_file(outputf, result);
 //
 //
-//    // machine.kmem[0001] = 0'12'0016'0003'0016ULL;
+//     machine.kmem[0001] = 0'12'0016'0003'0016ULL;
 //    machine.kmem[0001] = 0'21'0002'0010'0000ULL;
 //    machine.kmem[0012] = 549755813888;
 //    machine.kmem[0013] = 16;
 //    // machine.kmem[0016] = 9;
-//    machine.C_reg = 2;
+    machine.C_reg = 1;
 //
+    std::cout << std::setprecision(15);
 //
-//    while (machine.execute_opcode()) {
-//        std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
-//    }
-//    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
+    while (machine.execute_opcode()) {
+        std::cout << "\tRES: " << machine.kmem[0014] << " - " << std::to_string((word_to_number(machine.kmem[0014])* std::pow(2, -40) ))  <<  std::endl;
+        std::cout << "\tRES15: " << machine.kmem[0015] << " - " << std::to_string((word_to_number(machine.kmem[0015])* std::pow(2, -40) ))  <<  std::endl;
+        std::cout << "\tRES15: " << machine.kmem[0015] << " - " << machine.kmem[0015]* std::pow(2, -40)  <<  std::endl;
+    }
+    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
     return 0;
 }
