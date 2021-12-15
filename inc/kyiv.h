@@ -50,91 +50,86 @@ struct aproxy {
     word_t *mPtr;
 };
 
+class memory_error: public std::runtime_error{
+    addr_t err_addr;
+public:
+    memory_error(const std::string& err_descr_, addr_t addr_ ): std::runtime_error{err_descr_}, err_addr(addr_)
+    {}
+};
+
+class out_of_range_error: public memory_error {
+public:
+    out_of_range_error(const std::string& err_descr_, addr_t addr_ ): memory_error{err_descr_, addr_}
+    {}
+};
+
+class ROW_write_error: public memory_error {
+public:
+    ROW_write_error(const std::string& err_descr_, addr_t addr_ ): memory_error{err_descr_, addr_}
+    {}
+};
+
+
+class Kyiv_memory_t {
+private:
+    word_t mem_array_m[04000] = {0}; // 0AAAA -- octal constant};
+
+
+    //! Оператор може змінювати деякі значення  ROM
+    void internal_set_ROM_values(addr_t addr, word_t val){
+        // Перевірки додати, чи що? З пульта не всі змінюються. Або хай тим реалізація пульта займається?
+//        if (addr >= max_RAM_addr){
+//            throw out_of_range_error("Writing to ROM", addr);
+//        }
+        mem_array_m[addr] = val;
+    }
+
+public:
+    static constexpr addr_t min_addr =     0;
+    static constexpr addr_t min_RAM_addr = 0;
+    static constexpr addr_t min_ROM_addr = 03000;
+    static constexpr addr_t max_RAM_addr = min_ROM_addr; //! Напіввідкритий інтервал, як із вказівниками:
+    //! Коректні адреси: [min_RAM_addr, max_RAM_addr)
+    static constexpr addr_t max_ROM_addr = 04000;
+    static constexpr addr_t max_addr =     04000;
+
+    constexpr word_t read_memory(addr_t addr) const {
+        if(addr >= max_ROM_addr){
+            throw out_of_range_error("Wrong address while reading", addr);
+        }
+        return mem_array_m[addr];
+    }
+    void write_memory(addr_t addr, word_t val){
+        if(addr >= max_ROM_addr){
+            throw out_of_range_error("Wrong address while writing", addr);
+        } else if (addr >= max_RAM_addr){
+            throw out_of_range_error("Writing to ROM", addr);
+        }
+        mem_array_m[addr] = val;
+    }
+
+    void write_rom(addr_t addr, word_t val) {
+        if(addr >= max_ROM_addr){
+            throw out_of_range_error("Wrong address while writing", addr);
+        } else if (addr < min_ROM_addr){
+            throw out_of_range_error("Writing to RAM", addr);
+        }
+        mem_array_m[addr] = val;
+    }
+
+};
+
+
 class Kyiv_memory {
 private:
-    word_t k[04000] = {0, 0'01'0000'0011'0014ULL, 0'12'0016'0014'0015ULL,
-                       0'02'0015'0014'0015ULL, 0'11'0015'0012'0015ULL, 0'01'0014'0015'0014ULL, 0'05'0013'0015'0002ULL, 0'32'0000'0000'0000ULL, 8, 1099511627775, 549755813888, 16, 219902328832, 16, 43980464128};
+    word_t k[04000] = {0, 0'12'0004'0005'0007ULL, 0'02'0004'0005'0007ULL,
+                       100, 4, 5, 6, 7, 8, 1099511627775, 549755813888, 16, 219902328832, 16, 549755813888
+    };
 public:
     auto operator[](addr_t addres) {
         return aproxy(k[addres], addres);
     }
 
-};
-
-class Kyiv_magnetic_drum {
-private:
-    std::string file_name = "../magnetic_drum.txt";
-    std::pair<size_t, size_t> read_d, write_d = {0, 0};
-public:
-    word_t read_drum(addr3_t & addr3_shifted, Kyiv_memory & kmem) {
-        std::ifstream magnetic_drum;
-        magnetic_drum.open(file_name);
-
-        std::vector<std::string> data;
-        signed_word_t number;
-        std::string line;
-        int counter = 0;
-        int num_counter = 0;
-        bool flag;
-
-        while(magnetic_drum) {
-            std::getline(magnetic_drum, line);
-            if (counter == read_d.first) {
-                boost::split(data, line, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                for (size_t i = read_d.second; i < data.size(); i++) {
-                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
-                        flag = true;
-                        break;
-                    }
-                }
-            }
-
-        }
-//
-//        while(magnetic_drum){
-//            std::getline(magnetic_drum, line);
-//            if(counter == read_d.first){
-//                data = line.substr(read_d.second, line.size());
-//                boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-//                for(const auto& num : argv){
-//                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
-//                        flag = true;
-//                        break;
-//                    }
-//                    number = std::stoi(num);
-//                    if(number >= 0){
-//                        kmem[addr3_shifted.source_1 + num_counter] = number;
-//                    }else{
-//                        kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
-//                    }
-//                    num_counter ++;
-//                }
-//            }else if(counter > read_d.first){
-//                data = line;
-//                boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-//                for(const auto& num : argv){
-//                    if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
-//                        flag = true;
-//                        break;
-//                    }
-//                    number = std::stoi(num);
-//                    if(number >= 0){
-//                        kmem[addr3_shifted.source_1 + num_counter] = number;
-//                    }else{
-//                        kmem[addr3_shifted.source_1 + num_counter] = to_negative(std::abs(number));
-//                    }
-//                    num_counter ++;
-//                }
-//            }
-//            if(flag){
-//                break;
-//            }
-//            counter ++;
-//
-//        }
-        magnetic_drum.close();
-        return 0;
-    }
 };
 
 
@@ -148,6 +143,7 @@ struct Kyiv_t{
     // B_tumb is not bool because according to p. 163 Glushkov-Iushchenko it has 3 modes.
     // Maybe there is a better way to handle this?
     bool T_reg = false;
+    size_t h = 0;
 
 
     //! ! TODO: Пам'ять певне потрібно виділити в нову сутність -- клас, який зразу відповідатиме і за
@@ -155,7 +151,7 @@ struct Kyiv_t{
     //! Нульова адреса має завжди містити 0.
     //! Найпростіше, певне, буде створити свій клас, який перевизначає оператор [], і все це реалізовує.
     //! Тоді решта коду не потребуватиме зміни.
-    Kyiv_memory kmem;
+    Kyiv_memory_t kmem;
 
     //! TODO: Придумати адекватні мнемоніки
     enum arythm_operations_t{
@@ -200,9 +196,30 @@ struct Kyiv_t{
         opcode_write_magnetic_drum = 0'23,
     };
 
+    Kyiv_t() {
+        std::string rom_file = "../ROM.txt";
+        std::ifstream infile(rom_file);
+        std::string line;
+        while (std::getline(infile, line)) {
+            line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+            std::ostringstream str;
+            str << std::oct << line;
+            std::string data = str.str();
+            std::string address = data.substr(0, 4);
+            data = data.substr(4);
+            if (data.size() != 13 && data.size() != 14) {
+                continue;
+            }
+            if (data.size() != 14) {
+                data.insert(0, "0");
+            }
+            kmem.write_rom(std::stoi(address, 0, 8), std::stol(data, 0, 8));
+        }
+    }
+
     bool execute_opcode();
 
-    void opcode_flow_control(const addr3_t &addr3, opcode_t opcode);
+    void opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode, const addr3_t &addr3);
 
     void opcode_arythm(const addr3_t &addr3, opcode_t opcode);
 };
