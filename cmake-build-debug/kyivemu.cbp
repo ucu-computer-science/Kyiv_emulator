@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="kyivemu"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Boost-1.76.0\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_headers-1.76.0\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_program_options-1.76.0\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Widgets\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\;CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="kyivemu">
+				<Option output="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBOOST_ERROR_CODE_HEADER_ONLY"/>
+					<Add option="-DBOOST_ALL_NO_LIB"/>
+					<Add option="-DBOOST_PROGRAM_OPTIONS_DYN_LINK"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/include"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc"/>
+					<Add directory="/usr/include/qt"/>
+					<Add directory="/usr/include/qt/QtWidgets"/>
+					<Add directory="/usr/include/qt/QtGui"/>
+					<Add directory="/usr/include/qt/QtCore"/>
+					<Add directory="/usr/lib/qt/mkspecs/linux-g++"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 kyivemu"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="kyivemu/fast">
+				<Option output="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBOOST_ERROR_CODE_HEADER_ONLY"/>
+					<Add option="-DBOOST_ALL_NO_LIB"/>
+					<Add option="-DBOOST_PROGRAM_OPTIONS_DYN_LINK"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/include"/>
+					<Add directory="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc"/>
+					<Add directory="/usr/include/qt"/>
+					<Add directory="/usr/include/qt/QtWidgets"/>
+					<Add directory="/usr/include/qt/QtGui"/>
+					<Add directory="/usr/include/qt/QtCore"/>
+					<Add directory="/usr/lib/qt/mkspecs/linux-g++"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../include/c++/11.1.0/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 kyivemu/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="kyivemu_autogen">
+				<Option working_dir="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 kyivemu_autogen"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc/emulator/asm_disasm.h">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc/emulator/kyiv.h">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc/interface/mainwindow.h">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/main.cpp">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/asm_disasm.cpp">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/mainKyiv.cpp">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.cpp">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.ui">
+			<Option target="kyivemu"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/BoostDetectToolset-1.76.0.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Boost-1.76.0/BoostConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Boost-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Boost-1.76.0/BoostConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Boost-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_headers-1.76.0/boost_headers-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_headers-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_headers-1.76.0/boost_headers-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_headers-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_program_options-1.76.0/boost_program_options-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_program_options-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_program_options-1.76.0/boost_program_options-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_program_options-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_program_options-1.76.0/libboost_program_options-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_program_options-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/boost_program_options-1.76.0/libboost_program_options-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\boost_program_options-1.76.0\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5/Qt5Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5/Qt5ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5/Qt5ModuleLocation.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5GuiConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QComposePlatformInputContextPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEglFSEmulatorIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEglFSIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEglFSKmsEglDeviceIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEglFSKmsGbmIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEglFSX11IntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEvdevKeyboardPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEvdevMousePlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEvdevTabletPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QEvdevTouchScreenPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QGifPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QGtk3ThemePlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QICNSPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QICOPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QIbusPlatformInputContextPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QJp2Plugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QJpegPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QLibInputPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QLinuxFbIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QMinimalEglIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QMinimalIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QMngPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QOffscreenIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QPdfPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QSvgIconPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QSvgPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QTgaPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QTiffPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QTsLibPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QTuioTouchPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QVirtualKeyboardPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QVncIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWaylandEglPlatformIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWaylandIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWaylandXCompositeEglPlatformIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWaylandXCompositeGlxPlatformIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWbmpPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWebGLIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QWebpPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QXcbEglIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QXcbGlxIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QXcbIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Gui/Qt5Gui_QXdgDesktopPortalThemePlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Core/Qt5CoreConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Core/Qt5CoreConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Core/Qt5CoreConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/../../../../../../../../../usr/lib64/cmake/Qt5Core/Qt5CoreMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

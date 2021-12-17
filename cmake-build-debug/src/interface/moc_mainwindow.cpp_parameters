@@ -1,0 +1,5 @@
+-I/usr/include
+-I/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc
+-o
+/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/src/interface/moc_mainwindow.cpp
+/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.cpp
