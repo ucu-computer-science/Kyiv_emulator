@@ -514,16 +514,18 @@ int main(int argc, char *argv[]) {
 //    Assembly as;
 //    as.read_file("../commans.txt", false);
     Kyiv_t machine;
-    machine.kmem.write_memory(00002, 549755813888);
+    machine.kmem.write_memory(00002, 659706976665);
+//    machine.kmem.write_memory(00010, 659706976665);
+//    machine.kmem.write_memory(00004, 762123384786);
 //    machine.kmem.write_memory(00001, 1);
     std::cout <<  machine.kmem.read_memory(03067) << std::endl;
-    machine.C_reg = 03242;
+    machine.C_reg = 03116;
     while (machine.execute_opcode()) {
-        std::cout << "\tRES: " << word_to_number(machine.kmem.read_memory(00003)) << " - " << word_to_number(machine.kmem.read_memory(00003))  * std::pow(2, -40) <<  std::endl;
+        std::cout << "\tRES 0003: " << word_to_number(machine.kmem.read_memory(00003)) << " - " << word_to_number(machine.kmem.read_memory(00003))  * std::pow(2, -40) <<  std::endl;
 
     }
 
-    std::cout << "\tRES: " << word_to_number(machine.kmem.read_memory(00004)) << " - " << word_to_number(machine.kmem.read_memory(00004))  * std::pow(2, -40) <<  std::endl;
+    std::cout << "\tRES 0004: " << word_to_number(machine.kmem.read_memory(00004)) << " - " << word_to_number(machine.kmem.read_memory(00004))  * std::pow(2, -40) <<  std::endl;
 
 //    as.execute(machine, 2);
 //    std::string result;
