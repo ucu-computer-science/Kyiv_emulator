@@ -202,71 +202,59 @@ bool Kyiv_t::execute_opcode(){
             break;
 //==========================================================================================================
         case IO_operations_t::opcode_read_perfo_data:{
-            std::ifstream punch_cards;
-            std::ifstream heads;
-            std::string head;
-            std::string line;
-            std::string perfo;
-            std::vector<std::string> argv;
-            signed_word_t number;
+                std::ifstream punch_cards;
+                std::string line;
+                std::string perfo;
+                std::vector<std::string> argv;
+                signed_word_t number;
 
-            punch_cards.open("../punched_tape.txt");
-            heads.open("../heads.txt");
+                punch_cards.open("../../mem/punch_cards_in.txt");
 
-            std::getline(heads, head);
-//            int num = std::stoi(head);
-            size_t num = h;
-            int counter = 0;
-            int num_counter = 0;
-            bool flag = false;
+                int counter = 0;
+                int num_counter = 0;
+                bool flag;
 
-            while(punch_cards){
-                std::getline(punch_cards, line);
-                if(counter == num){
-                    perfo = line.substr(kmem.read_memory(addr3_shifted.destination), line.size());
-                    boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto & i : argv){
-                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
-                            flag = true;
-                            break;
+                while (punch_cards) {
+                    std::getline(punch_cards, line);
+                    if (counter == perfo_num) {
+                        perfo = line.substr(addr3_shifted.destination, line.size());
+                        boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto num : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stol(num);
+                            if(number >= 0){
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
+                            }else{
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
+                            }
+                            num_counter++;
                         }
-                        number = std::stol(i);
-                        if(number >= 0){
-                            kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
-                        }else{
-                            kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
+                    }else if(counter > num_counter){
+                        perfo = line;
+                        boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto num : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stoi(num);
+                            if (number >= 0) {
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
+                            } else {
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
+                            }
+                            num_counter ++;
                         }
-                        num_counter ++;
                     }
-                }else if(counter > num){
-                    perfo = line;
-                    boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
-                    for(auto & i : argv){
-                        if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
-                            flag = true;
-                            break;
-                        }
-                        number = std::stol(i);
-                        if(number >= 0){
-                            kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
-                        }else{
-                            kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
-                        }
-                        num_counter ++;
+                    if(flag == true){
+                        break;
                     }
+                    counter++;
                 }
-                if(flag){
-                    break;
-                }
-                counter ++;
-            }
-
-            h += counter;
-            punch_cards.close();
-            heads.close();
-
-            C_reg ++;
-            K_reg = kmem.read_memory(C_reg);
+                punch_cards.close();
         }
             break;
 
@@ -313,37 +301,25 @@ bool Kyiv_t::execute_opcode(){
                 }
             }
             h += com_counter;
-            ++C_reg;
         }
             break;
 
         case IO_operations_t::opcode_read_magnetic_drum:{
             std::ifstream magnetic_drum;
-            std::ifstream heads;
-            std::string head;
             std::string line;
             std::string data;
             std::vector<std::string> argv;
             signed_word_t number;
 
-            magnetic_drum.open("../magnetic_drum.txt");
-            heads.open("../heads.txt");
-
-            std::getline(heads, head);
-            std::getline(heads, head);
-            std::getline(heads, head);
-
-            int pos = head.find(',');
-            int coord_1 = std::stoi(head.substr(0, pos));
-            int coord_2 = std::stoi(head.substr(pos+1, head.size()));
+            magnetic_drum.open("../../mem/drum_in.txt");
 
             int counter = 0;
             int num_counter = 0;
             bool flag;
-            while(magnetic_drum){
+            while (magnetic_drum) {
                 std::getline(magnetic_drum, line);
-                if(counter == coord_1){
-                    data = line.substr(coord_2, line.size());
+                if(counter == drum_num_read){
+                    data = line.substr(drum_zone_read, line.size());
                     boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
                     for(const auto& num : argv){
                         if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
@@ -358,7 +334,7 @@ bool Kyiv_t::execute_opcode(){
                         }
                         num_counter ++;
                     }
-                }else if(counter > coord_1){
+                }else if(counter > drum_num_read){
                     data = line;
                     boost::split(argv, data, boost::is_any_of(" "), boost::algorithm::token_compress_off);
                     for(const auto& num : argv){
@@ -379,14 +355,9 @@ bool Kyiv_t::execute_opcode(){
                     break;
                 }
                 counter ++;
-
             }
 
             magnetic_drum.close();
-            heads.close();
-
-            C_reg = addr3_shifted.destination;
-            K_reg = kmem.read_memory(C_reg);
         }
             break;
 
@@ -407,6 +378,7 @@ bool Kyiv_t::execute_opcode(){
             K_reg = kmem.read_memory(C_reg);
         }
 
+
         case IO_operations_t::opcode_write_magnetic_drum:{
             std::ofstream myfile;
             myfile.open("../magnetic_drum.txt");
@@ -426,31 +398,13 @@ bool Kyiv_t::execute_opcode(){
             break;
 
         case IO_operations_t::opcode_init_magnetic_drum:{
-            std::ifstream headsin;
-            std::string result;
-            std::string line;
-
-            headsin.open("../heads.txt");
-
-            std::getline(headsin, result);
-            result += '\n';
-            std::getline(headsin, line);
-            if(addr3_shifted.source_1 == 0){
-                result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
-                std::getline(headsin, line);
-                result += line;
-            }else{
-                result += line;
-                result += '\n';
-                result += std::to_string(addr3_shifted.source_2) + ',' + std::to_string(addr3_shifted.destination) + '\n';
+            if (addr3_shifted.source_1 == 0) {
+                drum_num_read = addr3_shifted.source_2;
+                drum_zone_read = addr3_shifted.destination;
+            } else if (addr3_shifted.source_1 == 1) {
+                drum_num_write = addr3_shifted.source_2;
+                drum_zone_write = addr3_shifted.destination;
             }
-
-            headsin.close();
-
-            std::ofstream headsout;
-            headsout.open("../heads.txt");
-            headsout << result << std::endl;
-            headsout.close();
         }
             break;
 //==========================================================================================================
