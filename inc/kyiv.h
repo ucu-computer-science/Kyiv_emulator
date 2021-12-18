@@ -144,6 +144,12 @@ struct Kyiv_t{
     // Maybe there is a better way to handle this?
     bool T_reg = false;
     size_t h = 0;
+    
+    int perfo_num = 0;
+    int drum_num_read = 0;
+    int drum_zone_read = 0;
+    int drum_num_write = 0;
+    int drum_zone_write = 0;
 
 
     //! ! TODO: Пам'ять певне потрібно виділити в нову сутність -- клас, який зразу відповідатиме і за
