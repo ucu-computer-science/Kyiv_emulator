@@ -45,6 +45,24 @@ It demonstrates the inner work of "Kyiv" at the time of command execution.
 
 2. Control panel
 
+It emulates the work of the control panel, from which it is possible to change the settings of the machine, change ROM and execute an own command.
+
+There is an upper and lower part of the panel:
+
+1. The upper part contains the set codes - three cells 03000-03002 of ROM which may be chosen by setting the first button on and choosing the values for each digit (in binary-octal) of three buttons.
+2. The lower part contains some triggers, tumblers, addresses and command:
+- the first row contains buttons for a command. If the first button is checked, it is possible to execute the chosen command (in binary-octal).
+- the trigger of emergency stop is checked when the machine works in the usual state, where if there is a stop in "Kyiv", T register is enabled and one command is skipped. Otherwise T register remains the same, and the two commands are skipped.
+- The next trigger is disabled when there is a need to block command counter register (for example, to execute the same command many times for debugging).
+- The trigger "Пч" is used for print but is currently not implemented.
+- The next trigger blocks registers of address, loop and return.
+- The trigger "Переск - ОСТ" blocks stop, so that there never occurs stop of machine when this trigger is enabled, even when it should occur in normal mode.
+- Tumbler "Авт-Цикл-Такт" is set to "Авт" when machine works in its usual automatic mode, "Цикл" - when each command is executed one by one, and "Такт" when each command is executed by 4 tats one by one. Each new step occurs when the key "K" is pressed.
+- Tumbler "Норм раб - Ввод - Уст с ПУ" is set to "Норм раб" when the machin works in a normal mode, "Ввод" - when the user wants to change the content of the set codes in the upper panel or the command in the lower panel, and "Уст с ПУ" to load these changes into machine (execute the command or save set codes to ROM).
+- The next trigger sets all registers to zero.
+- Button "Останов" stops the machine if the stop block is disabled.
+- Tumbler "Нейтральное - По N команды - По III адресу" is set to "Нейтральное" when the normal stop works (during program execution), "По N команды" - machine stops when it executes the same command as on the lower panel, and "По III адресу" - machine stops when the executed command's third address is the same as in the nearby cells.
+
 ![image](https://user-images.githubusercontent.com/50978411/149560985-c8facf84-4fe7-4b3a-90f7-4b98925563c2.png)
 
 3. Set codes of ROM (cells 03000 - 03007)
