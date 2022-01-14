@@ -27,6 +27,18 @@ GUI consists of such main parts:
 
 1. Signalization panel
 
+It demonstrates the inner work of "Kyiv" at the time of command execution.
+1. The first row shows binary result of the command execution - data that is written to the third address of the command.
+2. The second row shows the content of the number register - the number that is transported from or to a magnetic drum. Works with the commands 023 (write magnetic deum) or 024 (read magnetic drum).
+3. The left part of third and forth rows (KOп) is a set of bulbs that are responsible for the executed opcode. When a command is executed, one of 29 bulbs lights up.
+4. The bulb "Тр Выб" ligths up if there is an exchange with punch tape, punch card or magnetic drum.
+5. The middle part of the third row is the indicator of the address register - it works in the takt mode and shows the address of a certain takt's address.
+6. The middle part of the forth row shows the content of the return register.
+7. The bulp "Тр Пр" light up if there is the command of jumps if the jump is made.
+8. The last part of the third row is meant for takt control of "Kyiv" but it is currently not implemented.
+9. The last part of the forth row shows the content of the command counter register.
+10. The fifth row shows the content of the command register in the binary-octal mode, usual for "Kyiv" 
+
 ![image](https://user-images.githubusercontent.com/50978411/149560770-1e69b03f-a726-4977-bf7f-51dc73fdf1d0.png)
 
 2. Control panel
