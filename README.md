@@ -23,8 +23,29 @@ $ ./kyivemu
 
 ## GUI Usage
 
+GUI consists of such main parts:
+
+1. Signalization panel
+
 ![image](https://user-images.githubusercontent.com/50978411/149560770-1e69b03f-a726-4977-bf7f-51dc73fdf1d0.png)
 
+2. Control panel
+
+![image](https://user-images.githubusercontent.com/50978411/149560985-c8facf84-4fe7-4b3a-90f7-4b98925563c2.png)
+
+3. Set codes of ROM (cells 03000 - 03007)
+
+![image](https://user-images.githubusercontent.com/50978411/149561110-79695334-4dda-49bd-8e1a-2135b614bfd4.png)
+
+4. Assembly input / opening from file
+
+![image](https://user-images.githubusercontent.com/50978411/149561230-f6c63bc9-6052-4b58-bd3d-e18417d3dccc.png)
+
+5. Three magnetic drums
+
+![image](https://user-images.githubusercontent.com/50978411/149561296-743bcaf5-944d-4f77-9de5-d18570147177.png)
+
+6. Punch cards
 
 ## Authors
 * [Anna Korabliova](https://github.com/anika02)
