@@ -57,10 +57,10 @@ RM = /opt/clion/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator
+CMAKE_SOURCE_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug
+CMAKE_BINARY_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

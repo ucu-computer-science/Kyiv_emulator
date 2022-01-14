@@ -234,7 +234,6 @@
 #define __cpp_digit_separators 201309L
 #define __ELF__ 1
 #define __GCC_ASM_FLAG_OUTPUTS__ 1
-#define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define __UINT32_TYPE__ unsigned int
 #define __FLT_RADIX__ 2
 #define __INT_LEAST16_TYPE__ short int

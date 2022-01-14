@@ -1,6 +1,6 @@
-/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/FA2BWFNSR3/moc_mainwindow.cpp: /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc/interface/mainwindow.h \
-  /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/moc_predefs.h \
-  /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/inc/emulator/kyiv.h \
+/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/FA2BWFNSR3/moc_mainwindow.cpp: /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/inc/interface/mainwindow.h \
+  /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/moc_predefs.h \
+  /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/inc/emulator/kyiv.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -597,6 +597,7 @@
   /usr/include/c++/11.1.0/bits/exception.h \
   /usr/include/c++/11.1.0/bits/exception_defines.h \
   /usr/include/c++/11.1.0/bits/exception_ptr.h \
+  /usr/include/c++/11.1.0/bits/fstream.tcc \
   /usr/include/c++/11.1.0/bits/functexcept.h \
   /usr/include/c++/11.1.0/bits/functional_hash.h \
   /usr/include/c++/11.1.0/bits/hash_bytes.h \
@@ -704,6 +705,7 @@
   /usr/include/c++/11.1.0/ext/numeric_traits.h \
   /usr/include/c++/11.1.0/ext/string_conversions.h \
   /usr/include/c++/11.1.0/ext/type_traits.h \
+  /usr/include/c++/11.1.0/fstream \
   /usr/include/c++/11.1.0/functional \
   /usr/include/c++/11.1.0/initializer_list \
   /usr/include/c++/11.1.0/iomanip \
@@ -752,8 +754,10 @@
   /usr/include/c++/11.1.0/utility \
   /usr/include/c++/11.1.0/vector \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/atomic_word.h \
+  /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/basic_file.h \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/c++allocator.h \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/c++io.h \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/c++locale.h \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/cpu_defines.h \
   /usr/include/c++/11.1.0/x86_64-pc-linux-gnu/bits/ctype_base.h \
@@ -775,11 +779,13 @@
   /usr/include/linux/limits.h \
   /usr/include/locale.h \
   /usr/include/pthread.h \
+  /usr/include/qt/QtCore/QTimer \
   /usr/include/qt/QtCore/qalgorithms.h \
   /usr/include/qt/QtCore/qarraydata.h \
   /usr/include/qt/QtCore/qatomic.h \
   /usr/include/qt/QtCore/qatomic_cxx11.h \
   /usr/include/qt/QtCore/qbasicatomic.h \
+  /usr/include/qt/QtCore/qbasictimer.h \
   /usr/include/qt/QtCore/qbytearray.h \
   /usr/include/qt/QtCore/qbytearraylist.h \
   /usr/include/qt/QtCore/qchar.h \
@@ -799,6 +805,7 @@
   /usr/include/qt/QtCore/qline.h \
   /usr/include/qt/QtCore/qlist.h \
   /usr/include/qt/QtCore/qlogging.h \
+  /usr/include/qt/QtCore/qmap.h \
   /usr/include/qt/QtCore/qmargins.h \
   /usr/include/qt/QtCore/qmetatype.h \
   /usr/include/qt/QtCore/qnamespace.h \
@@ -827,7 +834,9 @@
   /usr/include/qt/QtCore/qsysinfo.h \
   /usr/include/qt/QtCore/qsystemdetection.h \
   /usr/include/qt/QtCore/qtcore-config.h \
+  /usr/include/qt/QtCore/qtimer.h \
   /usr/include/qt/QtCore/qtypeinfo.h \
+  /usr/include/qt/QtCore/qvariant.h \
   /usr/include/qt/QtCore/qvarlengtharray.h \
   /usr/include/qt/QtCore/qvector.h \
   /usr/include/qt/QtCore/qversiontagging.h \
@@ -843,19 +852,34 @@
   /usr/include/qt/QtGui/qmatrix.h \
   /usr/include/qt/QtGui/qpaintdevice.h \
   /usr/include/qt/QtGui/qpalette.h \
+  /usr/include/qt/QtGui/qpen.h \
   /usr/include/qt/QtGui/qpixelformat.h \
   /usr/include/qt/QtGui/qpixmap.h \
   /usr/include/qt/QtGui/qpolygon.h \
   /usr/include/qt/QtGui/qregion.h \
   /usr/include/qt/QtGui/qrgb.h \
   /usr/include/qt/QtGui/qrgba64.h \
+  /usr/include/qt/QtGui/qtextcursor.h \
+  /usr/include/qt/QtGui/qtextformat.h \
+  /usr/include/qt/QtGui/qtextoption.h \
   /usr/include/qt/QtGui/qtgui-config.h \
   /usr/include/qt/QtGui/qtguiglobal.h \
   /usr/include/qt/QtGui/qtransform.h \
   /usr/include/qt/QtGui/qwindowdefs.h \
+  /usr/include/qt/QtWidgets/QLCDNumber \
+  /usr/include/qt/QtWidgets/QLineEdit \
   /usr/include/qt/QtWidgets/QMainWindow \
+  /usr/include/qt/QtWidgets/QRadioButton \
+  /usr/include/qt/QtWidgets/QSlider \
+  /usr/include/qt/QtWidgets/qabstractbutton.h \
+  /usr/include/qt/QtWidgets/qabstractslider.h \
+  /usr/include/qt/QtWidgets/qframe.h \
+  /usr/include/qt/QtWidgets/qlcdnumber.h \
+  /usr/include/qt/QtWidgets/qlineedit.h \
   /usr/include/qt/QtWidgets/qmainwindow.h \
+  /usr/include/qt/QtWidgets/qradiobutton.h \
   /usr/include/qt/QtWidgets/qsizepolicy.h \
+  /usr/include/qt/QtWidgets/qslider.h \
   /usr/include/qt/QtWidgets/qtabwidget.h \
   /usr/include/qt/QtWidgets/qtwidgets-config.h \
   /usr/include/qt/QtWidgets/qtwidgetsglobal.h \

@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[4];
-    char stringdata0[57];
+    QByteArrayData data[15];
+    char stringdata0[298];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,13 +33,30 @@ struct qt_meta_stringdata_MainWindow_t {
 static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
-QT_MOC_LITERAL(1, 11, 19), // "on_uoButton_clicked"
-QT_MOC_LITERAL(2, 31, 0), // ""
-QT_MOC_LITERAL(3, 32, 24) // "on_ostanovButton_clicked"
+QT_MOC_LITERAL(1, 11, 28), // "on_openDisasmFileBtn_clicked"
+QT_MOC_LITERAL(2, 40, 0), // ""
+QT_MOC_LITERAL(3, 41, 22), // "on_assemblyBtn_clicked"
+QT_MOC_LITERAL(4, 64, 21), // "on_saveROMBtn_clicked"
+QT_MOC_LITERAL(5, 86, 19), // "on_uoButton_clicked"
+QT_MOC_LITERAL(6, 106, 24), // "on_ostanovButton_clicked"
+QT_MOC_LITERAL(7, 131, 17), // "on_blockC_clicked"
+QT_MOC_LITERAL(8, 149, 17), // "on_blockA_clicked"
+QT_MOC_LITERAL(9, 167, 21), // "onSetFromPult_clicked"
+QT_MOC_LITERAL(10, 189, 21), // "onOstanovPult_clicked"
+QT_MOC_LITERAL(11, 211, 23), // "on_blockOstanov_clicked"
+QT_MOC_LITERAL(12, 235, 24), // "on_avar_ost_trig_clicked"
+QT_MOC_LITERAL(13, 260, 18), // "onSetSpeed_clicked"
+QT_MOC_LITERAL(14, 279, 18) // "on_KButton_clicked"
 
     },
-    "MainWindow\0on_uoButton_clicked\0\0"
-    "on_ostanovButton_clicked"
+    "MainWindow\0on_openDisasmFileBtn_clicked\0"
+    "\0on_assemblyBtn_clicked\0on_saveROMBtn_clicked\0"
+    "on_uoButton_clicked\0on_ostanovButton_clicked\0"
+    "on_blockC_clicked\0on_blockA_clicked\0"
+    "onSetFromPult_clicked\0onOstanovPult_clicked\0"
+    "on_blockOstanov_clicked\0"
+    "on_avar_ost_trig_clicked\0onSetSpeed_clicked\0"
+    "on_KButton_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,7 +66,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -57,10 +74,32 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   24,    2, 0x0a /* Public */,
-       3,    0,   25,    2, 0x0a /* Public */,
+       1,    0,   79,    2, 0x0a /* Public */,
+       3,    0,   80,    2, 0x0a /* Public */,
+       4,    0,   81,    2, 0x0a /* Public */,
+       5,    0,   82,    2, 0x0a /* Public */,
+       6,    0,   83,    2, 0x0a /* Public */,
+       7,    0,   84,    2, 0x0a /* Public */,
+       8,    0,   85,    2, 0x0a /* Public */,
+       9,    0,   86,    2, 0x0a /* Public */,
+      10,    0,   87,    2, 0x0a /* Public */,
+      11,    0,   88,    2, 0x0a /* Public */,
+      12,    0,   89,    2, 0x0a /* Public */,
+      13,    0,   90,    2, 0x0a /* Public */,
+      14,    0,   91,    2, 0x0a /* Public */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -73,8 +112,19 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<MainWindow *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->on_uoButton_clicked(); break;
-        case 1: _t->on_ostanovButton_clicked(); break;
+        case 0: _t->on_openDisasmFileBtn_clicked(); break;
+        case 1: _t->on_assemblyBtn_clicked(); break;
+        case 2: _t->on_saveROMBtn_clicked(); break;
+        case 3: _t->on_uoButton_clicked(); break;
+        case 4: _t->on_ostanovButton_clicked(); break;
+        case 5: _t->on_blockC_clicked(); break;
+        case 6: _t->on_blockA_clicked(); break;
+        case 7: _t->onSetFromPult_clicked(); break;
+        case 8: _t->onOstanovPult_clicked(); break;
+        case 9: _t->on_blockOstanov_clicked(); break;
+        case 10: _t->on_avar_ost_trig_clicked(); break;
+        case 11: _t->onSetSpeed_clicked(); break;
+        case 12: _t->on_KButton_clicked(); break;
         default: ;
         }
     }
@@ -110,13 +160,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 13)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 2;
+        _id -= 13;
     }
     return _id;
 }

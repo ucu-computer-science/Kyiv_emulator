@@ -53,10 +53,10 @@ RM = /opt/clion/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator
+CMAKE_SOURCE_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug
+CMAKE_BINARY_DIR = /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/kyivemu.dir/depend.make
@@ -68,92 +68,92 @@ include CMakeFiles/kyivemu.dir/flags.make
 
 CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o: CMakeFiles/kyivemu.dir/flags.make
 CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o: kyivemu_autogen/mocs_compilation.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp
 
 CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp > CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp > CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp -o CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.s
-
-CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o: CMakeFiles/kyivemu.dir/flags.make
-CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o: ../src/emulator/mainKyiv.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/mainKyiv.cpp
-
-CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/mainKyiv.cpp > CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i
-
-CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/mainKyiv.cpp -o CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s
-
-CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o: CMakeFiles/kyivemu.dir/flags.make
-CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o: ../src/emulator/asm_disasm.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/asm_disasm.cpp
-
-CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/asm_disasm.cpp > CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i
-
-CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/emulator/asm_disasm.cpp -o CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/kyivemu_autogen/mocs_compilation.cpp -o CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o: CMakeFiles/kyivemu.dir/flags.make
 CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o: ../src/interface/mainwindow.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/interface/mainwindow.cpp
 
 CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.cpp > CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/interface/mainwindow.cpp > CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.i
 
 CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/src/interface/mainwindow.cpp -o CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/interface/mainwindow.cpp -o CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.s
 
 CMakeFiles/kyivemu.dir/main.cpp.o: CMakeFiles/kyivemu.dir/flags.make
 CMakeFiles/kyivemu.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kyivemu.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/main.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/kyivemu.dir/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/main.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/main.cpp
 
 CMakeFiles/kyivemu.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/main.cpp > CMakeFiles/kyivemu.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/main.cpp > CMakeFiles/kyivemu.dir/main.cpp.i
 
 CMakeFiles/kyivemu.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/main.cpp -o CMakeFiles/kyivemu.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/main.cpp -o CMakeFiles/kyivemu.dir/main.cpp.s
+
+CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o: CMakeFiles/kyivemu.dir/flags.make
+CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o: ../src/emulator/asm_disasm.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/asm_disasm.cpp
+
+CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/asm_disasm.cpp > CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.i
+
+CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/asm_disasm.cpp -o CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.s
+
+CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o: CMakeFiles/kyivemu.dir/flags.make
+CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o: ../src/emulator/mainKyiv.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o -c /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/mainKyiv.cpp
+
+CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/mainKyiv.cpp > CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.i
+
+CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/src/emulator/mainKyiv.cpp -o CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.s
 
 # Object files for target kyivemu
 kyivemu_OBJECTS = \
 "CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o" \
-"CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o" \
-"CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o" \
 "CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o" \
-"CMakeFiles/kyivemu.dir/main.cpp.o"
+"CMakeFiles/kyivemu.dir/main.cpp.o" \
+"CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o" \
+"CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o"
 
 # External object files for target kyivemu
 kyivemu_EXTERNAL_OBJECTS =
 
 kyivemu: CMakeFiles/kyivemu.dir/kyivemu_autogen/mocs_compilation.cpp.o
-kyivemu: CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o
-kyivemu: CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o
 kyivemu: CMakeFiles/kyivemu.dir/src/interface/mainwindow.cpp.o
 kyivemu: CMakeFiles/kyivemu.dir/main.cpp.o
+kyivemu: CMakeFiles/kyivemu.dir/src/emulator/asm_disasm.cpp.o
+kyivemu: CMakeFiles/kyivemu.dir/src/emulator/mainKyiv.cpp.o
 kyivemu: CMakeFiles/kyivemu.dir/build.make
 kyivemu: /usr/lib/libboost_program_options.so.1.76.0
 kyivemu: /usr/lib/libQt5Widgets.so.5.15.2
 kyivemu: /usr/lib/libQt5Gui.so.5.15.2
 kyivemu: /usr/lib/libQt5Core.so.5.15.2
 kyivemu: CMakeFiles/kyivemu.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable kyivemu"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable kyivemu"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kyivemu.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -165,6 +165,6 @@ CMakeFiles/kyivemu.dir/clean:
 .PHONY : CMakeFiles/kyivemu.dir/clean
 
 CMakeFiles/kyivemu.dir/depend:
-	cd /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug /home/olya/study/programming/poc/kyiv/web2/web_kyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles/kyivemu.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug /home/olya/study/programming/poc/kyiv/web2/web_kyiv/new_web/kyiv_with_asm/Kyiv_emulator/cmake-build-debug/CMakeFiles/kyivemu.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/kyivemu.dir/depend
 
