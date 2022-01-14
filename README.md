@@ -49,7 +49,7 @@ It emulates the work of the control panel, from which it is possible to change t
 
 There is an upper and lower part of the panel:
 
-1. The upper part contains the set codes - three cells 03000-03002 of ROM which may be chosen by setting the first button on and choosing the values for each digit (in binary-octal) of three buttons.
+1. The upper part contains some of the set codes - three cells 03000-03002 of ROM which may be chosen by setting the first button on and choosing the values for each digit (in binary-octal) of three buttons.
 2. The lower part contains some triggers, tumblers, addresses and command:
 - the first row contains buttons for a command. If the first button is checked, it is possible to execute the chosen command (in binary-octal).
 - the trigger of emergency stop is checked when the machine works in the usual state, where if there is a stop in "Kyiv", T register is enabled and one command is skipped. Otherwise T register remains the same, and the two commands are skipped.
@@ -67,9 +67,16 @@ There is an upper and lower part of the panel:
 
 3. Set codes of ROM (cells 03000 - 03007)
 
+It contains the set codes - eight cells 03000-03007 of ROM. By default contains zeros. If one of the cells is chosen on the control panel, machine works with it, otherwise - with the cell from here.
+
 ![image](https://user-images.githubusercontent.com/50978411/149561110-79695334-4dda-49bd-8e1a-2135b614bfd4.png)
 
 4. Assembly input / opening from file
+
+It contains two parts:
+
+1. The place for assember code. It may be entered directly in the field or chosen from text file using the below button.
+2. The place for assembled code. It is impossible to write there, it only shows the "Kyiv" direct commands from the assembler code after clicking on button "Assembly".
 
 ![image](https://user-images.githubusercontent.com/50978411/149561230-f6c63bc9-6052-4b58-bd3d-e18417d3dccc.png)
 
