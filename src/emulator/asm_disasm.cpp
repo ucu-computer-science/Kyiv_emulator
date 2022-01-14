@@ -327,12 +327,15 @@ int Assembly::read_file(const std::string& filename, bool numerate=false) {
     command_count = 0;
     org_counter = 0;
     numer = numerate;
-
+    std::cout << "reading1" << std::endl;
     std::ifstream infile(filename);
     std::string line;
     std::vector<std::string> commands;
+    std::cout << "reading2" << std::endl;
 
     while (std::getline(infile, line)) {
+        std::cout << line << std::endl;
+
         if (line.find(';') != std::string::npos)
             line.erase(line.find_first_of(';')); // remove comment
         if (!line.empty() && find_special_bts(line) == 0) {
@@ -346,11 +349,17 @@ int Assembly::read_file(const std::string& filename, bool numerate=false) {
             end++;
         }
     }
+    std::cout << "reading4" << std::endl;
+
     std::ostringstream oct;
     oct << std::setw(4) << std::setfill('0') << std::oct << end;
+    std::cout << "reading5" << std::endl;
+
     references["org" + std::to_string(org_counter-1)] += oct.str() + "0000";
     infile.close();
     std::string res;
+    std::cout << "reading6" << std::endl;
+
     for (auto & command : commands) {
         std::vector<std::string> argv;
         boost::split(argv,command,boost::is_any_of(" "), boost::algorithm::token_compress_off);
@@ -365,6 +374,8 @@ int Assembly::read_file(const std::string& filename, bool numerate=false) {
                 lines_cout.pop_back();
         }
     }
+    std::cout << "reading7" << std::endl;
+
     write_file(outputf, res);
     return 0;
 }
@@ -395,7 +406,7 @@ int Assembly::find_special_bts(std::string &line) {
         std::string com = text ? "21" : "20";
         com += argv[1];
         if (numer)
-            command_count =  std::stoi(argv[1]);
+            command_count = std::stoi(argv[1]);
         references["org" + std::to_string(org_counter)] = com;
         line = "org" + std::to_string(org_counter++);
     } else if (!text && argv.size() == 2) {
@@ -406,8 +417,10 @@ int Assembly::find_special_bts(std::string &line) {
     } else if (!text) {
         if (stoi(argv[0]) == 1)
             line = "1099511627775";
-        else
-            line = std::to_string( (int64_t) (stof(argv[0]) * std::pow(2, 40)));
+        else {
+            line = std::to_string((int64_t) (std::stof(argv[0]) * std::pow(2, 40)));
+            std::cout << "MEGA HYI: " << line << std::endl;
+        }
 
     } else if (text && argv.size() == 1) {
         std::ostringstream oct;
@@ -472,8 +485,11 @@ int Assembly::write_file(const char* filename, std::string &res) {
  * @return 0 if success
  */
 int Assembly::execute(Kyiv_t & machine, const size_t start) {
+    std::cout << "asm" << std::endl;
     for (auto & i : readers) {
+        std::cout << "asmloop" << std::endl;
         machine.kmem.write_memory(0001, stol(i, 0, 8));
+        std::cout << "asmloop2" << std::endl;
         machine.C_reg = 1;
         machine.execute_opcode();
     }
@@ -481,7 +497,7 @@ int Assembly::execute(Kyiv_t & machine, const size_t start) {
     while (machine.execute_opcode()) {
         std::cout << "\tRES: " << machine.kmem.read_memory(0015) << " - " << word_to_number(machine.kmem.read_memory(0015)) * std::pow(2, -40) <<  std::endl;
     }
-    std::cout << "RES: " << machine.kmem.read_memory(0015) << " - " << machine.kmem.read_memory(0015) * std::pow(2, -40) <<  std::endl;
+    std::cout << "RES: " << machine.kmem.read_memory(0003) << " - " << machine.kmem.read_memory(0003) * std::pow(2, -40) <<  std::endl;
     return 0;
 };
 

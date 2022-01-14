@@ -154,7 +154,7 @@ struct Kyiv_t{
     //! Увага, ми біти нумеруємо з нуля, вони - з 1, тому 40 = 41-1 і т.д.
 
     //! TODO: Які вони там значення при включенні мали? Як це керувалося?
-    uint64_t C_reg = 0, K_reg = 0, P_reg = 0, Loop_reg = 0, A_reg = 0, B_tumb = 3, work_state = 3;
+    uint64_t C_reg = 0, K_reg = 0, P_reg = 0, Loop_reg = 0, A_reg = 0, B_tumb = 3, work_state = 3, ostanov_state = 3;
     // B_tumb is not bool because according to p. 163 Glushkov-Iushchenko it has 3 modes.
     // Maybe there is a better way to handle this?
     bool T_reg = false;
@@ -230,24 +230,24 @@ struct Kyiv_t{
     };
 
     Kyiv_t() {
-        std::string rom_file = "../../ROM.txt";
+        std::string rom_file = "../ROM.txt";
         std::ifstream infile(rom_file);
-//        std::string line;
-//        while (std::getline(infile, line)) {
-//            line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
-//            std::ostringstream str;
-//            str << std::oct << line;
-//            std::string data = str.str();
-//            std::string address = data.substr(0, 4);
-//            data = data.substr(4);
-//            if (data.size() != 13 && data.size() != 14) {
-//                continue;
-//            }
-//            if (data.size() != 14) {
-//                data.insert(0, "0");
-//            }
-//            kmem.write_rom(std::stoi(address, 0, 8), std::stol(data, 0, 8));
-//        }
+        std::string line;
+        while (std::getline(infile, line)) {
+            line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+            std::ostringstream str;
+            str << std::oct << line;
+            std::string data = str.str();
+            std::string address = data.substr(0, 4);
+            data = data.substr(4);
+            if (data.size() != 13 && data.size() != 14) {
+                continue;
+            }
+            if (data.size() != 14) {
+                data.insert(0, "0");
+            }
+            kmem.write_rom(std::stoi(address, 0, 8), std::stol(data, 0, 8));
+        }
     }
 
     opcode_t get_opcode(bool norm_work=true);

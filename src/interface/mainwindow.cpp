@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
     auto *panelAndCode = new QHBoxLayout();
     auto *mainLay = new QVBoxLayout();
 
+    QLocale curLocale(QLocale("C"));
+    QLocale::setDefault(curLocale);
+    std::setlocale(LC_ALL, "C");
+
 
 
     for (int row = 0; row < 7; row++) {
@@ -929,13 +933,18 @@ void MainWindow::on_openDisasmFileBtn_clicked() {
 }
 
 void MainWindow::on_assemblyBtn_clicked() {
+    std::cout << "start" << std::endl;
     auto *codeArea = qobject_cast<QTextEdit *>(sender()->parent()->children().at(1));
     if (codeArea->toPlainText().isEmpty()) {
         return;
     }
+    std::cout << "start1" << std::endl;
+
     auto *asCodeArea = qobject_cast<QTextEdit *>(sender()->parent()->children().at(2));
 
     QFile tempDisasm("../tempDisasm.txt");
+    std::cout << "start2" << std::endl;
+
     if (tempDisasm.open(QFile::ReadWrite | QFile::Truncate)) {
         QTextStream stream(&tempDisasm);
         stream << codeArea->toPlainText();
@@ -944,9 +953,11 @@ void MainWindow::on_assemblyBtn_clicked() {
         std::cout << "Unable to open disasm file";
     }
     tempDisasm.close();
+    std::cout << "start4" << std::endl;
 
     Assembly as;
     as.read_file("../tempDisasm.txt", false);
+    std::cout << "start5" << std::endl;
 
     QFile tempAsm(outputf);
     if (tempAsm.open(QFile::ReadOnly)) {
@@ -955,6 +966,9 @@ void MainWindow::on_assemblyBtn_clicked() {
     } else {
         std::cout << "Unable to open asm file";
     }
+    std::cout << "start6" << std::endl;
+
+    as.execute(machine, 0005);
     tempAsm.close();
 }
 
@@ -1064,6 +1078,7 @@ void MainWindow::onOstanovPult_clicked() {
     auto *sld = qobject_cast<QSlider *>(sender());
     qDebug() << sld->value();
     int pos = sld->value();
+    machine.ostanov_state = pos;
     machine.B_tumb = pos;
     if (pos == 1) { // by third address
         machine.ostanovCommand = 0;
