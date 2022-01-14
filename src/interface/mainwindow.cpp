@@ -10,7 +10,15 @@
 #include <QDebug>
 #include <QTimer>
 #include "emulator/kyiv.h"
+#include "emulator/asm_disasm.h"
 #include <unistd.h>
+#include <QSlider>
+#include <QSpinBox>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QTextEdit>
+#include <QFileDialog>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,14 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Kyiv_t machine;
-
-    setWindowTitle("Панель сигналізації & управління");
+    setWindowTitle("ЕОМ \"Київ\"");
     auto *scrollArea=new QScrollArea(this);
     auto *widget=new QWidget;
+    auto *kyivLay = new QVBoxLayout();
+    auto *panelAndCode = new QHBoxLayout();
     auto *mainLay = new QVBoxLayout();
 
-    QVector<QVector<QRadioButton*>> signalization;
+
 
     for (int row = 0; row < 7; row++) {
         QVector<QRadioButton*> rowButtons;
@@ -53,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
             radioRowButton->setChecked(0);
             rowButtons.push_back(radioRowButton);
         }
-        signalization.push_back(rowButtons);
+        machine.signalization.push_back(rowButtons);
     }
 
 
@@ -72,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
             label = QString::number(43 - i);
         }
         text -> setText(label);
-        radioLay->addWidget(signalization[0][i]);
+        radioLay->addWidget(machine.signalization[0][i]);
         radioLay->addWidget(text);
         row1 -> addItem(radioLay);
     }
@@ -87,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout * radioLay1 = new QVBoxLayout();
     QLabel *text = new QLabel();
     text -> setText("+");
-    radioLay1->addWidget(signalization[1][0]);
+    radioLay1->addWidget(machine.signalization[1][0]);
     radioLay1->addWidget(text);
     row2 -> addItem(radioLay1);
 
@@ -104,12 +112,12 @@ MainWindow::MainWindow(QWidget *parent)
     row2 -> addItem(radioLay2);
 
     QList<QString> texts;
-    texts = {"СпК", "Ср1", "Ср2", "Н", "Ц", "", "/xor", "", "Л->", "V", "Л", "Ср3", "~", "В", "", "", "П3"};
+    texts = {"СпК", "Ср1", "Ср2", "|-|", "Ц+", "X", "⮾", ":", "Л->", "v", "^", "Ср3", "≅", "В1", "", "", "", "П3"};
 
     for (int i = 10; i > 0; i--) {
         texts.append(QString::number(i));
     }
-    for (int i = 5; i > 0; i--) {
+    for (int i = 4; i > 0; i--) {
         texts.append("");
     }
 
@@ -117,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent)
     texts.append("вз1");
     texts.append("ива2");
     texts.append("вз2");
-    texts.append("икол");
+    texts.append("икоп");
     texts.append("ива3");
     texts.append("вз3");
     texts.append("ива4");
@@ -129,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
         QString label;
         label = texts[i];
         text -> setText(label);
-        radioLay->addWidget(signalization[1][i+1]);
+        radioLay->addWidget(machine.signalization[1][i+1]);
         radioLay->addWidget(text);
         row2 -> addItem(radioLay);
     }
@@ -150,9 +158,9 @@ MainWindow::MainWindow(QWidget *parent)
         QString label;
         label = texts3[i];
         text -> setText(label);
-        radioLay->addWidget(signalization[2][i]);
+        radioLay->addWidget(machine.signalization[2][i]);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[3][i]);
+        radioLay->addWidget(machine.signalization[3][i]);
         row3 -> addItem(radioLay);
     }
 
@@ -175,7 +183,7 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel *text3_3 = new QLabel();
     text3_3 -> setText("Выб");
     radioLay4 -> addWidget(text3_3);
-    radioLay4->addWidget(signalization[2][16]);
+    radioLay4->addWidget(machine.signalization[2][16]);
     radioLay4 -> addWidget(empty);
     row3 -> addItem(radioLay4);
 
@@ -191,9 +199,9 @@ MainWindow::MainWindow(QWidget *parent)
         QString label;
         label = texts3[i+16];
         text -> setText(label);
-        radioLay->addWidget(signalization[2][17+i]);
+        radioLay->addWidget(machine.signalization[2][17+i]);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[2][16+i]);
+        radioLay->addWidget(machine.signalization[3][16+i]);
         row3 -> addItem(radioLay);
     }
 
@@ -208,7 +216,7 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel *text3_5 = new QLabel();
     text3_5 -> setText("ТрПр");
     radioLay5 -> addWidget(text3_5);
-    radioLay5->addWidget(signalization[2][28]);
+    radioLay5->addWidget(machine.signalization[2][28]);
     radioLay5->addWidget(empty);
     row3 -> addItem(radioLay5);
 
@@ -220,7 +228,7 @@ MainWindow::MainWindow(QWidget *parent)
     text3_7 -> setText("ПЗ");
     radioLay6 -> addWidget(text3_6);
     radioLay6 -> addWidget(text3_7);
-    radioLay6 -> addWidget(signalization[3][27]);
+    radioLay6 -> addWidget(machine.signalization[3][27]);
     row3 -> addItem(radioLay6);
 
     for (int i = 10; i > 1; i--) {
@@ -229,9 +237,9 @@ MainWindow::MainWindow(QWidget *parent)
         QString label;
         label = QString::number(i);
         text -> setText(label);
-        radioLay->addWidget(signalization[2][39-i]);
+        radioLay->addWidget(machine.signalization[2][39-i]);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[3][38-i]);
+        radioLay->addWidget(machine.signalization[3][38-i]);
         row3 -> addItem(radioLay);
     }
 
@@ -243,7 +251,7 @@ MainWindow::MainWindow(QWidget *parent)
     text3_9 -> setText("1");
     radioLay7 -> addWidget(text3_8);
     radioLay7 -> addWidget(text3_9);
-    radioLay7 -> addWidget(signalization[3][37]);
+    radioLay7 -> addWidget(machine.signalization[3][37]);
     row3 -> addItem(radioLay7);
     row3->addWidget(new QLabel("УВК"));
 
@@ -257,7 +265,7 @@ MainWindow::MainWindow(QWidget *parent)
         QString label = QString::number(i);
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[4][5-i]);
+        radioLay->addWidget(machine.signalization[4][5-i]);
         row4 -> addItem(radioLay);
     }
 
@@ -275,7 +283,7 @@ MainWindow::MainWindow(QWidget *parent)
             QString label = texts4[i];
             text -> setText(label);
             radioLay->addWidget(text);
-            radioLay->addWidget(signalization[4][5 + 12*j + i]);
+            radioLay->addWidget(machine.signalization[4][5 + 12*j + i]);
             row4 -> addItem(radioLay);
         }
         if (j == 0) {
@@ -296,7 +304,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout * radioLay5_1 = new QVBoxLayout();
     radioLay5_1 -> addWidget(new QLabel("Зн"));
-    radioLay5_1 -> addWidget(signalization[5][0]);
+    radioLay5_1 -> addWidget(machine.signalization[5][0]);
     row5 -> addItem(radioLay5_1);
 
     for (int i = 40; i > 0; i--) {
@@ -305,7 +313,7 @@ MainWindow::MainWindow(QWidget *parent)
         QString label = QString::number(i);
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[5][41-i]);
+        radioLay->addWidget(machine.signalization[5][41-i]);
         row5 -> addItem(radioLay);
     }
 
@@ -332,7 +340,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[6][i]);
+        radioLay->addWidget(machine.signalization[6][i]);
         row6 -> addItem(radioLay);
     }
 
@@ -347,22 +355,22 @@ MainWindow::MainWindow(QWidget *parent)
         }
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[6][10+i]);
+        radioLay->addWidget(machine.signalization[6][10+i]);
         row6 -> addItem(radioLay);
     }
 
     row6->addWidget(new QLabel("СчА"));
 
     QVBoxLayout * radioLay6_1 = new QVBoxLayout();
-    radioLay6_1 -> addWidget(new QLabel("Зн"));
-    radioLay6_1 -> addWidget(signalization[6][20]);
+    radioLay6_1 -> addWidget(new QLabel("Зп"));
+    radioLay6_1 -> addWidget(machine.signalization[6][20]);
     row6 -> addItem(radioLay6_1);
 
     row6->addWidget(new QLabel(" "));
 
     QVBoxLayout * radioLay6_2 = new QVBoxLayout();
     radioLay6_2 -> addWidget(new QLabel("ЧТ"));
-    radioLay6_2 -> addWidget(signalization[6][21]);
+    radioLay6_2 -> addWidget(machine.signalization[6][21]);
     row6 -> addItem(radioLay6_2);
 
     row6->addWidget(new QLabel(" "));
@@ -380,7 +388,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[6][22+i]);
+        radioLay->addWidget(machine.signalization[6][22+i]);
         row6 -> addItem(radioLay);
     }
 
@@ -399,7 +407,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         text -> setText(label);
         radioLay->addWidget(text);
-        radioLay->addWidget(signalization[6][32+i]);
+        radioLay->addWidget(machine.signalization[6][32+i]);
         row6 -> addItem(radioLay);
     }
 
@@ -416,28 +424,36 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    QVector<QVector<QRadioButton*>> upControl;
+
 
     for (int row = 0; row < 3; row++) {
         QVector<QRadioButton*> rowButtons;
+        word_t currentROMValue = machine.kmem.read_memory(1536 + row);
+        std::ostringstream oct;
+        oct << std::setw(14) << std::setfill('0') << std::oct << currentROMValue;
+        QString octal = QString::fromStdString(oct.str());
+        int binary_octal[42];
+        binary_octal[0] = 0;
+        int firstNum = octal[0].digitValue();
+        binary_octal[1] = firstNum % 2;
+        binary_octal[2] = (firstNum / 2) % 2;
+        for (int i = 1; i < 14; i++) {
+            int curr = octal[i].digitValue();
+            binary_octal[2+3*i] = curr % 2;
+            curr = curr / 2;
+            binary_octal[1+3*i] = curr % 2;
+            curr = curr / 2;
+            binary_octal[3*i] = curr % 2;
+        }
         for (int i = 0; i < 42; i++) {
-
-            QRadioButton *radioButton = new QRadioButton(this);
+            QRadioButton *radioButton = new QRadioButton();
             radioButton->setAutoExclusive(0);
             rowButtons.push_back(radioButton);
             rowButtons[i]->setEnabled(0);
-            rowButtons[i]->setChecked(1);
+            rowButtons[i]->setChecked(binary_octal[i]);
         }
         upControl.push_back(rowButtons);
     }
-
-//    for (int row = 0; row < 3; row++) {
-//        for (int i = 0; i < 39; i++) {
-
-//            upControl[row][i]->setEnabled(0);
-//            upControl[row][i]->setChecked(1);
-//        }
-//    }
 
     QString space = "";
     for (int i = 0; i < 57; i++) {
@@ -476,16 +492,15 @@ MainWindow::MainWindow(QWidget *parent)
 //    mainLay->addWidget(line);
 
 
-    QVector<QVector<QRadioButton*>> lowControl;
 
     for (int row = 0; row < 2; row++) {
         QVector<QRadioButton*> rowButtons;
         int end = (row == 0) ? 42 : 22;
         for (int i = 0; i < end; i++) {
-            QRadioButton *radioButton = new QRadioButton(this);
+            QRadioButton *radioButton = new QRadioButton();
             radioButton->setAutoExclusive(0);
             rowButtons.push_back(radioButton);
-            rowButtons[i]->setEnabled(1);
+            rowButtons[i]->setEnabled(row);
         }
         lowControl.push_back(rowButtons);
     }
@@ -529,12 +544,21 @@ MainWindow::MainWindow(QWidget *parent)
     lowControlBox->addItem(rowButtons);
 
     QHBoxLayout *lowestRowButtons = new QHBoxLayout();
+    QVBoxLayout *el1 = new QVBoxLayout();
+    el1->addWidget(new QLabel("Тр"));
+    lowControl[1][0]->setChecked(1);
+    el1->addWidget(lowControl[1][0]);
+    connect(lowControl[1][0], &QRadioButton::clicked, this, &MainWindow::on_avar_ost_trig_clicked);
+    el1->addWidget(new QLabel("авар"));
+    el1->addWidget(new QLabel("ОСТ"));
+    lowestRowButtons->addItem(el1);
     lowestRowButtons->addWidget(lowControl[1][0]);
     lowestRowButtons->addWidget(new QLabel(" "));
 
     QVBoxLayout *el2 = new QVBoxLayout();
     el2->addWidget(new QLabel("HP"));
     el2->addWidget(lowControl[1][1]);
+    connect(lowControl[1][1], &QRadioButton::clicked, this, &MainWindow::on_blockC_clicked);
     el2->addWidget(new QLabel("бл"));
     el2->addWidget(new QLabel("УВК"));
     lowestRowButtons->addItem(el2);
@@ -549,27 +573,37 @@ MainWindow::MainWindow(QWidget *parent)
 
     lowestRowButtons->addWidget(new QLabel(" "));
     lowestRowButtons->addWidget(lowControl[1][3]);
+    connect(lowControl[1][3], &QRadioButton::clicked, this, &MainWindow::on_blockA_clicked);
     lowestRowButtons->addWidget(new QLabel("УОСчА "));
 
     QVBoxLayout *el4 = new QVBoxLayout();
     el4->addWidget(new QLabel("Переск"));
     el4->addWidget(lowControl[1][4]);
+    connect(lowControl[1][4], &QRadioButton::clicked, this, &MainWindow::on_blockOstanov_clicked);
     el4->addWidget(new QLabel("ОСТ"));
     lowestRowButtons->addItem(el4);
 
     lowestRowButtons->addWidget(new QLabel("    "));
 
-    lowestRowButtons->addWidget(lowControl[1][5]);
     QVBoxLayout *el5 = new QVBoxLayout();
+    QSlider *slider1 = new QSlider(Qt::Vertical);
+    slider1->setValue(3);
+    machine.signalization[6][33] -> setChecked(1);
+    connect(slider1, &QSlider::valueChanged, this, &MainWindow::onSetSpeed_clicked);
+    lowestRowButtons->addWidget(slider1);
+    slider1->setRange(1, 3);
     el5->addWidget(new QLabel("|Авт"));
     el5->addWidget(new QLabel("|Цикл"));
     el5->addWidget(new QLabel("|Такт"));
     lowestRowButtons->addItem(el5);
-
     lowestRowButtons->addWidget(new QLabel(" "));
 
-    lowestRowButtons->addWidget(lowControl[1][6]);
     QVBoxLayout *el6 = new QVBoxLayout();
+
+    slider2->setValue(3);
+    connect(slider2, &QSlider::valueChanged, this, &MainWindow::onSetFromPult_clicked);
+    lowestRowButtons->addWidget(slider2);
+    slider2->setRange(1, 3);
     el6->addWidget(new QLabel("|Норм раб"));
     el6->addWidget(new QLabel("|Ввод"));
     el6->addWidget(new QLabel("|УСТ с ПУ"));
@@ -586,42 +620,56 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout *el8 = new QVBoxLayout();
     el8->addWidget(new QLabel("запуска"));
+    connect(lowControl[1][8], &QRadioButton::clicked, this, &MainWindow::on_KButton_clicked);
     el8->addWidget(lowControl[1][8]);
     el8->addWidget(new QLabel("К"));
     lowestRowButtons->addItem(el8);
 
     QVBoxLayout *el9 = new QVBoxLayout();
-    el9->addWidget(new QLabel("По N команды"));
+    el9->addWidget(new QLabel(" "));
     connect(lowControl[1][9], &QRadioButton::clicked, this, &MainWindow::on_ostanovButton_clicked);
     el9->addWidget(lowControl[1][9]);
     el9->addWidget(new QLabel("Останов"));
     lowestRowButtons->addItem(el9);
 
     QVBoxLayout *el10 = new QVBoxLayout();
-    el10->addWidget(new QLabel(" "));
-    el10->addWidget(lowControl[1][10]);
-    el10->addWidget(new QLabel("По"));
+    QSlider *slider3 = new QSlider(Qt::Vertical);
+    slider3->setValue(3);
+    connect(slider3, &QSlider::valueChanged, this, &MainWindow::onOstanovPult_clicked);
+    lowestRowButtons->addWidget(slider3);
+    slider3->setRange(1, 3);
+    el10->addWidget(new QLabel("|Нейтральное"));
+    el10->addWidget(new QLabel("|По N команды"));
+    el10->addWidget(new QLabel("|По III адресу"));
     lowestRowButtons->addItem(el10);
 
+    lowestRowButtons->addWidget(new QLabel(" "));
+
     QVBoxLayout *el11 = new QVBoxLayout();
-    el11->addWidget(new QLabel("П3"));
-    el11->addWidget(lowControl[1][11]);
-    el11->addWidget(new QLabel("III"));
+    el11->addWidget(new QLabel(" "));
+    el11->addWidget(lowControl[1][10]);
+    el11->addWidget(new QLabel(" "));
     lowestRowButtons->addItem(el11);
 
-    QVBoxLayout *addr = new QVBoxLayout();
-    addr->addWidget(new QLabel("10  9  8"));
-    QHBoxLayout *buttons = new QHBoxLayout();
-    for (int i = 12; i < 15; i++) {
-        buttons->addWidget(lowControl[1][i]);
-        buttons->addWidget(new QLabel(" "));
+    QVBoxLayout *el12 = new QVBoxLayout();
+    el12->addWidget(new QLabel("П3"));
+    el12->addWidget(lowControl[1][11]);
+    el12->addWidget(new QLabel(" "));
+    lowestRowButtons->addItem(el12);
 
-    }
-    addr->addItem(buttons);
-    addr->addWidget(new QLabel("адресу"));
-    lowestRowButtons->addItem(addr);
+//    QVBoxLayout *addr = new QVBoxLayout();
+//    addr->addWidget(new QLabel("10  9  8"));
+//    QHBoxLayout *buttons = new QHBoxLayout();
+//    for (int i = 12; i < 15; i++) {
+//        buttons->addWidget(lowControl[1][i]);
+//        buttons->addWidget(new QLabel(" "));
+//
+//    }
+//    addr->addItem(buttons);
+////    addr->addWidget(new QLabel("адресу"));
+//    lowestRowButtons->addItem(addr);
 
-    for (int i = 15; i < 22; i++) {
+    for (int i = 12; i < 22; i++) {
         QVBoxLayout *lastButtons = new QVBoxLayout();
         lastButtons->addWidget(new QLabel(buttonNames[i+20]));
         lastButtons->addWidget(lowControl[1][i]);
@@ -634,13 +682,192 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainLay -> addLayout(lowControlBox);
 
+// -------------------------------------------------------------------------------------
 
-    widget->setLayout(mainLay);
+    mainLay->addWidget(new QLabel("ROM"));
+
+    for (int row = 0; row < 8; row++) {
+        QVector<QRadioButton*> rowButtons;
+        word_t currentROMValue = machine.kmem.read_memory(1536 + row);
+        std::ostringstream oct;
+        oct << std::setw(14) << std::setfill('0') << std::oct << currentROMValue;
+        QString octal = QString::fromStdString(oct.str());
+        int binary_octal[41];
+        int firstNum = octal[0].digitValue();
+        binary_octal[0] = firstNum % 2;
+        binary_octal[1] = (firstNum / 2) % 2;
+        for (int i = 1; i < 14; i++) {
+            int curr = octal[i].digitValue();
+            binary_octal[3*i+1] = curr % 2;
+            curr = curr / 2;
+            binary_octal[3*i] = curr % 2;
+            curr = curr / 2;
+            binary_octal[3*i-1] = curr % 2;
+        }
+        for (int i = 0; i < 41; i++) {
+            QRadioButton *radioButton = new QRadioButton();
+            radioButton->setAutoExclusive(0);
+            rowButtons.push_back(radioButton);
+            rowButtons[i]->setEnabled(1);
+            rowButtons[i]->setChecked(binary_octal[i]);
+        }
+        rom_buttons.push_back(rowButtons);
+    }
+
+    QVBoxLayout *romBox = new QVBoxLayout();
+
+    for (int i = 0; i < 8; i++) {
+
+        QHBoxLayout *rowBox = new QHBoxLayout();
+        rowBox->addWidget(new QLabel(QString::number(3000 + i) + " "));
+
+        for (int j = 0; j < 41; j++) {
+            rowBox->addWidget(rom_buttons[i][j]);
+            if (j == 1 || (j % 3 == 1)) {
+                rowBox->addWidget(new QLabel(" "));
+            }
+        }
+        romBox->addItem(rowBox);
+        romBox->addWidget(new QLabel(space));
+    }
+
+    romBox->addWidget(new QLabel(space));
+
+    auto *saveROMBtn = new QPushButton();
+    saveROMBtn->setText("SAVE ROM");
+    connect(saveROMBtn, SIGNAL(clicked()), this, SLOT(on_saveROMBtn_clicked()));
+
+    romBox->addWidget(saveROMBtn);
+
+    mainLay -> addLayout(romBox);
+
+// -------------------------------------------------------------------------------------
+
+    mainLay->addWidget(new QLabel("DISASM | ASM"));
+
+    auto* asmDisasmBox = new QGroupBox();
+
+    auto* asmDisasmLayout = new QVBoxLayout();
+    asmDisasmBox->setLayout(asmDisasmLayout);
+
+    auto* textEditLayout = new QHBoxLayout();
+    auto* asmButtonsLayout = new QHBoxLayout();
+
+    auto *codeArea = new QTextEdit();
+    codeArea->setFontFamily("Ubuntu");
+
+
+    auto *asCodeArea = new QTextEdit();
+    asCodeArea->setFontFamily("Ubuntu");
+    asCodeArea->setReadOnly(true);
+
+    auto *assemblyBtn = new QPushButton();
+    assemblyBtn->setText("ASSEMBLY");
+    connect(assemblyBtn, SIGNAL(clicked()), this, SLOT(on_assemblyBtn_clicked()));
+
+    auto *openFileBtn = new QPushButton();
+    openFileBtn->setText("OPEN FILE");
+    connect(openFileBtn, SIGNAL(clicked()), this, SLOT(on_openDisasmFileBtn_clicked()));
+
+    textEditLayout->addWidget(codeArea);
+    textEditLayout->addWidget(asCodeArea);
+    asmDisasmLayout->addLayout(textEditLayout);
+    asmButtonsLayout->addWidget(openFileBtn);
+    asmButtonsLayout->addWidget(assemblyBtn);
+    asmDisasmLayout->addLayout(asmButtonsLayout);
+
+    mainLay->addWidget(asmDisasmBox);
+
+// -------------------------------------------------------------------------------------
+
+    panelAndCode ->addLayout(mainLay);
+
+    QHBoxLayout *drums = new QHBoxLayout();
+
+    QVBoxLayout * lay1 = new QVBoxLayout();
+    QVBoxLayout * lay2 = new QVBoxLayout();
+    QVBoxLayout * lay3 = new QVBoxLayout();
+
+    for (int i = 0; i < 3288; i++) {
+        QLineEdit *num1 = new QLineEdit();
+        QLineEdit *num2 = new QLineEdit();
+        QLineEdit *num3 = new QLineEdit();
+        num1 -> setReadOnly(true);
+        num2 -> setReadOnly(true);
+        num3 -> setReadOnly(true);
+        num1 -> setText("0");
+        num2 -> setText("0");
+        num3 -> setText("0");
+        num1 -> setMinimumSize(400, 30);
+        num2 -> setMinimumSize(400, 30);
+        num3 -> setMinimumSize(400, 30);
+        num1 -> setFont(QFont( "Timers" , 15 ,  QFont::Bold) );
+        num2 -> setFont(QFont( "Timers" , 15 ,  QFont::Bold) );
+        num3 -> setFont(QFont( "Timers" , 15 ,  QFont::Bold) );
+
+        machine.drum1.push_back(num1);
+        machine.drum2.push_back(num2);
+        machine.drum3.push_back(num3);
+        lay1 -> addWidget(num1);
+        lay2 -> addWidget(num2);
+        lay3 -> addWidget(num3);
+    }
+
+    QScrollArea *sc1 = new QScrollArea();
+    QScrollArea *sc2 = new QScrollArea();
+    QScrollArea *sc3 = new QScrollArea();
+
+    auto *widget1=new QWidget;
+    auto *widget2=new QWidget;
+    auto *widget3=new QWidget;
+
+    widget1->setLayout(lay1);
+    widget2->setLayout(lay2);
+    widget3->setLayout(lay3);
+    sc1->setWidget(widget1);
+    sc2->setWidget(widget2);
+    sc3->setWidget(widget3);
+
+    drums->addWidget(sc1);
+    drums->addWidget(sc2);
+    drums->addWidget(sc3);
+
+
+    kyivLay->addLayout(panelAndCode);
+    kyivLay->addLayout(drums);
+
+    widget->setLayout(kyivLay);
     scrollArea->setWidget(widget);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea->resize(1300,800);
+    scrollArea->resize(1500,1000);
     this->setFixedSize(1500, 1000);
+}
+
+void MainWindow::on_avar_ost_trig_clicked() {
+    auto *btn = qobject_cast<QRadioButton *>(sender());
+    qDebug() << "Ostanov trigger before: " << machine.T_tr;
+    bool machineTTr = btn->isChecked();
+    if (machineTTr) {
+        qDebug() << "ввімкнення тригеру останову";
+    } else {
+        qDebug() << "вимкнення тригеру останову";
+    }
+    machine.T_tr = machineTTr;
+    qDebug() << "Ostanov trigger after: " << machine.T_tr;
+}
+
+void MainWindow::on_blockOstanov_clicked() {
+    auto *btn = qobject_cast<QRadioButton *>(sender());
+    qDebug() << "Ostanov block before: " << machine.Ostanov_block;
+    bool machineOstanovBlock = btn->isChecked();
+    if (machineOstanovBlock) {
+        qDebug() << "заборона останову";
+    } else {
+        qDebug() << "розблокування заборони останову";
+    }
+    machine.Ostanov_block = machineOstanovBlock;
+    qDebug() << "Ostanov block after: " << machine.Ostanov_block;
 }
 
 void MainWindow::on_uoButton_clicked() {
@@ -657,10 +884,287 @@ void MainWindow::on_ostanovButton_clicked() {
     qDebug() << "останов";
     auto *btn = qobject_cast<QRadioButton *>(sender());
     btn->setChecked(1);
-    machine.opcode_flow_control(word_to_addr3(0), 0'33);
+    machine.opcode_flow_control(word_to_addr3(0), 0'33, word_to_addr3(0));
     qDebug() << "T register after ostanov =" << machine.T_reg;
     QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
 }
+
+void MainWindow::on_blockC_clicked() {
+    qDebug() << "С block before =" << machine.C_block;
+    auto *btn = qobject_cast<QRadioButton *>(sender());
+    bool toBlock = btn->isChecked();
+    if (toBlock) {
+        qDebug() << "блокування лічильника команд";
+    } else {
+        qDebug() << "розблокування лічильника команд";
+    }
+    machine.C_block = toBlock;
+    qDebug() << "С block after =" << machine.C_block;
+}
+
+void MainWindow::on_blockA_clicked() {
+    qDebug() << "A block before =" << machine.A_block;
+    auto *btn = qobject_cast<QRadioButton *>(sender());
+    bool toBlock = btn->isChecked();
+    if (toBlock) {
+        qDebug() << "блокування регістрів повернення, циклів та модифікації адрес";
+    } else {
+        qDebug() << "розблокування регістрів повернення, циклів та модифікації адрес";
+    }
+    machine.A_block = toBlock;
+    qDebug() << "A block after =" << machine.A_block;
+}
+
+void MainWindow::on_openDisasmFileBtn_clicked() {
+    auto *codeArea = qobject_cast<QTextEdit *>(sender()->parent()->children().at(1));
+    auto file_name = QFileDialog::getOpenFileName(this, "Open a file", QDir::homePath());
+    QFile openFile(file_name);
+    if (openFile.open(QFile::ReadOnly)) {
+        QTextStream ReadFile(&openFile);
+        codeArea->setText(ReadFile.readAll());
+    } else {
+        std::cout << "Unable to open file";
+    }
+    openFile.close();
+}
+
+void MainWindow::on_assemblyBtn_clicked() {
+    auto *codeArea = qobject_cast<QTextEdit *>(sender()->parent()->children().at(1));
+    if (codeArea->toPlainText().isEmpty()) {
+        return;
+    }
+    auto *asCodeArea = qobject_cast<QTextEdit *>(sender()->parent()->children().at(2));
+
+    QFile tempDisasm("../tempDisasm.txt");
+    if (tempDisasm.open(QFile::ReadWrite | QFile::Truncate)) {
+        QTextStream stream(&tempDisasm);
+        stream << codeArea->toPlainText();
+        tempDisasm.flush();
+    } else {
+        std::cout << "Unable to open disasm file";
+    }
+    tempDisasm.close();
+
+    Assembly as;
+    as.read_file("../tempDisasm.txt", false);
+
+    QFile tempAsm(outputf);
+    if (tempAsm.open(QFile::ReadOnly)) {
+        QTextStream ReadFile(&tempAsm);
+        asCodeArea->setText(ReadFile.readAll());
+    } else {
+        std::cout << "Unable to open asm file";
+    }
+    tempAsm.close();
+}
+
+
+void MainWindow::on_saveROMBtn_clicked() {
+    for (int row = 0; row < 8; row++) {
+        std::string octal;
+        int currDigit = rom_buttons[row][0]->isChecked() * 2 + rom_buttons[row][1]->isChecked();
+        octal += std::to_string(currDigit);
+        for (int i = 1; i < 14; i++) {
+            int octalDigit =
+                    rom_buttons[row][i * 3 - 1]->isChecked() * 4 + rom_buttons[row][i * 3]->isChecked() * 2 +
+                    rom_buttons[row][1 + i * 3]->isChecked();
+            octal += std::to_string(octalDigit);
+        }
+        unsigned long long value = std::stoull(octal, 0, 10);
+        qDebug() << "command octal string: " << QString::fromStdString(octal);
+        qDebug() << "command octal int: " << QString::number(value);
+
+        qDebug() << "ROM cell before: " << QString::number(machine.kmem.read_memory(03000 + row));
+        machine.kmem.write_rom(03000 + row, value);
+        qDebug() << "ROM cell after: " << QString::number(machine.kmem.read_memory(03000 + row));
+    }
+}
+
+void MainWindow::onSetFromPult_clicked() {
+    auto *sld = qobject_cast<QSlider *>(sender());
+    qDebug() << sld->value();
+    int pos = sld->value();
+    if (pos == 2) {
+        for (int row = 0; row < 3; row++) {
+            for (int i = 0; i < 42; i++) {
+                upControl[row][i]->setEnabled(1);
+            }
+        }
+        for (int i = 0; i < 42; i++) {
+            lowControl[0][i]->setEnabled(1);
+        }
+    } else if (pos == 1) {
+        for (int row = 0; row < 3; row++) {
+            for (int i = 0; i < 42; i++) {
+                upControl[row][i]->setEnabled(0);
+            }
+        }
+        for (int i = 0; i < 42; i++) {
+            lowControl[0][i]->setEnabled(0);
+        }
+
+        for (int row = 0; row < 3; row++) {
+            if (upControl[row][0]->isChecked()) { // tumbler for pult work is on
+                std::string octal;
+                int currDigit = upControl[row][1]->isChecked() * 2 + upControl[row][2]->isChecked();
+                octal += std::to_string(currDigit);
+                for (int i = 1; i < 14; i++) {
+                    int octalDigit =
+                            upControl[row][i * 3]->isChecked() * 4 + upControl[row][1 + i * 3]->isChecked() * 2 +
+                                    upControl[row][2 + i * 3]->isChecked();
+                    octal += std::to_string(octalDigit);
+                }
+                unsigned long long value = std::stoull(octal, 0, 10);
+                qDebug() << "command octal string: " << QString::fromStdString(octal);
+                qDebug() << "command octal int: " << QString::number(value);
+
+                qDebug() << "ROM cell before: " << QString::number(machine.kmem.read_memory(1536+row));
+                machine.kmem.norm_rom[row] = false;
+                machine.kmem.writable_rom_pu[row] = value; // upper 3 rows: if the first button is enabled,
+                                                              // replace ROM cell with this value
+                qDebug() << "ROM cell after: " << QString::number(machine.kmem.read_memory(1536+row));
+            } else {
+                machine.kmem.norm_rom[row] = true;
+            }
+        }
+        if (lowControl[0][0]->isChecked()) {
+            // from binary to octal
+            std::string octal;
+            int currDigit = lowControl[0][1]->isChecked() * 2 + lowControl[0][2]->isChecked();
+            octal += std::to_string(currDigit);
+            for (int i = 1; i < 14; i++) {
+                int octalDigit =
+                        lowControl[0][i * 3]->isChecked() * 4 + lowControl[0][1 + i * 3]->isChecked() * 2 +
+                                lowControl[0][2 + i * 3]->isChecked();
+                octal += std::to_string(octalDigit);
+            }
+            qDebug() << "command octal string: " << QString::fromStdString(octal);
+            unsigned long long value = std::stoull(octal, 0, 8);
+            qDebug() << "command decimal int: " << QString::number(value);
+            qDebug() << "kmem[7]: " << QString::number(machine.kmem.read_memory(7));
+            machine.K_reg = value; // execute command from pult
+            machine.execute_opcode(false);
+            qDebug() << "kmem[7]: " << QString::number(machine.kmem.read_memory(7)); // може мати попереднє значення, бо цей прінт виконується раніше за виконання команди
+        }
+    } else if (pos == 3) {
+        for (int row = 0; row < 3; row++) {
+            for (int i = 0; i < 42; i++) {
+                upControl[row][i]->setEnabled(0);
+            }
+        }
+        for (int i = 0; i < 42; i++) {
+            lowControl[0][i]->setEnabled(0);
+        }
+        machine.execute_opcode();
+    }
+}
+
+
+void MainWindow::onOstanovPult_clicked() {
+    auto *sld = qobject_cast<QSlider *>(sender());
+    qDebug() << sld->value();
+    int pos = sld->value();
+    machine.B_tumb = pos;
+    if (pos == 1) { // by third address
+        machine.ostanovCommand = 0;
+        std::string octal;
+        for (int i = 0; i < 4; i++) {
+            int octalDigit =
+                    lowControl[1][10 + i * 3]->isChecked() * 4 + lowControl[1][11 + i * 3]->isChecked() * 2 +
+                            lowControl[1][12 + i * 3]->isChecked();
+            octal += std::to_string(octalDigit);
+        }
+        qDebug() << "address octal string: " << QString::fromStdString(octal);
+        addr_t value = std::stoull(octal, 0, 10);
+        qDebug() << "address decimal int: " << QString::number(value);
+        machine.ostanovAdrr_t = value;
+    } else if (pos == 2) { // by command number
+        machine.ostanovAdrr_t = 0;
+        std::string octal;
+        int currDigit = lowControl[0][1]->isChecked() * 2 + lowControl[0][2]->isChecked();
+        octal += std::to_string(currDigit);
+        for (int i = 1; i < 14; i++) {
+            int octalDigit =
+                    lowControl[0][i * 3]->isChecked() * 4 + lowControl[0][1 + i * 3]->isChecked() * 2 +
+                            lowControl[0][2 + i * 3]->isChecked();
+            octal += std::to_string(octalDigit);
+        }
+        qDebug() << "command octal string: " << QString::fromStdString(octal);
+        unsigned long long value = std::stoull(octal, 0, 8);
+        qDebug() << "command decimal int: " << QString::number(value);
+        machine.ostanovCommand = value;
+    } else if (pos == 3) { // neutral
+        machine.ostanovCommand = 0;
+        machine.ostanovAdrr_t = 0;
+    }
+}
+
+void MainWindow::onSetSpeed_clicked() {
+    auto *sld = qobject_cast<QSlider *>(sender());
+    qDebug() << sld->value();
+    int pos = sld->value();
+    machine.work_state = pos;
+    if (pos == 3) {
+        machine.signalization[6][33] -> setChecked(1);
+    } else {
+        machine.signalization[6][33] -> setChecked(0);
+    }
+//    while (machine.execute_opcode()) {
+//        std::cout << "C reg: " << machine.C_reg << std::endl;
+//    }
+}
+
+void MainWindow::on_KButton_clicked() {
+    auto *btn = qobject_cast<QRadioButton *>(sender());
+    btn->setChecked(1);
+    QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+    bool exec_mode = (slider2->value() > 1);
+    if (machine.work_state == 3) {
+        while (machine.execute_opcode(exec_mode)) {
+            std::cout << "C reg: " << machine.C_reg << std::endl;
+        }
+    } else if (machine.work_state == 2) {
+        machine.execute_opcode(exec_mode);
+    } else if (machine.work_state == 1) {
+        if (!machine.T_reg) {
+            addr_t addr;
+            switch (curr_takt) {
+                case 0: {
+                    opcode_t opcode = machine.get_opcode(exec_mode);
+                    addr = 0;
+                    std::cout << "opcode: " << opcode << std::endl;
+                    break;
+                }
+                case 1: {
+                    addr = machine.get_addr1();
+                    std::cout << "Addr 1: " << addr << std::endl;
+                    break;
+                }
+                case 2: {
+                    addr = machine.get_addr2();
+                    std::cout << "Addr 2: " << addr << std::endl;
+                    break;
+                }
+                case 3: {
+                    addr = machine.get_addr3();
+                    std::cout << "Addr 3: " << addr << std::endl;
+                    machine.execute_opcode(exec_mode);
+                    curr_takt = -1;
+                    break;
+                }
+            }
+            curr_takt++;
+            std::bitset<11> b(addr);
+            std::string addr_str = b.to_string();
+            for (size_t i = 0; i < 11; i++) {
+                bool val = (addr_str[i] - '0');
+                machine.signalization[2][i+17]->setChecked(val);
+            }
+        }
+    }
+}
+
+
 
 MainWindow::~MainWindow()
 {

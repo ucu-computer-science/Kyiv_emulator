@@ -1,5 +1,0 @@
-/home/hannusia/build-kyiv_web-Desktop-Debug/CMakeFiles/kyiv_web.dir
-/home/hannusia/build-kyiv_web-Desktop-Debug/CMakeFiles/edit_cache.dir
-/home/hannusia/build-kyiv_web-Desktop-Debug/CMakeFiles/rebuild_cache.dir
-/home/hannusia/build-kyiv_web-Desktop-Debug/CMakeFiles/kyiv_web_autogen_timestamp_deps.dir
-/home/hannusia/build-kyiv_web-Desktop-Debug/CMakeFiles/kyiv_web_autogen.dir
