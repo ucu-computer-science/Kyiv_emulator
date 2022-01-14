@@ -35,9 +35,11 @@ It demonstrates the inner work of "Kyiv" at the time of command execution.
 5. The middle part of the third row is the indicator of the address register - it works in the takt mode and shows the address of a certain takt's address.
 6. The middle part of the forth row shows the content of the return register.
 7. The bulp "Тр Пр" light up if there is the command of jumps if the jump is made.
-8. The last part of the third row is meant for takt control of "Kyiv" but it is currently not implemented.
+8. The last part of the third row is meant for takt control of "Kyiv": it demonstrates the start and end of most important parts of command execution.
 9. The last part of the forth row shows the content of the command counter register.
-10. The fifth row shows the content of the command register in the binary-octal mode, usual for "Kyiv" 
+10. The fifth row shows the content of the command register in the binary-octal mode, usual for "Kyiv" where first 5 bulbs stand for opcode, then each 12 represent first, second and third addresses respectively.
+11. The sixth row shows the content of intrmediate register to which the content of number register is written.
+12. The seventh row contains three parts. Unfortunately, we don't know the purpose of the most left one. The middle one contains the address register's contant, and the rigth part - the contant of the loop register. There are also three buttons: "Нач" and "Гот" for beginning and start of a command execution, and "Авт" for the work of the machine in an automatic mode.
 
 ![image](https://user-images.githubusercontent.com/50978411/149560770-1e69b03f-a726-4977-bf7f-51dc73fdf1d0.png)
 
