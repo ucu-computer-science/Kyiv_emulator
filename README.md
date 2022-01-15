@@ -21,6 +21,91 @@ $ make
 $ ./kyivemu
 ```
 
+## Coding system and registers
+
+The Kyiv computer has 41-bit cells: 
+![image_1]()
+The 41-st bit is a sign bit (0 if number is positive and 1 when is negative), which means that there are negative 0 which is actually used in some of the programs.
+The numbers are fixed point - the point is situated before 40s bit, which means that there are only number from range (0, 1).
+![image_2]()
+Commands are encoded as shown on picture 2. There are 5 bits of opcode and then 3*12 bits of addresses. The 12th bit as modification bit, which indicates if the following address should be modificated by adding to it value of register A. For convinience the addresses are written the next way: k'_i + e'_i*A', where k'_i is address without modification bit, e'_i - modification bit and A - value of register A.
+
+
+##### Registers
+
+A register - modification register
+P register - return register
+Ц register - loop register
+C register - command counter (contains command that is currently executed)
+K register - command register
+T trigger-register - stop register
+
+
+## Memory
+
+1. RAM - addresses from 0000 to 1777 (the 0000 address always has 0);
+1. ROM - addresses from 3000 to 3777 where:
+	1. 8 first cells are inputed codes, addresses 3000-3007.
+	1. 184 cells - permanently soldered codes, addresses 3010-3277. It containes some constants that are frequently used in programmes and some of the basic programmes.
+	1. 320 cells - interchangeable-soldered codes, addresses 3300-3777. It is blocks with 64 codes each that contain library programs.
+	
+## Standart programs permanently soldered memory. 
+
+They usually take their argumet from address 0002 and return their result to address 0003.
+
+1. Conversion from binary system to decimal (-1 < x < 1), starting address - 3100.
+1. 1/2*sin(x) (-1 < x < 1), starting address - 3152.
+1. 1/2*cos(x) (-1 < x < 1), starting address - 3174.
+1. 1/2*sin(x) (-2*pi < x < 2*pi), starting address - 3264.
+1. 1/2*cos(x) (-2*pi < x < 2*pi), starting address - 3217.
+1. 1/n*ln(x) (0 < x < 1), starting address - 3166. This programm returns 2 values: 0003 - for ln and 0004 for value M.
+1. sqrt(x)  (2^(-22) < x < 1), starting address - 3163.
+1. 1/4*e^x  (-1 < x < 1), starting address - 3202.
+1. 1/pi*arcsin(x) (-1 < x < 1), starting address - 3242.
+1. 1/pi*arccos(x) (-1 < x < 1), starting address - 3244.
+
+While debugging the 8th program, we found value of an unknown cell 3201 which contains 1/32.
+
+There are also implemented some programs from interchangeable-soldered memory:
+
+Block #1:
+
+
+1. sqrt(x) with range (0 <= x < 1). (Return result * 0.25) adresses 3300-3317.
+1. scalar product of 2 vectors, addresses 3200-3333, starting address - 3320.
+1. Multiplication of square matix on a vector, addresses 3334-3357, starting address - 3334.
+1. 1/4*a^x, address 3360-3374, starting address 3360.
+
+Block #4:
+
+Calculation of system of differential equations by Runge-Kutta method, starting address 3600.
+
+Also interchangeable-soldered memory has much more programs, for example software implementation of floating point numbers.
+	
+## Assembler/disassembler
+
+In Kyiv emulator there are implemented assembler and disassembler. Assembler converts programs to octal code and looks like this:
+
+```
+.text
+org 3163
+    add 0000 3035 0003
+jump1:
+    div 0002 0003 0004
+    sub 0004 0003 0004
+    rmul 0004 3042 0004
+    add 0003 0004 0003
+    jlea 3047 0004 jump1
+    ret 0000 0000 0000
+.data
+org 0002
+    0.04
+```
+
+where '.text' - code of the program, org [address] - starting address of the program or place to put data, '.data' - values, 'jump[number]' - label of the jump.
+Disassembler converts octal programs to assembly, identifies jumps and addresses of modification.
+There is also implemented disassembler for debugging that translates commands while the programm is running and outputs values of the cells.
+
 ## Kyiv Programs
 Kyiv has 29 operations:
 
