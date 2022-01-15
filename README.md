@@ -24,42 +24,48 @@ $ ./kyivemu
 ## Kyiv Programs
 Kyiv has 29 operations:
 
-|            Opcode           	| instruction (en) 	|                description               	|   	|   	|
-|:---------------------------:	|:----------------:	|:----------------------------------------:	|---	|---	|
-| Arithmetic operations       	|                  	|                                          	|   	|   	|
-|              01             	|        add       	| addition                                 	|   	|   	|
-|              02             	|        sub       	| substruction                             	|   	|   	|
-|              03             	|        adc       	| addition of commands                     	|   	|   	|
-|              06             	|       suba       	| modulus substraction                     	|   	|   	|
-|              07             	|      addcyc      	| cyclical addition                        	|   	|   	|
-|              10             	|        mul       	| multiplication without rounding          	|   	|   	|
-|              11             	|       rmul       	| multiplication with rounding             	|   	|   	|
-|              12             	|        div       	| division                                 	|   	|   	|
-| Logical operations          	|                  	|                                          	|   	|   	|
-|              13             	|        sh        	| logical shift                            	|   	|   	|
-|              14             	|        and       	| digital logical addition                 	|   	|   	|
-|              15             	|        or        	| digital logical "multiplication"         	|   	|   	|
-|              17             	|        xor       	| digital logical operation nonequivalence 	|   	|   	|
-|              35             	|       norm       	| normalization                            	|   	|   	|
-| Control transfer operations 	|                  	|                                          	|   	|   	|
-|              04             	|        jle       	| if 1  ≤  2                               	|   	|   	|
-|              05             	|       jlea       	| if \| 1 \|  ≤  \| 2 \|                   	|   	|   	|
-|              16             	|        je        	| if 1  =  2                               	|   	|   	|
-|              30             	|       nfork      	| if 1 ≤ -0                                	|   	|   	|
-|              31             	|       ncall      	| 1 ≤ -0                                   	|   	|   	|
-|              32             	|        ret       	| return                                   	|   	|   	|
-| Modification of addresses   	|                  	|                                          	|   	|   	|
-|              26             	|        gob       	| beginning of a group operation           	|   	|   	|
-|              27             	|        goe       	| end of a group operation                 	|   	|   	|
-|              34             	|        fop       	| call on the retainer (F)                 	|   	|   	|
-| Input/Output                	|                  	|                                          	|   	|   	|
-|              20             	|        rdt       	| input of data from punched card          	|   	|   	|
-|              21             	|        rbn       	| input of command from punched card       	|   	|   	|
-|              22             	|        wbn       	| output to punched card                   	|   	|   	|
-|              23             	|        wmd       	| write to magnetic drum                   	|   	|   	|
-|              24             	|        rmd       	| read from magnetic drum                  	|   	|   	|
-|              25             	|        imd       	| init magnetic dram                       	|   	|   	|
-|              33             	|      ostanov     	| stop                                     	|   	|   	|
+Just for k1,2,3 :
+
+k1 = '(A1+E1A)
+
+'k1 = A1
+
+|            Opcode           	| instruction (en) 	|                description               	|                                                                                                                       	| STOP         	|
+|:---------------------------:	|:----------------:	|:----------------------------------------:	|-----------------------------------------------------------------------------------------------------------------------	|--------------	|
+| Arithmetic operations       	|                  	|                                          	|                                                                                                                       	|              	|
+|              01             	|        add       	| addition                                 	| k1+k2=>k3 'C+1=>C                                                                                                     	| \|res\| ≥ 1  	|
+|              02             	|        sub       	| substruction                             	| k1-k2=>k3 'C+1=>C                                                                                                     	| \|res\| ≥ 1  	|
+|              03             	|        adc       	| addition of commands                     	| \| k1 + \|k2\| \| V sign of k2 => k3 'C+1=>C                                                                          	|              	|
+|              06             	|       suba       	| modulus substraction                     	| \|k1\| - \|k2\| => k3 'C+1=>C                                                                                         	|              	|
+|              07             	|      addcyc      	| cyclical addition                        	| k1+k2=>k3 if res ≥ 1 : k3 & k1 >> 40 ( carry from the sign bit goes to the least significant bit of the res ) 'C+1=>1 	|              	|
+|              10             	|        mul       	| multiplication without rounding          	| k1*k2=>k3 res>>40 'C+1=>C                                                                                             	|              	|
+|              11             	|       rmul       	| multiplication with rounding             	| k1*k2=>k3 res += 1<<39 res>>40 (1 is added to the highest of the discarded bits.) 'C+1=>C                             	|              	|
+|              12             	|        div       	| division                                 	| k1/k2=>k3 'C+1=>C                                                                                                     	|              	|
+| Logical operations          	|                  	|                                          	|                                                                                                                       	|              	|
+|              13             	|        sh        	| logical shift                            	| if k2 < 0    >> else    << k1 >>/<< n => k3 n -- the number of orders of 3rd address of k2 'C+1=>C                    	|              	|
+|              14             	|        and       	| digital logical addition                 	| k1 & k2 => k3 'C+1=>C                                                                                                 	|              	|
+|              15             	|        or        	| digital logical "multiplication"         	| k1 \| k2 => k3 'C+1=>C                                                                                                	|              	|
+|              17             	|        xor       	| digital logical operation nonequivalence 	| k1 XOR k2 => k3 'C+1=>C                                                                                               	|              	|
+|              35             	|       norm       	| normalization                            	| k1 -- normalized exponent => k2 mantissa => k3 'C+1=>C                                                                	|              	|
+| Control transfer operations 	|                  	|                                          	|                                                                                                                       	|              	|
+|              04             	|        jle       	| if 1  ≤  2                               	| if k1 ≤ k2: k3=>C else: 'C+1=>C                                                                                       	|              	|
+|              05             	|       jlea       	| if \| 1 \|  ≤  \| 2 \|                   	| if \|k2\| ≤ \|k2\|: k3=>C else: 'C+1=>C                                                                               	|              	|
+|              16             	|        je        	| if 1  =  2                               	| if k1 == k2: k3=>C else: 'C+1=>C                                                                                      	|              	|
+|              30             	|       nfork      	| if 1 ≤ -0                                	| if k1 ≤ -0: k3=>C k2=>P else: 'C+1=>C                                                                                 	|              	|
+|              31             	|       ncall      	| 1 ≤ -0                                   	| if k1 ≤ -0: k3=>C else k2=>C                                                                                          	|              	|
+|              32             	|        ret       	| return                                   	|                                                                                                                       	|              	|
+| Modification of addresses   	|                  	|                                          	|                                                                                                                       	|              	|
+|              26             	|        gob       	| beginning of a group operation           	| k1=>Ц(loop) k2=>A if A=Ц: k3=>C else: 'C+1=>C                                                                         	|              	|
+|              27             	|        goe       	| end of a group operation                 	| A+k1=>A if A=Ц: k3=>C else: k2=>C                                                                                     	|              	|
+|              34             	|        fop       	| call on the retainer (F)                 	| second address of k1 ==> A 'A=>k3 'C+1=>C                                                                             	|              	|
+| Input/Output                	|                  	|                                          	|                                                                                                                       	|              	|
+|              20             	|        rdt       	| input of data from punched card          	| read data to 'k1, 'k1+1,..,'k2. Start reading with offset k3                                                          	|              	|
+|              21             	|        rbn       	| input of command from punched card       	| read command to 'k1, 'k1+1,...,'k2. Start reading with offset k3                                                      	|              	|
+|              22             	|        wbn       	| output to punched card                   	| write 'k1, 'k1+1,...'k2 to card                                                                                       	|              	|
+|              23             	|        wmd       	| write to magnetic drum                   	| write 'k1, 'k1+1,...'k2 to drum                                                                                       	|              	|
+|              24             	|        rmd       	| read from magnetic drum                  	| read from drum and write to 'k1, 'k1+1,..., 'k2                                                                        	|              	|
+|              25             	|        imd       	| init magnetic dram                       	| k2 -- number of magnetic dram (3 max) number of road k3 -- offset k1 -- 0 if read, 1 -- of write 'C+1=>C              	|              	|
+|              33             	|      ostanov     	| stop                                     	|                                                                                                                       	|              	|
 ## GUI Usage
 
 GUI consists of such main parts:
