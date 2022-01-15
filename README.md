@@ -21,6 +21,45 @@ $ make
 $ ./kyivemu
 ```
 
+## Kyiv Programs
+Kyiv has 29 operations:
+
+|            Opcode           	| instruction (en) 	|                description               	|   	|   	|
+|:---------------------------:	|:----------------:	|:----------------------------------------:	|---	|---	|
+| Arithmetic operations       	|                  	|                                          	|   	|   	|
+|              01             	|        add       	| addition                                 	|   	|   	|
+|              02             	|        sub       	| substruction                             	|   	|   	|
+|              03             	|        adc       	| addition of commands                     	|   	|   	|
+|              06             	|       suba       	| modulus substraction                     	|   	|   	|
+|              07             	|      addcyc      	| cyclical addition                        	|   	|   	|
+|              10             	|        mul       	| multiplication without rounding          	|   	|   	|
+|              11             	|       rmul       	| multiplication with rounding             	|   	|   	|
+|              12             	|        div       	| division                                 	|   	|   	|
+| Logical operations          	|                  	|                                          	|   	|   	|
+|              13             	|        sh        	| logical shift                            	|   	|   	|
+|              14             	|        and       	| digital logical addition                 	|   	|   	|
+|              15             	|        or        	| digital logical "multiplication"         	|   	|   	|
+|              17             	|        xor       	| digital logical operation nonequivalence 	|   	|   	|
+|              35             	|       norm       	| normalization                            	|   	|   	|
+| Control transfer operations 	|                  	|                                          	|   	|   	|
+|              04             	|        jle       	| if 1  ≤  2                               	|   	|   	|
+|              05             	|       jlea       	| if \| 1 \|  ≤  \| 2 \|                   	|   	|   	|
+|              16             	|        je        	| if 1  =  2                               	|   	|   	|
+|              30             	|       nfork      	| if 1 ≤ -0                                	|   	|   	|
+|              31             	|       ncall      	| 1 ≤ -0                                   	|   	|   	|
+|              32             	|        ret       	| return                                   	|   	|   	|
+| Modification of addresses   	|                  	|                                          	|   	|   	|
+|              26             	|        gob       	| beginning of a group operation           	|   	|   	|
+|              27             	|        goe       	| end of a group operation                 	|   	|   	|
+|              34             	|        fop       	| call on the retainer (F)                 	|   	|   	|
+| Input/Output                	|                  	|                                          	|   	|   	|
+|              20             	|        rdt       	| input of data from punched card          	|   	|   	|
+|              21             	|        rbn       	| input of command from punched card       	|   	|   	|
+|              22             	|        wbn       	| output to punched card                   	|   	|   	|
+|              23             	|        wmd       	| write to magnetic drum                   	|   	|   	|
+|              24             	|        rmd       	| read from magnetic drum                  	|   	|   	|
+|              25             	|        imd       	| init magnetic dram                       	|   	|   	|
+|              33             	|      ostanov     	| stop                                     	|   	|   	|
 ## GUI Usage
 
 GUI consists of such main parts:
