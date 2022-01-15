@@ -2,6 +2,8 @@
 #define KYIVEMU_KYIV_H
 
 #include <boost/multiprecision/cpp_int.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string.hpp>
 #include <iosfwd>
 #include <fstream>
 #include <bitset>

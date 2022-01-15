@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
     auto *panelAndCode = new QHBoxLayout();
     auto *mainLay = new QVBoxLayout();
 
+    widget->adjustSize();
+
     QLocale curLocale(QLocale("C"));
     QLocale::setDefault(curLocale);
     std::setlocale(LC_ALL, "C");
@@ -688,7 +690,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 // -------------------------------------------------------------------------------------
 
-    mainLay->addWidget(new QLabel("ROM"));
+    mainLay->addWidget(new QLabel("\n\nROM"));
 
     for (int row = 0; row < 8; row++) {
         QVector<QRadioButton*> rowButtons;
@@ -747,7 +749,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 // -------------------------------------------------------------------------------------
 
-    mainLay->addWidget(new QLabel("DISASM | ASM"));
+    mainLay->addWidget(new QLabel("\n\nDISASM | ASM"));
 
     auto* asmDisasmBox = new QGroupBox();
 
@@ -783,6 +785,42 @@ MainWindow::MainWindow(QWidget *parent)
     mainLay->addWidget(asmDisasmBox);
 
 // -------------------------------------------------------------------------------------
+
+    mainLay->addWidget(new QLabel("\n\nPUNCHCARDS"));
+
+    auto* layout = new QVBoxLayout();
+
+    auto* scrollAreaCards = new QScrollArea(this);
+    scrollAreaCards->setMinimumSize(1400, 600);
+    scrollAreaCards->setWidgetResizable(true);
+
+    toolBox = new QToolBox();
+    scrollAreaCards->setWidget(toolBox);
+    scrollAreaCards->setBackgroundRole(QPalette::Dark);
+
+    auto *addBtn = new QPushButton("ADD PUNCH CARD");
+    connect(addBtn,  SIGNAL(clicked()), this, SLOT(on_addBtn_clicked()));
+
+    auto *delBtn = new QPushButton("DELETE PUNCH CARD");
+    connect(delBtn,  SIGNAL(clicked()), this, SLOT(on_delBtn_clicked()));
+
+    auto *savePerfoDataBth = new QPushButton("SAVE PERFO DATA");
+    connect(savePerfoDataBth,  SIGNAL(clicked()), this, SLOT(on_savePerfoDataBth_clicked()));
+
+    auto* perfoButtons = new QHBoxLayout();
+    perfoButtons->addWidget(addBtn);
+    perfoButtons->addWidget(delBtn);
+    perfoButtons->addWidget(savePerfoDataBth);
+
+    layout->addWidget(scrollAreaCards);
+    layout->addLayout(perfoButtons);
+
+
+    mainLay->addLayout(layout);
+
+// -------------------------------------------------------------------------------------
+
+    mainLay->addWidget(new QLabel("\n\nDRUMS"));
 
     panelAndCode ->addLayout(mainLay);
 
@@ -1179,6 +1217,135 @@ void MainWindow::on_KButton_clicked() {
     }
 }
 
+
+void MainWindow::on_saveButton_clicked() {
+    std::vector<std::string> argv;
+
+    auto *inputLine = sender()->parent()->findChild<QLineEdit *>();
+    auto *grid = sender()->parent()->findChild<QGridLayout *>();
+
+    boost::split(argv, inputLine->text().toStdString(), boost::is_any_of(" "), boost::algorithm::token_compress_off);
+
+    for (size_t i = 0; i < 80; i++) {
+        for (size_t j = 0; j < 12; j++) {
+            auto *label = qobject_cast<QLabel *>(grid->itemAtPosition(j, i)->widget());
+            label->setStyleSheet("QLabel{font-family: 'Agency FB';}");
+        }
+    }
+
+    int count = 0;
+    std::string perfoLine;
+    for(auto& part : argv){
+        if (part.empty())
+            continue;
+
+        if (count != 0)
+            perfoLine += ' ';
+
+        if (part.front() == '-') {
+            if (count == 79 || part.size() == 1) {
+                break;
+            }
+            auto *label = qobject_cast<QLabel *>(grid->itemAtPosition(0, count)->widget());
+            part.erase(0,1);
+            label->setStyleSheet("QLabel { background-color : black; }");
+            count++;
+            perfoLine += '-';
+        }
+
+        for(auto elem : part) {
+            if (!std::isdigit(elem)) {
+                break;
+            }
+            int value = (int)elem - '0';
+            auto *label = qobject_cast<QLabel *>(grid->itemAtPosition(value + 2, count)->widget());
+            label->setStyleSheet("QLabel { background-color : black; }");
+            perfoLine += elem;
+            count++;
+
+            if (count > 79) {
+                break;
+            }
+        }
+
+        count++;
+        if (count > 79) {
+            break;
+        }
+    }
+    toolBox->setItemText(toolBox->currentIndex(), QString::fromStdString(perfoLine));
+    inputLine->setText(QString::fromStdString(perfoLine));
+}
+
+
+void MainWindow::on_addBtn_clicked() {
+    auto *box = new QGroupBox();
+    box->setFixedHeight(400);
+
+    auto* tempLayout = new QVBoxLayout(box);
+
+    auto *grid = new QGridLayout();
+    tempLayout->addLayout(grid);
+    toolBox->insertItem(toolBox->currentIndex() + 1, box, "NEW");
+
+    for (size_t i = 0; i < 12; i++) {
+        for (size_t j = 0; j < 80; j++) {
+            auto *number = new QLabel();
+            if (i > 1) {
+                number->setText(QString::number(i-2));
+                number->setStyleSheet("QLabel{font-family: 'Agency FB';}");
+            }
+            grid->addWidget(number, i, j);
+        }
+    }
+
+    auto *inputLayout = new QHBoxLayout();
+    tempLayout->addLayout(inputLayout);
+
+    auto *saveButton = new QPushButton("SAVE");
+    connect(saveButton,  SIGNAL(clicked()), this, SLOT(on_saveButton_clicked()));
+    saveButton->setFixedSize(QSize(60, 30));
+
+    inputLayout->addWidget(new QLineEdit());
+    inputLayout->addWidget(saveButton);
+
+    toolBox->setMinimumHeight(407 + toolBox->count() * 31);
+}
+
+
+void MainWindow::on_delBtn_clicked() {
+    auto index = toolBox->currentIndex();
+    if (index < 0) {
+        qDebug() << "unable to delete, punch card don't find";
+    } else {
+        toolBox->removeItem(index);
+        if (toolBox->count() == 0)
+            toolBox->setMinimumHeight(600);
+        else
+            toolBox->setMinimumHeight(407 + toolBox->count() * 31);
+    }
+}
+
+
+void MainWindow::on_savePerfoDataBth_clicked() {
+    std::ofstream perfoFile;
+    perfoFile.open("../perfoData.txt", std::ios_base::out | std::ios_base::trunc);
+    if (!perfoFile.is_open())
+        std::cout << "Unable to open perfo file";
+
+    for (size_t i = 0; i < toolBox->count(); i++) {
+        std::vector<std::string> argv;
+        auto line = toolBox->itemText(i).toStdString();
+        if (line == "NEW" || line == "") {
+            continue;
+        }
+        boost::split(argv, line, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+        for(auto& part : argv){
+            perfoFile << part << '\n';
+        }
+    }
+    perfoFile.close();
+}
 
 
 MainWindow::~MainWindow()

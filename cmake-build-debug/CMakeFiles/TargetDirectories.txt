@@ -1,4 +1,0 @@
-/home/olya/study/programming/poc/kyiv/lastkyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/olya/study/programming/poc/kyiv/lastkyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/olya/study/programming/poc/kyiv/lastkyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles/kyivemu.dir
-/home/olya/study/programming/poc/kyiv/lastkyiv/Kyiv_emulator/cmake-build-debug/CMakeFiles/kyivemu_autogen.dir

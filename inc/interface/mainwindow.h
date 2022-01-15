@@ -5,6 +5,7 @@
 #include <QRadioButton>
 #include <QLCDNumber>
 #include <QSlider>
+#include <QToolBox>
 #include "emulator/kyiv.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,6 +22,10 @@ public:
 
 
 public slots:
+    void on_saveButton_clicked();
+    void on_addBtn_clicked();
+    void on_delBtn_clicked();
+    void on_savePerfoDataBth_clicked();
     void on_openDisasmFileBtn_clicked();
     void on_assemblyBtn_clicked();
     void on_saveROMBtn_clicked();
@@ -46,6 +51,7 @@ private:
     QVector<QVector<QRadioButton*>> lowControl;
     QSlider *slider2 = new QSlider(Qt::Vertical);
     QVector<QVector<QRadioButton*>> rom_buttons;
+    QToolBox* toolBox;
 
 };
 #endif // MAINWINDOW_H
