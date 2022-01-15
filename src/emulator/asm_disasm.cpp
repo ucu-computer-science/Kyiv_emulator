@@ -419,7 +419,6 @@ int Assembly::find_special_bts(std::string &line) {
             line = "1099511627775";
         else {
             line = std::to_string((int64_t) (std::stof(argv[0]) * std::pow(2, 40)));
-            std::cout << "MEGA HYI: " << line << std::endl;
         }
 
     } else if (text && argv.size() == 1) {

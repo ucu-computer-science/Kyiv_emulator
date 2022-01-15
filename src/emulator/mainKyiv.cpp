@@ -361,50 +361,76 @@ bool Kyiv_t::execute_opcode(bool norm_work){
             }
                 break;
                 //==========================================================================================================
-            case IO_operations_t::opcode_read_perfo_data: {
-                QRadioButton* read = signalization[6][21];
-                QRadioButton* btn = signalization[2][16];
-                btn -> setChecked(1);
-                read -> setChecked(1);
+            case IO_operations_t::opcode_read_perfo_data:{
                 std::ifstream punch_cards;
+                std::ifstream heads;
+                std::string head;
                 std::string line;
+                std::string perfo;
+                std::vector<std::string> argv;
                 signed_word_t number;
 
-                punch_cards.open("../../mem/punched_tape.txt");
+                punch_cards.open("../punched_tape.txt");
+                heads.open("../heads.txt");
 
+                std::getline(heads, head);
+//            int num = std::stoi(head);
+                size_t num = h;
                 int counter = 0;
                 int num_counter = 0;
-                bool flag;
-                bool inc;
+                bool flag = false;
 
-                while (num_counter < perfo_num) {
+                while(punch_cards){
                     std::getline(punch_cards, line);
-                }
-                while (punch_cards) {
-                    for (int i = addr3_shifted.source_2; i <= addr3_shifted.destination; i++) {
-                        std::getline(punch_cards, line);
-                        number = std::stol(line);
-                        if (number >= 0) {
-                            kmem.write_memory(i, number);
-                        } else {
-                            kmem.write_memory(i, to_negative(std::abs(number)));
+                    if(counter == num){
+                        perfo = line.substr(kmem.read_memory(addr3_shifted.destination), line.size());
+                        boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto & i : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stol(i);
+                            if(number >= 0){
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
+                            }else{
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
+                            }
+                            num_counter ++;
                         }
-                        perfo_num++;
+                    }else if(counter > num){
+                        perfo = line;
+                        boost::split(argv, perfo, boost::is_any_of(" "), boost::algorithm::token_compress_off);
+                        for(auto & i : argv){
+                            if(num_counter == addr3_shifted.source_2 - addr3_shifted.source_1){
+                                flag = true;
+                                break;
+                            }
+                            number = std::stol(i);
+                            if(number >= 0){
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
+                            }else{
+                                kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
+                            }
+                            num_counter ++;
+                        }
                     }
+                    if(flag){
+                        break;
+                    }
+                    counter ++;
                 }
+
+                h += counter;
                 punch_cards.close();
-                if (norm_work && !C_block) { ++C_reg; }
-                if (norm_work) { K_reg = kmem.read_memory(C_reg); }
-                QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
-                QTimer::singleShot(400,[read]()->void{read->setChecked(0);});
+                heads.close();
+
+                C_reg ++;
+                K_reg = kmem.read_memory(C_reg);
             }
                 break;
 
-            case IO_operations_t::opcode_read_perfo_binary: {
-                QRadioButton* btn = signalization[2][16];
-                QRadioButton* read = signalization[6][21];
-                read -> setChecked(1);
-                btn -> setChecked(1);
+            case IO_operations_t::opcode_read_perfo_binary:{
                 std::ifstream punch_cards;
                 std::ifstream heads;
                 std::string head;
@@ -412,51 +438,48 @@ bool Kyiv_t::execute_opcode(bool norm_work){
 
                 punch_cards.open("../punched_tape.txt");
                 heads.open("../heads.txt");
-
                 std::getline(heads, head);
                 std::getline(heads, head);
                 // int num = std::stoi(head);
-                size_t num = perfo_num;
+                size_t num = h;
                 int counter = 0;
                 int com_counter = 0;
                 bool flag = false;
-
-                while (punch_cards) {
+                while(punch_cards){
                     std::getline(punch_cards, line);
                     int pos = 0;
-                    if (counter == num) {
-                        if (com_counter < addr3_shifted.source_2 - addr3_shifted.source_1) {
-                            kmem.write_memory(addr3_shifted.source_1 + com_counter, std::stol(line, 0, 8));
+                    if(counter == num){
+                        if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
+                            if (!line.empty())
+                                kmem.write_memory(addr3_shifted.source_1 + com_counter, std::stol(line, 0, 8));
                             com_counter++;
-                        } else {
+                        }else{
                             flag = true;
                             break;
                         }
-                    } else if (counter > num) {
-                        if (com_counter < addr3_shifted.source_2 - addr3_shifted.source_1) {
+                    }else if(counter > num){
+                        if(com_counter < addr3_shifted.source_2 - addr3_shifted.source_1){
                             kmem.write_memory(addr3_shifted.source_1 + com_counter, std::stol(line, 0, 8));
-                            com_counter++;
-                        } else {
+                            com_counter ++;
+                        }else{
                             flag = true;
                             break;
                         }
 
                     }
-                    if (flag) {
+                    if(flag){
                         break;
                     }
                 }
-                perfo_num += com_counter;
-                if (norm_work && !C_block) { ++C_reg; }
-                QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
-                QTimer::singleShot(400,[read]()->void{read->setChecked(0);});
+                h += com_counter;
+                ++C_reg;
             }
                 break;
-
             case IO_operations_t::opcode_read_magnetic_drum: {
                 QRadioButton* btn = signalization[2][16];
                 QRadioButton* read = signalization[6][21];
                 QRadioButton* signBut = signalization[1][1];
+                QRadioButton* signBut2 = signalization[5][0];
 
                 read ->setChecked(1);
                 btn -> setChecked(1);
@@ -468,12 +491,14 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         word_t num = drum1[j] -> text().toLongLong();
                         sign = is_negative(num);
                         signBut -> setChecked(sign);
+                        signBut2 -> setChecked(sign);
                         abs_val = static_cast<signed_word_t>(num & mask_40_bits);
                         std::bitset<40> b(abs_val);
                         std::string butts = b.to_string();
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         kmem.write_memory(i, num);
                         j++;
@@ -489,6 +514,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         kmem.write_memory(i, num);
                         j++;
@@ -504,6 +530,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         kmem.write_memory(i, num);
                         j++;
@@ -515,6 +542,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                 QTimer::singleShot(400,[read]()->void{read->setChecked(0);});
                 for (int i = 1; i <= 41; i++) {
                     signalization[1][i] -> setChecked(0);
+                    signalization[5][i] -> setChecked(0);
                 }
             }
                 break;
@@ -546,6 +574,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                 QRadioButton* btn = signalization[2][16];
                 QRadioButton* write = signalization[6][20];
                 QRadioButton* signBut = signalization[1][1];
+                QRadioButton* signBut2 = signalization[5][0];
 
                 write -> setChecked(1);
                 btn -> setChecked(1);
@@ -559,12 +588,14 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         drum1[j] -> setText(QString::number(num));
                         sign = is_negative(num);
                         signBut -> setChecked(sign);
+                        signBut2 -> setChecked(sign);
                         abs_val = static_cast<signed_word_t>(num & mask_40_bits);
                         std::bitset<40> b(abs_val);
                         std::string butts = b.to_string();
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         j++;
                     }
@@ -580,6 +611,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         j++;
                     }
@@ -595,12 +627,14 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                         for (int i = 0; i < 40; i++) {
                             bool val = butts[i] - '0';
                             signalization[1][2+i] -> setChecked(val);
+                            signalization[5][1+i] -> setChecked(val);
                         }
                         j++;
                     }
                 }
                 for (int i = 1; i <= 41; i++) {
                     signalization[1][i] -> setChecked(0);
+                    signalization[5][i] -> setChecked(0);
                 }
                 if (norm_work && !C_block) { C_reg = addr3_shifted.destination; }
                 if (norm_work) { K_reg = kmem.read_memory(C_reg); }
@@ -682,7 +716,7 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
         case arythm_operations_t::opcode_add: {
             res += sign2 * (signed_word_t) abs_val2;
             btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            QTimer::singleShot(40000,[btn]()->void{btn->setChecked(0);});
         }
             break;
         case arythm_operations_t::opcode_sub: {

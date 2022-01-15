@@ -786,6 +786,24 @@ MainWindow::MainWindow(QWidget *parent)
 
 // -------------------------------------------------------------------------------------
 
+    mainLay->addWidget(new QLabel("\n\nPROGRAMS"));
+
+    auto* programsLayout = new QHBoxLayout();
+
+    auto* komytatorsBtn = new QPushButton("KOMYTATORS");
+    auto* rungeKuttaBtn = new QPushButton("RUNGE KUTTA");
+    auto* sqrtAndFriendsBtn = new QPushButton("SQRT AND FRIENDS");
+
+    connect(komytatorsBtn,  SIGNAL(clicked()), this, SLOT(on_komytatorsBtn_clicked()));
+    connect(rungeKuttaBtn,  SIGNAL(clicked()), this, SLOT(on_rungeKuttaBtn_clicked()));
+    connect(sqrtAndFriendsBtn,  SIGNAL(clicked()), this, SLOT(on_sqrtAndFriendsBtn_clicked()));
+
+    programsLayout->addWidget(komytatorsBtn);
+    programsLayout->addWidget(rungeKuttaBtn);
+    programsLayout->addWidget(sqrtAndFriendsBtn);
+
+    mainLay->addLayout(programsLayout);
+
     mainLay->addWidget(new QLabel("\n\nPUNCHCARDS"));
 
     auto* layout = new QVBoxLayout();
@@ -796,7 +814,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     toolBox = new QToolBox();
     scrollAreaCards->setWidget(toolBox);
-    scrollAreaCards->setBackgroundRole(QPalette::Dark);
+//    scrollAreaCards->setBackgroundRole(QPalette::Dark);
 
     auto *addBtn = new QPushButton("ADD PUNCH CARD");
     connect(addBtn,  SIGNAL(clicked()), this, SLOT(on_addBtn_clicked()));
@@ -1004,10 +1022,9 @@ void MainWindow::on_assemblyBtn_clicked() {
     } else {
         std::cout << "Unable to open asm file";
     }
-    std::cout << "start6" << std::endl;
-
-    as.execute(machine, 0005);
+//    std::cout << "start6" << std::endl;
     tempAsm.close();
+    as.execute(machine, 0005);
 }
 
 
@@ -1329,7 +1346,7 @@ void MainWindow::on_delBtn_clicked() {
 
 void MainWindow::on_savePerfoDataBth_clicked() {
     std::ofstream perfoFile;
-    perfoFile.open("../perfoData.txt", std::ios_base::out | std::ios_base::trunc);
+    perfoFile.open("../mem/punched_tape.txt", std::ios_base::out | std::ios_base::trunc);
     if (!perfoFile.is_open())
         std::cout << "Unable to open perfo file";
 
@@ -1345,6 +1362,50 @@ void MainWindow::on_savePerfoDataBth_clicked() {
         }
     }
     perfoFile.close();
+}
+
+void MainWindow::read_program(std::string filepath) {
+    std::ifstream infile(filepath);
+    std::string line;
+    while (std::getline(infile, line)) {
+        line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+        std::ostringstream str;
+        str << std::oct << line;
+        std::string data = str.str();
+        std::string address = data.substr(0, 4);
+        data = data.substr(4);
+        if (data.size() != 13 && data.size() != 14) {
+            continue;
+        }
+        if (data.size() != 14) {
+            data.insert(0, "0");
+        }
+        machine.kmem.write_rom(std::stoi(address, 0, 8), std::stol(data, 0, 8));
+    }
+}
+
+void MainWindow::on_komytatorsBtn_clicked() {
+    qDebug() << "03300 before: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 before: " << machine.kmem.read_memory(03600);
+    read_program("../libs/komytators.txt");
+    qDebug() << "03300 after: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 after: " << machine.kmem.read_memory(03600);
+}
+
+void MainWindow::on_rungeKuttaBtn_clicked() {
+    qDebug() << "03300 before: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 before: " << machine.kmem.read_memory(03600);
+    read_program("../libs/runge_kutta.txt");
+    qDebug() << "03300 after: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 after: " << machine.kmem.read_memory(03600);
+}
+
+void MainWindow::on_sqrtAndFriendsBtn_clicked() {
+    qDebug() << "03300 before: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 before: " << machine.kmem.read_memory(03600);
+    read_program("../libs/sqrt_and_friends.txt");
+    qDebug() << "03300 after: " << machine.kmem.read_memory(03300);
+    qDebug() << "03600 after: " << machine.kmem.read_memory(03600);
 }
 
 

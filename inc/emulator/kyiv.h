@@ -168,7 +168,6 @@ struct Kyiv_t{
     addr_t ostanovAdrr_t = 0;
     unsigned long long ostanovCommand = 0;
 
-
     int perfo_num = 0;
     int drum_num_read = 0;
     int drum_zone_read = 0;

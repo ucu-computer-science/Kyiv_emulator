@@ -39,6 +39,11 @@ public slots:
     void on_avar_ost_trig_clicked();
     void onSetSpeed_clicked();
     void on_KButton_clicked();
+    void on_komytatorsBtn_clicked();
+    void on_rungeKuttaBtn_clicked();
+    void on_sqrtAndFriendsBtn_clicked();
+
+    void read_program(std::string filepath);
 
 
 private:
