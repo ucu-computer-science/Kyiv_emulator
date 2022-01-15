@@ -23,29 +23,29 @@ $ ./kyivemu
 
 ## Coding system and registers
 
-The Kyiv computer has 41-bit cells: 
-![image_1]()
+The Kyiv computer has 41-bit cells: <br>
+![image_1](/img/photo_2022-01-15_04-35-41.jpg) <br>
 The 41-st bit is a sign bit (0 if number is positive and 1 when is negative), which means that there are negative 0 which is actually used in some of the programs.
-The numbers are fixed point - the point is situated before 40s bit, which means that there are only number from range (0, 1).
-![image_2]()
-Commands are encoded as shown on picture 2. There are 5 bits of opcode and then 3*12 bits of addresses. The 12th bit as modification bit, which indicates if the following address should be modificated by adding to it value of register A. For convinience the addresses are written the next way: k'_i + e'_i*A', where k'_i is address without modification bit, e'_i - modification bit and A - value of register A.
+The numbers are fixed point - the point is situated before 40s bit, which means that there are only number from range (0, 1). <br>
+![image_2](/img/photo_2022-01-15_04-35-47.jpg) <br>
+Commands are encoded as shown on picture 2. There are 5 bits of opcode and then 3\*12 bits of addresses. The 12th bit as modification bit, which indicates if the following address should be modificated by adding to it value of register A. For convinience the addresses are written the next way: k'i + e'i\*A', where k'i is address without modification bit, e'i - modification bit and A - value of register A.
 
 
 ##### Registers
 
-A register - modification register
-P register - return register
-Ц register - loop register
-C register - command counter (contains command that is currently executed)
-K register - command register
-T trigger-register - stop register
+A register - modification register <br>
+P register - return register <br>
+Ц register - loop register <br>
+C register - command counter (contains command that is currently executed) <br>
+K register - command register <br>
+T trigger-register - stop register <br>
 
 
 ## Memory
 
-1. RAM - addresses from 0000 to 1777 (the 0000 address always has 0);
-1. ROM - addresses from 3000 to 3777 where:
-	1. 8 first cells are inputed codes, addresses 3000-3007.
+1. RAM - addresses from 0000 to 1777 (the 0000 address always has 0); 
+1. ROM - addresses from 3000 to 3777 where: 
+	1. 8 first cells are inputed codes, addresses 3000-3007. 
 	1. 184 cells - permanently soldered codes, addresses 3010-3277. It containes some constants that are frequently used in programmes and some of the basic programmes.
 	1. 320 cells - interchangeable-soldered codes, addresses 3300-3777. It is blocks with 64 codes each that contain library programs.
 	
