@@ -79,7 +79,6 @@ public:
     {}
 };
 
-
 class Kyiv_memory_t {
 private:
     word_t mem_array_m[04000] = {0}; // 0AAAA -- octal constant};
@@ -105,15 +104,10 @@ public:
     bool norm_rom[3] = {true, true, true};
     word_t writable_rom_pu[3] = {0};
 
-    constexpr word_t read_memory(addr_t addr) const {
+    [[nodiscard]] constexpr word_t read_memory(addr_t addr) const {
         if(addr >= max_ROM_addr){
             throw out_of_range_error("Wrong address while reading", addr);
         }
-        if (addr >= 03000 && addr <= 03002 && !norm_rom[addr - 03000]) {
-//            std::cout << "here" << std::endl;
-            return writable_rom_pu[addr - 03000];
-        }
-//        std::cout << "no" << std::endl;
         return mem_array_m[addr];
     }
     void write_memory(addr_t addr, word_t val){
@@ -121,6 +115,8 @@ public:
             throw out_of_range_error("Wrong address while writing", addr);
         } else if (addr >= max_RAM_addr){
             throw out_of_range_error("Writing to ROM", addr);
+        } else if (addr == 0){
+            return;
         }
         mem_array_m[addr] = val;
     }

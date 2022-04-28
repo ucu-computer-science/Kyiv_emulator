@@ -3,9 +3,14 @@
 
 #include <QMainWindow>
 #include <QRadioButton>
+#include <QScrollArea>
 #include <QLCDNumber>
 #include <QSlider>
 #include <QToolBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QThread>
 #include "emulator/kyiv.h"
 
 QT_BEGIN_NAMESPACE
@@ -16,47 +21,66 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-
-
-public slots:
-    void on_saveButton_clicked();
-    void on_addBtn_clicked();
-    void on_delBtn_clicked();
-    void on_savePerfoDataBth_clicked();
-    void on_openDisasmFileBtn_clicked();
-    void on_assemblyBtn_clicked();
-    void on_saveROMBtn_clicked();
-    void on_uoButton_clicked();
-    void on_ostanovButton_clicked();
-    void on_blockC_clicked();
-    void on_blockA_clicked();
-    void onSetFromPult_clicked();
-    void onOstanovPult_clicked();
-    void on_blockOstanov_clicked();
-    void on_avar_ost_trig_clicked();
-    void onSetSpeed_clicked();
-    void on_KButton_clicked();
-    void on_komytatorsBtn_clicked();
-    void on_rungeKuttaBtn_clicked();
-    void on_sqrtAndFriendsBtn_clicked();
-
-    void read_program(std::string filepath);
-
-
 private:
     Ui::MainWindow *ui;
     Kyiv_t machine;
 
-    int curr_takt = 0;
+    QScrollArea* scrollArea;    // main scroll area
+    QWidget* widget;
+    QVBoxLayout* kyivLay;
+    QVBoxLayout* mainLay;
+    QHBoxLayout* panelAndCode;
 
     QVector<QVector<QRadioButton*>> upControl;
     QVector<QVector<QRadioButton*>> lowControl;
     QSlider *slider2 = new QSlider(Qt::Vertical);
     QVector<QVector<QRadioButton*>> rom_buttons;
     QToolBox* toolBox;
+
+    QPushButton *komytatorsBtn;
+    QPushButton *rungeKuttaBtn;
+    QPushButton *sqrtAndFriendsBtn;
+
+
+    int curr_takt = 0;
+
+private:
+
+    void InitSignalPanel();
+    void InitControlPanel();
+    void InitROMPanel();
+    void InitASMDisASMPanel();
+    void InitProgramsPanel();
+    void InitPunchCardsPanel();
+    void InitDrumsPanel();
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
+
+public slots:
+    void OnSaveButtonClicked();
+    void OnAddButtonClicked();
+    void OnDelButtonClicked();
+    void OnSavePerfoDataButtonClicked();
+    void OnOpenDisasmFileButtonClicked();
+    void OnAssemblyButtonClicked();
+    void OnSaveROMButtonClicked();
+    void OnuoButtonClicked();
+    void OnOstanovButtonClicked();
+    void OnBlockCButtonClicked();
+    void OnBlockAButtonClicked();
+    void OnSetFromPultButtonClicked();
+    void OnOstanovPultButtonClicked();
+    void OnBlockOstanovButtonClicked();
+    void OnAvarOstTrigButtonClicked();
+    void OnSetSpeedClicked();
+    void OnKButtonClicked();
+    void OnKomytatorsButtonClicked();
+    void OnRungeKuttaButtonClicked();
+    void OnSqrtAndFriendsButtonClicked();
+
+    void ReadProgram(const std::string& filepath);
 
 };
 #endif // MAINWINDOW_H

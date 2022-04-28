@@ -1,5 +1,6 @@
 #ifndef KYIVEMU_ASM_DISASM_H
 #define KYIVEMU_ASM_DISASM_H
+#include <QObject>
 
 constexpr char outputf[] = "../punched_tape.txt";
 
@@ -15,6 +16,7 @@ class Assembly {
      * Class for reading and executing assembly code on Kyiv.
      */
 private:
+    Kyiv_t & machine;
     std::map<std::string, std::string> references;          // contains origins, labels
     std::vector<std::string> readers;                       // helper for executing final code on Kyiv
     std::vector<std::string> lines_cout;                    // Optional - saves command address
@@ -25,11 +27,12 @@ private:
     bool numer;                                             // Optional - if we want to address commands
 
 public:
+    Assembly(Kyiv_t & machine_) : machine(machine_) {};
     int read_file(const std::string& filename, bool numerate);
     int find_special_bts(std::string &line);
     int assembly_command(std::string& command, std::string &result);
-    int write_file(const char* filename, std::string &res);
-    int execute(Kyiv_t & machine, const size_t start);
+    static int write_file(const char* filename, std::string &res);
+    void execute();
 };
 
 #endif //KYIVEMU_ASM_DISASM_H

@@ -168,17 +168,19 @@ bool Kyiv_t::execute_opcode(bool norm_work){
     QRadioButton* iva3 = signalization[2][34];
 
     QRadioButton *btn_st = signalization[6][32];
-    btn_st -> setChecked(1);
+    btn_st -> setChecked(true);
     QTimer::singleShot(400,[btn_st]()->void{btn_st->setChecked(0);});
 
+    std::cout << "normw" << norm_work << std::endl;
+
     if (norm_work) {
-        iva1 -> setChecked(1);
-        iva2 -> setChecked(1);
-        iva3 -> setChecked(1);
+        iva1 -> setChecked(true);
+        iva2 -> setChecked(true);
+        iva3 -> setChecked(true);
         K_reg = kmem.read_memory(C_reg);
-        QTimer::singleShot(400,[iva1]()->void{iva1->setChecked(0);});
-        QTimer::singleShot(400,[iva2]()->void{iva2->setChecked(0);});
-        QTimer::singleShot(400,[iva3]()->void{iva3->setChecked(0);});
+        QTimer::singleShot(400,[iva1]()->void{iva1->setChecked(false);});
+        QTimer::singleShot(400,[iva2]()->void{iva2->setChecked(false);});
+        QTimer::singleShot(400,[iva3]()->void{iva3->setChecked(false);});
         std::bitset<11> b_c_reg(C_reg);
         std::string c_reg_str = b_c_reg.to_string();
         for (size_t i = 0; i < 11; i++) {
@@ -193,8 +195,8 @@ bool Kyiv_t::execute_opcode(bool norm_work){
     std::cout << "T reg1: " << T_reg << std::endl;
 
     QRadioButton *btn_iva4 = signalization[2][36];
-    btn_iva4 -> setChecked(1);
-    QTimer::singleShot(400,[btn_iva4]()->void{btn_iva4->setChecked(0);});
+    btn_iva4 -> setChecked(true);
+    QTimer::singleShot(400,[btn_iva4]()->void{btn_iva4->setChecked(false);});
 
     std::stringstream str_stream;
     str_stream << std::oct << K_reg;
@@ -204,7 +206,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
 //    std::cout << command_str.size() << std::endl;
     std::cout << "T reg2: " << T_reg << std::endl;
     for (size_t i = 0; i < 41; i++) {
-        signalization[4][i]->setChecked(0);
+        signalization[4][i]->setChecked(false);
     }
 //    std::cout << "Is it here" << std::endl;
     for (int i = command_str.size() - 1; i >= 0; i--) {
@@ -227,8 +229,8 @@ bool Kyiv_t::execute_opcode(bool norm_work){
 //    std::cout << "Is it here2" << std::endl;
     std::cout << "T reg3: " << T_reg << std::endl;
     QRadioButton *btn_vz4 = signalization[2][37];
-    btn_vz4 -> setChecked(1);
-    QTimer::singleShot(400,[btn_vz4]()->void{btn_vz4->setChecked(0);});
+    btn_vz4 -> setChecked(true);
+    QTimer::singleShot(400,[btn_vz4]()->void{btn_vz4->setChecked(false);});
 
     std::cout << "RRRRRRRRR: " << K_reg << std::endl;
 
@@ -242,12 +244,12 @@ bool Kyiv_t::execute_opcode(bool norm_work){
 
         if (opcode <= 16) {
             QRadioButton *btn = signalization[2][opcode - 1];
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         } else {
             QRadioButton *btn = signalization[3][opcode - 17];
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
     }
     std::cout << "opcode: " << opcode << std::endl;
@@ -343,7 +345,6 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                 kmem.write_memory(addr3_shifted.destination, kmem.read_memory(addr3_shifted.source_1) |
                                                              kmem.read_memory(addr3_shifted.source_2));
                 if (norm_work && !C_block) { ++C_reg; }
-                std::cout << "orr" << kmem.read_memory(addr3_shifted.destination) << std::endl;
             }
                 break;
             case logic_operations_t::opcode_log_and: {
@@ -390,9 +391,11 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                                 flag = true;
                                 break;
                             }
-                            number = std::stol(i);
+                            number = std::stoll(i);
                             if(number >= 0){
+                                std::cout << (kmem.read_memory(addr3_shifted.source_1 + num_counter)) << " num " << number << std::endl;
                                 kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
+                                std::cout << (kmem.read_memory(addr3_shifted.source_1 + num_counter)) << std::endl;
                             }else{
                                 kmem.write_memory(addr3_shifted.source_1 + num_counter, to_negative(std::abs(number)));
                             }
@@ -406,7 +409,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                                 flag = true;
                                 break;
                             }
-                            number = std::stol(i);
+                            number = std::stoll(i);
                             if(number >= 0){
                                 kmem.write_memory(addr3_shifted.source_1 + num_counter, number);
                             }else{
@@ -421,7 +424,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                     counter ++;
                 }
 
-                h += counter;
+                h = counter;
                 punch_cards.close();
                 heads.close();
 
@@ -438,6 +441,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
 
                 punch_cards.open("../punched_tape.txt");
                 heads.open("../heads.txt");
+
                 std::getline(heads, head);
                 std::getline(heads, head);
                 // int num = std::stoi(head);
@@ -445,6 +449,7 @@ bool Kyiv_t::execute_opcode(bool norm_work){
                 int counter = 0;
                 int com_counter = 0;
                 bool flag = false;
+
                 while(punch_cards){
                     std::getline(punch_cards, line);
                     int pos = 0;
@@ -698,12 +703,12 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
     QRadioButton* vz1 = signalization[2][30];
     QRadioButton* vz2 = signalization[2][32];
     QRadioButton* vz3 = signalization[2][35];
-    vz1 -> setChecked(1);
+    vz1->setChecked(true);
     word_t abs_val1 = static_cast<signed_word_t>(kmem.read_memory(addr3.source_1) & mask_40_bits);
-    QTimer::singleShot(400,[vz1]()->void{vz1->setChecked(0);});
-    vz2 -> setChecked(1);
+    QTimer::singleShot(400,[vz1]()->void{vz1->setChecked(false);});
+    vz2->setChecked(true);
     word_t abs_val2 = static_cast<signed_word_t>(kmem.read_memory(addr3.source_2) & mask_40_bits);
-    QTimer::singleShot(400,[vz2]()->void{vz2->setChecked(0);});
+    QTimer::singleShot(400,[vz2]()->void{vz2->setChecked(false);});
     signed_word_t res = sign1 * (signed_word_t) abs_val1;
 
     signed_word_t res_for_norm;
@@ -712,61 +717,63 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
     QRadioButton* btn = signalization[2][33];
     QRadioButton* zn = signalization[5][0];
 
+
+    std::cout << "C_block" << C_block << std::endl;
     switch(opcode){
         case arythm_operations_t::opcode_add: {
             res += sign2 * (signed_word_t) abs_val2;
-            btn -> setChecked(1);
+            btn -> setChecked(true);
             QTimer::singleShot(40000,[btn]()->void{btn->setChecked(0);});
         }
             break;
         case arythm_operations_t::opcode_sub: {
             res -= sign2 * (signed_word_t) abs_val2;
-            btn -> setChecked(1);
+            btn -> setChecked(true);
             QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
         }
             break;
         case arythm_operations_t::opcode_addcmd: {
             res += (signed_word_t) abs_val2;
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
         case arythm_operations_t::opcode_subabs: {
             res = (signed_word_t) abs_val1 - (signed_word_t) abs_val2;
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
         case arythm_operations_t::opcode_addcyc: {
             res += sign2 * (signed_word_t) abs_val2; // Те ж, що і для opcode_add, але подальша обробка інша
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
         case arythm_operations_t::opcode_mul: [[fallthrough]];
         case arythm_operations_t::opcode_mul_round: {
             res_mul = sign1 * (mul_word_t) abs_val1 * sign2 * (mul_word_t) abs_val2;
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
         case arythm_operations_t::opcode_norm: {
             res_for_norm = sign1 * (abs_val1 << power);
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
         case arythm_operations_t::opcode_div: {
             if (((abs_val2 == 0) || (abs_val2 < abs_val1)) && !Ostanov_block) {
                 T_reg = true;
-                zn -> setChecked(1);
-                QTimer::singleShot(400,[zn]()->void{zn->setChecked(0);});
+                zn -> setChecked(true);
+                QTimer::singleShot(400,[zn]()->void{zn->setChecked(false);});
                 if (norm_work && !C_block) { ++C_reg; }
                 return;
             }
             res_mul = ((mul_word_t) abs_val1 << 40) / (mul_word_t) abs_val2;
-            btn -> setChecked(1);
-            QTimer::singleShot(400,[btn]()->void{btn->setChecked(0);});
+            btn -> setChecked(true);
+            QTimer::singleShot(400,[btn]()->void{btn->setChecked(false);});
         }
             break;
 
@@ -791,16 +798,16 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
         assert(res >= 0);
         if (res & mask_41_bit) { // if sum & CPU1.mask_41_bit == 1 -- overflow to sign bit
             if (is_negative) {
-                signalization[0][1]->setChecked(0);
-                signalization[0][2]->setChecked(1);
+                signalization[0][1]->setChecked(false);
+                signalization[0][2]->setChecked(true);
             } else {
-                signalization[0][1]->setChecked(1);
-                signalization[0][2]->setChecked(0);
+                signalization[0][1]->setChecked(true);
+                signalization[0][2]->setChecked(false);
             }
             if (!Ostanov_block) {
                 T_reg = true;
-                zn -> setChecked(1);
-                QTimer::singleShot(400,[zn]()->void{zn->setChecked(0);});
+                zn -> setChecked(true);
+                QTimer::singleShot(400,[zn]()->void{zn->setChecked(false);});
             }
             if (norm_work && !C_block) { ++C_reg; }
             return;
@@ -808,19 +815,19 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
             signalization[0][1]->setChecked(is_negative);
             signalization[0][2]->setChecked(is_negative);
         }
-        vz3 -> setChecked(1);
+        vz3 -> setChecked(true);
         kmem.write_memory(addr3.destination, static_cast<uint64_t>(res) & mask_40_bits);
         std::cout << "Written value: " << kmem.read_memory(addr3.destination) << std::endl;
         std::bitset<40> b(kmem.read_memory(addr3.destination));
         std::string res_str = b.to_string();
-        for (size_t i = 0; i < 40; i++) {
+        for (int i = 0; i < 40; i++) {
             bool val = (res_str[i] - '0');
             if (is_negative) { // one's complement
                 val = !val;
             }
             signalization[0][i+3]->setChecked(val);
         }
-        // std::cout << -1 * res << std::endl;
+
         if (is_negative)
             kmem.write_memory(addr3.destination, kmem.read_memory(addr3.destination) | mask_41_bit);
         //! "Нуль, получаемый как разность двух равных чисел, имеет отрицательный знак" -- стор. 13 Глушко-Ющенко, опис УПЧ
@@ -830,10 +837,10 @@ void Kyiv_t::opcode_arythm(const addr3_t& addr3, opcode_t opcode, bool norm_work
             kmem.write_memory(addr3.destination, res | mask_41_bit);
             std::cout << "NEGATIVE 0" << (res | mask_41_bit) << std::endl;
         }
-        QTimer::singleShot(400,[vz3]()->void{vz3->setChecked(0);});
+        QTimer::singleShot(400,[vz3]()->void{vz3->setChecked(false);});
 
     } else if(opcode == arythm_operations_t::opcode_addcmd){
-        vz3 -> setChecked(1);
+        vz3 -> setChecked(true);
         kmem.write_memory(addr3.destination, static_cast<uint64_t>(res) & mask_40_bits);
         kmem.write_memory(addr3.destination, kmem.read_memory(addr3.destination) | (kmem.read_memory(addr3.source_2) & mask_41_bit)); // Копіюємо біт знаку з source_2 // edited тут наче так має бути
         QTimer::singleShot(400,[vz3]()->void{vz3->setChecked(0);});
@@ -978,7 +985,7 @@ void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode, 
             for (size_t i = 0; i < 11; i++) {
                 signalization[3][16+i]->setChecked(0);
             }
-            if (norm_work && !C_block) { C_reg = P_reg; }
+            if (norm_work && !C_block) { C_reg = P_reg; P_reg = 0; }
         }
             break;
         case flow_control_operations_t::opcode_group_op_begin:{
@@ -1012,18 +1019,9 @@ void Kyiv_t::opcode_flow_control(const addr3_t& addr3_shifted, opcode_t opcode, 
             break;
         case flow_control_operations_t::opcode_F:{
             // Якщо я правильно розібралася з 2 попередними командами, то тут все зрозуміло і немає суперечностей
-            std::cout << "read: " << kmem.read_memory(addr3.source_1) << std::endl;
-
-            std::ostringstream oct;
-            oct << std::oct << std::to_string(kmem.read_memory(addr3.source_1)) << std::endl;
-//            word_t res = kmem.read_memory(A_reg);
-//            std::cout << "RES_F: " << res << std::endl;
-            std::cout << "FFFFF: " << word_to_addr3(kmem.read_memory(addr3.source_1)).source_2 << std::endl;
-            std::cout << "Convr: " << oct.str() << std::endl;
-
-            kmem.write_memory(addr3.destination, kmem.read_memory(word_to_addr3(kmem.read_memory(addr3_shifted.source_1)).source_2));
             A_reg = word_to_addr3(kmem.read_memory(addr3_shifted.source_1)).source_2;
-            if (norm_work && !C_block) ++C_reg;
+            kmem.write_memory(addr3_shifted.destination, kmem.read_memory(A_reg));
+            if (norm_work && !C_block) { ++C_reg; }
         }
             break;
         case flow_control_operations_t::opcode_stop:{ //! TODO: Вона враховує стан кнопки на пульті?

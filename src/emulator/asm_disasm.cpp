@@ -415,10 +415,15 @@ int Assembly::find_special_bts(std::string &line) {
         references[argv[0]] = oct.str();
         line = argv[1];
     } else if (!text) {
-        if (stoi(argv[0]) == 1)
+        if (stol(argv[0]) == 1)
             line = "1099511627775";
         else {
-            line = std::to_string((int64_t) (std::stof(argv[0]) * std::pow(2, 40)));
+            if (argv[0].find('d') != std::string::npos) {
+                argv[0].pop_back();
+                line = std::to_string((int64_t) (stol(argv[0])));     // in case user already converted
+            }
+            else
+                line = std::to_string((int64_t) (stof(argv[0]) * std::pow(2, 40)));
         }
 
     } else if (text && argv.size() == 1) {
@@ -483,49 +488,60 @@ int Assembly::write_file(const char* filename, std::string &res) {
  * @param struct Kyiv_t, address from which we start execution
  * @return 0 if success
  */
-int Assembly::execute(Kyiv_t & machine, const size_t start) {
+void Assembly::execute() {
+    machine.h = 0;
+    std::cout << std::setprecision(10);
     std::cout << "asm" << std::endl;
     for (auto & i : readers) {
         std::cout << "asmloop" << std::endl;
         machine.kmem.write_memory(0001, stol(i, 0, 8));
-        std::cout << "asmloop2" << std::endl;
         machine.C_reg = 1;
         machine.execute_opcode();
     }
-    machine.C_reg = start;
-    while (machine.execute_opcode()) {
-        std::cout << "\tRES: " << machine.kmem.read_memory(0015) << " - " << word_to_number(machine.kmem.read_memory(0015)) * std::pow(2, -40) <<  std::endl;
-    }
-    std::cout << "RES: " << machine.kmem.read_memory(0003) << " - " << machine.kmem.read_memory(0003) * std::pow(2, -40) <<  std::endl;
-    return 0;
-};
 
-//int main_assembler(int argc, char *argv[]) {
-//    if (argc != 2) {
-//        std::cerr << "Wrong arg" << std::endl;
-//        return -1;
-//    }
-//    std::string from = "../test_1.txt";
-//    std::string to = "../test_2.txt";
-//    disassembly_text(from, to);
-////    std::string result;
-////    if (read_file(argv[1], result) < 0)
-////        return -1;
-////    write_file(outputf, result);
-////
-////    Kyiv_t machine;
-////    // machine.kmem[0001] = 0'12'0016'0003'0016ULL;
-////    machine.kmem[0001] = 0'21'0002'0010'0000ULL;
-////    machine.kmem[0012] = 549755813888;
-////    machine.kmem[0013] = 16;
-////    // machine.kmem[0016] = 9;
-////    machine.C_reg = 1;
-////
-////    std::cout << std::setprecision(15);
-////
-////    while (machine.execute_opcode()) {
-////        std::cout << "\tRES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
-////    }
-////    std::cout << "RES: " << machine.kmem[0014] << " - " << machine.kmem[0014] * std::pow(2, -40) <<  std::endl;
-//    return 0;
-//}
+//    machine.kmem.write_rom(03000, 219902325555); // 0.2 == 2h  549755813
+//    machine.kmem.write_rom(03001, 0); // 0 == x0
+//    machine.kmem.write_rom(03002, 1098412116148); // 0.999 == x_max
+//    machine.kmem.write_rom(03003, 0'04'0000'0000'0101ULL); // start of program
+//    machine.kmem.write_rom(03004, 0'00'0000'0004'0000ULL); // m
+//    machine.kmem.write_rom(03005, 0'00'0000'0116'0000ULL); // a
+
+//    machine.kmem.write_memory(00071, 0);
+//    machine.kmem.write_memory(00101, 0'10'0104'4000'0122ULL);   // mul x*0.3 => 122
+//    machine.kmem.write_memory(00102, 0'10'0122'3000'0122ULL);   // mul 122*0.2(2h) => 122
+//    machine.kmem.write_memory(00103, 0'05'0000'0000'3634ULL);   // jlea 3643
+//
+//    machine.kmem.write_memory(00104, 1110406787451); // -radon
+//
+//    machine.kmem.write_memory(00130, 109951162777); // 0.1
+//    machine.kmem.write_memory(00131, 54975581388); // 0.05
+//    machine.kmem.write_memory(00065, 68719476748);
+//    machine.kmem.write_memory(00115, 329853488332); // 0.3
+//    machine.kmem.write_memory(00116, 4096); // a
+//    machine.kmem.write_memory(00117, 230897441832); // y1  n    120 - y_i 121 - x_i 122 - 2*h*K
+//    machine.kmem.write_memory(00075, 16384); // 4 0000
+
+    machine.C_reg = 03600;
+    machine.T_reg = false;
+
+    std::cout << "\t 3000: " << ( word_to_number(machine.kmem.read_memory(03000)));
+    std::cout << "\t 3001: " << ( word_to_number(machine.kmem.read_memory(03001)));
+    std::cout << "\t 3002: " << ( word_to_number(machine.kmem.read_memory(03002)));
+    std::cout << "\t 3003: " << ( word_to_number(machine.kmem.read_memory(03003)));
+    std::cout << "\t 3004: " << ( word_to_number(machine.kmem.read_memory(03004)));
+    std::cout << "\t 3005: " << ( word_to_number(machine.kmem.read_memory(03004)));
+
+    while (machine.execute_opcode()) {
+        std::cout << "\t X: " << ( word_to_number(machine.kmem.read_memory(00031))) * std::pow(2, -40);
+        std::cout << "\t 117: " << ( word_to_number(machine.kmem.read_memory(00117))) * std::pow(2, -40);
+        std::cout << "\t 120: " << ( word_to_number(machine.kmem.read_memory(00120))) * std::pow(2, -40);
+        std::cout << "\t 121: " << ( word_to_number(machine.kmem.read_memory(00121))) * std::pow(2, -40);
+        std::cout << "\t 122: " << ( word_to_number(machine.kmem.read_memory(00122))) * std::pow(2, -40) << std::endl;
+    }
+    machine.kmem.write_memory(0001, 0'01'0117'0000'0117ULL);
+    machine.T_reg = false;
+    machine.C_reg = 0001;
+    machine.execute_opcode();
+    std::cout << "RES: " << machine.kmem.read_memory(0002) << " - " << machine.kmem.read_memory(0002) * std::pow(2, -40) <<  std::endl;
+    return;
+};
